@@ -10,7 +10,7 @@ int main(int argc, char **argv)
   cout << "Width " << capture->GetWidth() << endl;
   cout << "Height " << capture->GetHeight() << endl;
 
-  QPixmap pixmap = capture->Capture(0, 0, 500, 500);
+  QPixmap pixmap = capture->Capture(0, 0);
   pixmap.save("debug.png");
 
   delete capture;

@@ -4,9 +4,6 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
-// remove the window title bar which we are not interested in
-#define OSX_WINDOW_TITLE_BAR_HEIGHT 22
-
 class OSXWindowCapture : public WindowCapture
 {
 protected:
@@ -17,6 +14,8 @@ protected:
 
   static int FindWindow(const string& name);
   static CGRect GetWindowRect(int windowId);
+
+  bool IsFullscreen();
 
 public:
 
