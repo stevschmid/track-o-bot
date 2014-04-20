@@ -1,4 +1,5 @@
-CONFIG += qt precompile_header
+CONFIG += qt console precompile_header
+CONFIG -= app_bundle
 
 PRECOMPILED_HEADER = local.h
 
@@ -6,8 +7,13 @@ DESTDIR=../bin
 OBJECTS_DIR=../tmp
 
 HEADERS = local.h \
-          window_capture.h \
-          osx_window_capture.h
+          window_capture.h
 
-SOURCES = main.cpp \
-          osx_window_capture.cpp
+SOURCES = main.cpp
+
+mac {
+  HEADERS += osx_window_capture.h
+  SOURCES += osx_window_capture.cpp
+
+  LIBS += -framework ApplicationServices
+}
