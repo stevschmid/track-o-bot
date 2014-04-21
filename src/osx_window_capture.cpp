@@ -24,8 +24,6 @@ int OSXWindowCapture::GetHeight() {
 }
 
 QPixmap OSXWindowCapture::Capture(int x, int y, int w, int h) {
-  Update();
-
   if(!w) w = GetWidth();
   if(!w) h = GetHeight();
 
@@ -54,7 +52,6 @@ bool OSXWindowCapture::IsFullscreen() {
 }
 
 bool OSXWindowCapture::WindowFound() {
-  Update();
   return winId != 0;
 }
 
