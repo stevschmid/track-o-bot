@@ -1,6 +1,16 @@
-#include "dhash.h"
+#include "dhasher.h"
 
-unsigned int DHash::CalculateHammingDistance(dhash v1, dhash v2) {
+DEFINE_SINGLETON_SCOPE(DHasher)
+
+DHasher::DHasher() {
+
+}
+
+DHasher::~DHasher() {
+
+}
+
+unsigned int DHasher::CalculateHammingDistance(dhash v1, dhash v2) {
   unsigned int dist = 0;
   dhash diff = v1 ^ v2;
 
@@ -12,7 +22,7 @@ unsigned int DHash::CalculateHammingDistance(dhash v1, dhash v2) {
   return dist;
 }
 
-dhash DHash::ForPixmap(const QPixmap& pixmap) {
+dhash DHasher::HashOfPixmap(const QPixmap& pixmap) {
   dhash hash = 0;
 
   QImage image = pixmap.scaled(9, 8, Qt::IgnoreAspectRatio, Qt::SmoothTransformation).toImage();
@@ -41,4 +51,6 @@ dhash DHash::ForPixmap(const QPixmap& pixmap) {
   return hash;
 }
 
-
+bool DHasher::Similar(dhash v1, dhash v2) {
+  return CalculateHammingDistance(v1, v2) <= DHASH_HAMMING_DISTANCE_SIMILAR_THRESHOLD;
+}

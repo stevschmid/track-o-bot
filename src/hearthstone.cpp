@@ -1,5 +1,7 @@
 #include "hearthstone.h"
 
+DEFINE_SINGLETON_SCOPE(Hearthstone)
+
 Hearthstone::Hearthstone() {
   capture = new OSXWindowCapture("Hearthstone");
 }
@@ -12,7 +14,7 @@ bool Hearthstone::IsRunning() {
   return capture->WindowFound();
 }
 
-QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh, Gravity gravity) {
+QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh) {
   int x, y, w, h;
 
   int realCanvasWidth = capture->GetWidth();

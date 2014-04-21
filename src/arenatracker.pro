@@ -9,11 +9,11 @@ OBJECTS_DIR=../tmp
 HEADERS = local.h \
           window_capture.h \
           hearthstone.h \
-          dhash.cpp
+          dhasher.cpp
 
 SOURCES = main.cpp \
           hearthstone.cpp \
-          dhash.cpp
+          dhasher.cpp
 
 mac {
   HEADERS += osx_window_capture.h

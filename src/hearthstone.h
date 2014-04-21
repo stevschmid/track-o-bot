@@ -8,21 +8,16 @@
 #define VIRTUAL_CANVAS_WIDTH 1024
 #define VIRTUAL_CANVAS_HEIGHT 768
 
-typedef enum {
-  GRAVITY_CENTER
-} Gravity;
-
 class Hearthstone
 {
+  DEFINE_SINGLETON(Hearthstone)
+
 protected:
   WindowCapture *capture;
 
 public:
-  Hearthstone();
-  ~Hearthstone();
-
   bool IsRunning();
-  QPixmap Capture(int vx, int vy, int vw, int vh, Gravity gravity = GRAVITY_CENTER);
+  QPixmap Capture(int vx, int vy, int vw, int vh);
 };
 
 
