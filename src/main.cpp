@@ -52,7 +52,6 @@ public:
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
-  cout << "yolo " << app.applicationDirPath().toStdString() << endl;
   QDir::setCurrent(app.applicationDirPath());
 
   Scene mainMenu;
