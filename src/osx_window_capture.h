@@ -16,16 +16,14 @@ protected:
   static CGRect GetWindowRect(int windowId);
 
   bool IsFullscreen();
-
-public:
-
-  OSXWindowCapture(const string& windowName);
-
   void Update();
 
+public:
+  OSXWindowCapture(const string& windowName);
+
+  bool WindowFound();
   int GetWidth();
   int GetHeight();
 
   QPixmap Capture(int x, int y, int w = 0, int h = 0);
-
 };

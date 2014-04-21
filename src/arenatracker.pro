@@ -7,9 +7,11 @@ DESTDIR=../bin
 OBJECTS_DIR=../tmp
 
 HEADERS = local.h \
-          window_capture.h
+          window_capture.h \
+          hearthstone.h
 
-SOURCES = main.cpp
+SOURCES = main.cpp \
+          hearthstone.cpp
 
 mac {
   HEADERS += osx_window_capture.h
