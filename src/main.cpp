@@ -17,6 +17,7 @@ protected:
       :name(name), x(x), y(y), w(w), h(h)
     {
       QPixmap markerPixmap = QPixmap(sceneFileName.c_str()).copy(x, y, w, h);
+      markerPixmap.save((name + "_dbg.png").c_str());
       hash = DHasher::Instance()->HashOfPixmap(markerPixmap);
     }
   };
@@ -38,12 +39,12 @@ public:
     for(it = markers.begin(); it != markers.end(); ++it) {
       const Marker& marker = *it;
       const QPixmap& capture = Hearthstone::Instance()->Capture(marker.x, marker.y, marker.w, marker.h);
-      capture.save("debug_capture.png");
 
       dhash currentHash = DHasher::Instance()->HashOfPixmap(capture);
 
-      cout << "Marker " << marker.name << " differs by " << DHasher::Instance()->CalculateHammingDistance(currentHash, marker.hash) << " bits " << endl;
-      cout << "Similar " << DHasher::Instance()->Similar(currentHash, marker.hash) << endl;
+      if(DHasher::Instance()->Similar(currentHash, marker.hash)) {
+        cout << marker.name << endl;
+      }
     }
   }
 
@@ -54,12 +55,28 @@ int main(int argc, char **argv)
   QApplication app(argc, argv);
   QDir::setCurrent(app.applicationDirPath());
 
-  Scene mainMenu;
-  mainMenu.AddMarker("key1", "../scenes/main_menu.png", 205, 118, 100, 100);
+  Scene scene;
+
+  scene.AddMarker("main_menu_key", "../scenes/main_menu.png", 205, 118, 100, 100);
+  scene.AddMarker("constructed_key", "../scenes/constructed_casual.png", 443, 75, 70, 70);
+  scene.AddMarker("constructed_casual_selected", "../scenes/constructed_casual.png", 669, 37, 60, 60);
+  scene.AddMarker("constructed_ranked_selected", "../scenes/constructed_ranked.png", 927, 25, 75, 75);
+
+  scene.AddMarker("main_menu_key", "../scenes/main_menu.png", 205, 118, 100, 100);
+  scene.AddMarker("constructed_key", "../scenes/constructed_casual.png", 443, 75, 70, 70);
+  scene.AddMarker("constructed_casual_selected", "../scenes/constructed_casual.png", 669, 37, 60, 60);
+  scene.AddMarker("constructed_ranked_selected", "../scenes/constructed_ranked.png", 927, 25, 75, 75);
+
+  scene.AddMarker("mulligan_key", "../scenes/ingame_mulligan_1st.png", 613, 691, 150, 50);
+  scene.AddMarker("going_first", "../scenes/ingame_mulligan_1st.png", 751, 354, 55, 55);
+  scene.AddMarker("going_second", "../scenes/ingame_mulligan_2nd.png", 746, 355, 55, 55);
+
+  scene.AddMarker("victory", "../scenes/ingame_victory_v2.png", 442, 148, 55, 55);
+  scene.AddMarker("defeat", "../scenes/ingame_defeat_v2.png", 444, 547, 55, 55);
 
   while(1) {
-    mainMenu.CheckMarkers();
-    sleep(1);
+    scene.CheckMarkers();
+    usleep(100000);
   }
 
   /* Hearthstone hs; */
