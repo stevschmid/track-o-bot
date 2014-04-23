@@ -55,6 +55,9 @@ int main(int argc, char **argv)
   QApplication app(argc, argv);
   QDir::setCurrent(app.applicationDirPath());
 
+  capture = OSXWindowCapture("Hearthstone");
+  Hearthstone::Instance()->SetWindowCapture(&capture);
+
   Scene scene;
 
   scene.AddMarker("main_menu_key", "../scenes/main_menu.png", 205, 118, 100, 100);

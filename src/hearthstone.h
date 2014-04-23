@@ -16,6 +16,8 @@ protected:
   WindowCapture *capture;
 
 public:
+  void SetWindowCapture(WindowCapture *wc);
+
   bool IsRunning();
   QPixmap Capture(int vx, int vy, int vw, int vh);
 };

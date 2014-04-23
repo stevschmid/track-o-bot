@@ -1,4 +1,3 @@
-#include <limits.h>
 #include "dhasher.h"
 #include "gtest/gtest.h"
 
