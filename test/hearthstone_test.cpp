@@ -38,16 +38,27 @@ TEST_F(HearthstoneTest, IsRunningWhenWindowNotFound) {
   EXPECT_EQ(Hearthstone::Instance()->IsRunning(), false);
 }
 
-TEST_F(HearthstoneTest, CaptureTrivial) {
-  // Ingame is 1280x800, but our virtual canvas is fixed to 1024x768
+TEST_F(HearthstoneTest, CaptureVirtualCanvasTranslationSimple) {
+  // Ingame is 1280x1024, but our virtual canvas is fixed to 1024x768
+  EXPECT_CALL(window_capture, GetWidth())
+    .WillOnce(Return(1280));
+  EXPECT_CALL(window_capture, GetHeight())
+    .WillOnce(Return(1024));
+
+  EXPECT_CALL(window_capture, Capture(640, 512, 40, 44))
+    .WillOnce(Return(QPixmap(1, 1)));
+
+  Hearthstone::Instance()->Capture(512, 384, 32, 32);
+}
+
+TEST_F(HearthstoneTest, CaptureVirtualCanvasTranslationWhenAspectRatioIsDifferent) {
   EXPECT_CALL(window_capture, GetWidth())
     .WillOnce(Return(1280));
   EXPECT_CALL(window_capture, GetHeight())
     .WillOnce(Return(800));
-
-  EXPECT_CALL(window_capture, Capture(640, 400, 33, 33))
+  EXPECT_CALL(window_capture, Capture(373, 200, 104, 52))
     .WillOnce(Return(QPixmap(1, 1)));
 
-  Hearthstone::Instance()->Capture(512, 384, 32, 32);
+  Hearthstone::Instance()->Capture(256, 192, 100, 50);
 }
 
