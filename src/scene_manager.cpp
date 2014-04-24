@@ -19,7 +19,7 @@ void SceneManager::RegisterScene(Scene *scene) {
   scenes.push_back(scene);
 }
 
-Scene* SceneManager::findActiveScene() {
+Scene* SceneManager::FindActiveScene() {
   vector<Scene*>::iterator it;
   for(it = scenes.begin(); it != scenes.end(); it++) {
     Scene *scene = *it;
@@ -35,7 +35,7 @@ void SceneManager::Update() {
     currentScene->Update();
   }
 
-  Scene *newScene = findActiveScene();
+  Scene *newScene = FindActiveScene();
   if(newScene && newScene != currentScene) {
     newScene->Init();
     if(currentScene) {

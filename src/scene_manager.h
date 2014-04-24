@@ -14,7 +14,7 @@ protected:
 
   void RegisterScene(Scene *scene);
 
-  Scene *findActiveScene();
+  Scene *FindActiveScene();
 
 public:
   SceneManager();
