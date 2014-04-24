@@ -2,17 +2,10 @@
 
 #include "scene.h"
 
-typedef enum {
-  CONSTRUCTED_MODE_UNKNOWN,
-  CONSTRUCTED_MODE_CASUAL,
-  CONSTRUCTED_MODE_RANKED,
-  CONSTRUCTED_MODE_PRACTICE
-} ConstructedMode;
-
 class ConstructedScene : public Scene
 {
 public:
-  ConstructedMode mode;
+  GameMode mode;
 
 public:
   ConstructedScene()
@@ -24,18 +17,18 @@ public:
   }
 
   void Init() {
-    mode = CONSTRUCTED_MODE_UNKNOWN;
+    mode = MODE_UNKNOWN;
   }
 
   void Update() {
     if(FindMarker("constructed_casual_selected")) {
-      mode = CONSTRUCTED_MODE_CASUAL;
+      mode = MODE_CASUAL;
     }
     if(FindMarker("constructed_ranked_selected")) {
-      mode = CONSTRUCTED_MODE_RANKED;
+      mode = MODE_RANKED;
     }
     if(FindMarker("constructed_practice_selected")) {
-      mode = CONSTRUCTED_MODE_PRACTICE;
+      mode = MODE_PRACTICE;
     }
   }
 
@@ -43,6 +36,10 @@ public:
     return FindMarker("constructed_casual_selected") ||
            FindMarker("constructed_ranked_selected") ||
            FindMarker("constructed_practice_selected");
+  }
+
+  GameMode GetGameMode() const {
+    return mode;
   }
 };
 

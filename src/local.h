@@ -33,3 +33,43 @@ private: \
 #define DEFINE_SINGLETON_SCOPE( CLASSNAME ) \
   CLASSNAME* CLASSNAME::_singletonptr = NULL;
 
+typedef enum {
+  MODE_RANKED = 0,
+  MODE_CASUAL,
+  MODE_PRACTICE,
+  MODE_ARENA,
+  MODE_UNKNOWN
+} GameMode;
+
+typedef enum {
+  OUTCOME_VICTORY = 0,
+  OUTCOME_DEFEAT,
+  OUTCOME_UNKNOWN
+} Outcome;
+
+typedef enum {
+  CLASS_PRIEST = 0,
+  CLASS_ROGUE,
+  CLASS_MAGE,
+  CLASS_PALADIN,
+  CLASS_WARRIOR,
+  CLASS_WARLOCK,
+  CLASS_HUNTER,
+  CLASS_SHAMAN,
+  CLASS_DRUID,
+  CLASS_UNKNOWN
+} Class;
+
+#define NUM_CLASSES 9
+
+const char CLASS_NAMES[NUM_CLASSES][128] = {
+  "priest",
+  "rogue",
+  "mage",
+  "paladin",
+  "warrior",
+  "warlock",
+  "hunter",
+  "shaman",
+  "druid",
+};

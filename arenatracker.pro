@@ -10,12 +10,14 @@ HEADERS = src/local.h \
           src/window_capture.h \
           src/hearthstone.h \
           src/dhasher.h \
-          src/scene_manager.h
+          src/scene_manager.h \
+          src/tracker.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
           src/dhasher.cpp \
-          src/scene_manager.cpp
+          src/scene_manager.cpp \
+          src/tracker.cpp
 
 mac {
   HEADERS += src/osx_window_capture.h

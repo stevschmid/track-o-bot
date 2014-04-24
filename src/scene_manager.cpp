@@ -1,4 +1,5 @@
 #include "scene_manager.h"
+#include "tracker.h"
 
 SceneManager::SceneManager()
   :currentScene(NULL)
@@ -47,19 +48,23 @@ void SceneManager::Update() {
 
 void SceneManager::Transition(Scene *oldScene, Scene *newScene) {
   cout << "Transition from " << oldScene->GetName() << " to " << newScene->GetName() << endl;
+
   if(newScene->GetName() ==  "Ingame") {
+    IngameScene *ingame = (IngameScene*)newScene;
+
     if(oldScene->GetName() == "Constructed") {
-      /* newScene->setGameMode(); */
+      ConstructedScene *constructed = (ConstructedScene*)oldScene;
+      ingame->SetGameMode(constructed->GetGameMode());
     }
   }
 
-  if(newScene->GetName() == "Constructed") {
-    if(oldScene->GetName() == "Ingame") {
-      /* Tracker::Instance()->AddResult(oldScene->getGameMode(), */
-      /*                                oldScene->getOutcome(), */
-      /*                                oldScene->getOwnClass(), */
-      /*                                oldScene->getOpponentClass()); */
-    }
+  if(oldScene->GetName() == "Ingame") {
+    IngameScene *ingame = (IngameScene*)oldScene;
+    Tracker::Instance()->AddResult(ingame->GetGameMode(),
+                                   ingame->GetOutcome(),
+                                   ingame->GetCoin(),
+                                   ingame->GetOwnClass(),
+                                   ingame->GetOpponentClass());
   }
 }
 

@@ -1,33 +1,11 @@
-typedef enum {
-  INGAME_COIN_TOSS_UNKNOWN,
-  INGAME_COIN_TOSS_FIRST,
-  INGAME_COIN_TOSS_SECOND
-} IngameCoinToss;
-
-typedef enum {
-  INGAME_OUTCOME_UNKNOWN,
-  INGAME_OUTCOME_VICTORY,
-  INGAME_OUTCOME_DEFEAT
-} IngameOutcome;
-
-#define NUM_CLASSES 9
-const char CLASSES[NUM_CLASSES][128] = {
-  "priest",
-  "druid",
-  "shaman",
-  "warrior",
-  "warlock",
-  "paladin",
-  "rogue",
-  "hunter",
-  "mage"
-};
-
 class IngameScene : public Scene
 {
 protected:
-  IngameCoinToss coinToss;
-  IngameOutcome outcome;
+  Outcome outcome;
+  bool coin;
+  Class ownClass;
+  Class opponentClass;
+  GameMode mode;
 
 public:
   IngameScene()
@@ -40,33 +18,72 @@ public:
     AddMarker("defeat", "../scenes/ingame_defeat_v2.png", 444, 547, 55, 55);
 
     for(int i = 0; i < NUM_CLASSES; i++ ) {
-      string className = CLASSES[i];
-      AddMarker(string("own_class_") + className, string("../scenes/ingame_") + className + ".png", 487, 552, 50, 50);
-      AddMarker(string("opponent_class_") + className, string("../scenes/ingame_") + className + ".png", 487, 105, 50, 50);
+      AddMarker(string("own_class_") + CLASS_NAMES[i],
+          string("../scenes/ingame_") + CLASS_NAMES[i] + ".png",
+          487, 552, 50, 50);
+      AddMarker(string("opponent_class_") + CLASS_NAMES[i],
+          string("../scenes/ingame_") + CLASS_NAMES[i] + ".png",
+          487, 105, 50, 50);
     }
   }
 
   void Init() {
-    coinToss = INGAME_COIN_TOSS_UNKNOWN;
-    outcome = INGAME_OUTCOME_UNKNOWN;
+    mode = MODE_UNKNOWN;
+    outcome = OUTCOME_UNKNOWN;
+    coin = false;
+    ownClass = CLASS_UNKNOWN;
+    opponentClass = CLASS_UNKNOWN;
   }
 
   void Update() {
     if(FindMarker("going_first")) {
-      coinToss = INGAME_COIN_TOSS_FIRST;
+      coin = false;
     }
     if(FindMarker("going_second")) {
-      coinToss = INGAME_COIN_TOSS_SECOND;
+      coin = true;
     }
     if(FindMarker("victory")) {
-      outcome = INGAME_OUTCOME_VICTORY;
+      outcome = OUTCOME_VICTORY;
     }
     if(FindMarker("defeat")) {
-      outcome = INGAME_OUTCOME_DEFEAT;
+      outcome = OUTCOME_DEFEAT;
+    }
+    for(int i = 0; i < NUM_CLASSES; i++) {
+      string className = CLASS_NAMES[i];
+      if(FindMarker(string("own_class_") + className)) {
+        ownClass = (Class)i;
+      }
+      if(FindMarker(string("opponent_class_") + className)) {
+        opponentClass = (Class)i;
+      }
     }
   }
 
   bool Active() {
     return FindMarker("ingame");
+  }
+
+  void SetGameMode(GameMode newMode) {
+    mode = newMode;
+  }
+
+  GameMode GetGameMode() {
+    return mode;
+  }
+
+  Outcome GetOutcome() const {
+    return outcome;
+  }
+
+  Class GetOwnClass() const {
+    return ownClass;
+  }
+
+  Class GetOpponentClass() const {
+    return opponentClass;
+  }
+
+  bool GetCoin() const {
+    return coin;
   }
 };
