@@ -1,3 +1,5 @@
+#pragma once
+
 typedef quint64 dhash;
 
 //

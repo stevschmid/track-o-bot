@@ -9,11 +9,13 @@ OBJECTS_DIR = tmp
 HEADERS = src/local.h \
           src/window_capture.h \
           src/hearthstone.h \
-          src/dhasher.cpp
+          src/dhasher.h \
+          src/scene_manager.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
-          src/dhasher.cpp
+          src/dhasher.cpp \
+          src/scene_manager.cpp
 
 mac {
   HEADERS += src/osx_window_capture.h
