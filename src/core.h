@@ -2,6 +2,7 @@
 
 #include "scene_manager.h"
 #include "osx_window_capture.h"
+#include "tracker.h"
 
 #include <QTimer>
 
@@ -14,6 +15,7 @@ private:
 
     SceneManager sceneManager;
     GameMode currentGameMode;
+    Tracker tracker;
 
 private slots:
     void Tick();
