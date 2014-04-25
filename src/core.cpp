@@ -3,7 +3,7 @@
 #include "tracker.h"
 
 Core::Core()
-  :capture("Hearthstone"), gameMode(MODE_UNKNOWN)
+  :capture("Hearthstone"), currentGameMode(MODE_UNKNOWN)
 {
   Hearthstone::Instance()->SetWindowCapture(&capture);
 
@@ -32,13 +32,13 @@ void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
   if(newScene->GetName() ==  "Ingame") {
     if(oldScene->GetName() == "Constructed") {
       ConstructedScene *constructed = (ConstructedScene*)oldScene;
-      gameMode = constructed->GetGameMode();
+      currentGameMode = constructed->GetGameMode();
     }
   }
 
   if(oldScene && oldScene->GetName() == "Ingame") {
     IngameScene *ingame = (IngameScene*)oldScene;
-    Tracker::Instance()->AddResult(gameMode,
+    Tracker::Instance()->AddResult(currentGameMode,
                                    ingame->GetOutcome(),
                                    ingame->GetCoin(),
                                    ingame->GetOwnClass(),

@@ -15,7 +15,7 @@ private:
     SceneManager sceneManager;
     OSXWindowCapture capture;
 
-    GameMode gameMode;
+    GameMode currentGameMode;
 
 private slots:
     void Tick();
