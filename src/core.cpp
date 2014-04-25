@@ -21,5 +21,3 @@ void Core::Tick() {
     cout << "ActiveScene " << activeScene->GetName() << endl;
   }
 }
-
-

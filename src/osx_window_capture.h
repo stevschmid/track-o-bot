@@ -4,6 +4,11 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
+#include <QElapsedTimer>
+
+// FindWindow is quite intensive in terms of performance
+#define OSX_UPDATE_WINDOW_DATA_INTERVAL 1000 // ms
+
 class OSXWindowCapture : public WindowCapture
 {
 protected:
@@ -16,7 +21,9 @@ protected:
   static CGRect GetWindowRect(int windowId);
 
   bool IsFullscreen();
-  void Update();
+
+  QElapsedTimer updateTimer;
+  void Update(bool forced = false);
 
 public:
   OSXWindowCapture(const string& windowName);

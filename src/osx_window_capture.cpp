@@ -4,27 +4,41 @@
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
 OSXWindowCapture::OSXWindowCapture(const string& windowName)
-  :name(windowName)
+  :name(windowName), winId(0)
 {
-  Update();
+  Update(true);
 }
 
-void OSXWindowCapture::Update() {
-  // check if window still exists
-  winId = FindWindow(name);
-  rect = GetWindowRect(winId);
+void OSXWindowCapture::Update(bool forced) {
+  if(forced || updateTimer.hasExpired(OSX_UPDATE_WINDOW_DATA_INTERVAL)) {
+    winId = FindWindow(name);
+    rect = GetWindowRect(winId);
+
+    updateTimer.restart();
+  }
+}
+
+bool OSXWindowCapture::WindowFound() {
+  Update();
+  return winId != 0;
 }
 
 int OSXWindowCapture::GetWidth() {
+  Update();
+
   return CGRectGetWidth(rect);
 }
 
 int OSXWindowCapture::GetHeight() {
+  Update();
+
   int height = CGRectGetHeight(rect);
   return IsFullscreen() ? height : max<int>(height - OSX_WINDOW_TITLE_BAR_HEIGHT, 0);
 }
 
 QPixmap OSXWindowCapture::Capture(int x, int y, int w, int h) {
+  Update();
+
   if(!w) w = GetWidth();
   if(!w) h = GetHeight();
 
@@ -50,10 +64,6 @@ bool OSXWindowCapture::IsFullscreen() {
   return CGRectGetMinX(rect) == 0.0f &&
     CGRectGetMinY(rect) == 0.0f &&
     (int(CGRectGetHeight(rect)) & OSX_WINDOW_TITLE_BAR_HEIGHT) != OSX_WINDOW_TITLE_BAR_HEIGHT;
-}
-
-bool OSXWindowCapture::WindowFound() {
-  return winId != 0;
 }
 
 int OSXWindowCapture::FindWindow(const string& name) {
