@@ -11,7 +11,7 @@ RCC_DIR = tmp
 HEADERS = src/local.h \
           src/window_capture.h \
           src/hearthstone.h \
-          src/dhasher.h \
+          src/dhash.h \
           src/scene_manager.h \
           src/tracker.h \
           src/window.h \
@@ -19,7 +19,7 @@ HEADERS = src/local.h \
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
-          src/dhasher.cpp \
+          src/dhash.cpp \
           src/scene_manager.cpp \
           src/tracker.cpp \
           src/window.cpp \

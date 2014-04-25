@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../dhasher.h"
+#include "../dhash.h"
 #include "../hearthstone.h"
 
 #include <QPixmap>
@@ -22,7 +22,7 @@ protected:
     {
       QPixmap markerPixmap = QPixmap(sceneFileName.c_str()).copy(x, y, w, h);
       /* markerPixmap.save((name + "_dbg.png").c_str()); */
-      hash = DHasher::Instance()->HashOfPixmap(markerPixmap);
+      hash = dhash_for_pixmap(markerPixmap);
     }
   };
 
@@ -49,9 +49,9 @@ public:
     const Marker& marker = markers[name];
     const QPixmap& capture = Hearthstone::Instance()->Capture(marker.x, marker.y, marker.w, marker.h);
 
-    dhash currentHash = DHasher::Instance()->HashOfPixmap(capture);
+    dhash currentHash = dhash_for_pixmap(capture);
 
-    return DHasher::Instance()->Similar(currentHash, marker.hash);
+    return dhash_check_similarity(currentHash, marker.hash);
   }
 
   virtual bool Active() = 0;
