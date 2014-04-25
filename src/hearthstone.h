@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPixmap>
+
 #include "osx_window_capture.h"
 
 // Hearthstone provides a virtual canvas of 1024x768, which is independent

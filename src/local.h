@@ -3,8 +3,6 @@
 #include <iostream>
 using namespace std;
 
-#include <QPixmap>
-
 #define DEFINE_SINGLETON(CLASSNAME) \
 public: \
   static CLASSNAME* Instance( void ) { \

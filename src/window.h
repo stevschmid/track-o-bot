@@ -3,6 +3,8 @@
 #include <QSystemTrayIcon>
 #include <QDialog>
 
+#include "core.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
@@ -31,4 +33,6 @@ private:
 
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;
+
+  Core core;
 };

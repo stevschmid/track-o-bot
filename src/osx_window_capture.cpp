@@ -10,6 +10,7 @@ OSXWindowCapture::OSXWindowCapture(const string& windowName)
 }
 
 void OSXWindowCapture::Update() {
+  // check if window still exists
   winId = FindWindow(name);
   rect = GetWindowRect(winId);
 }

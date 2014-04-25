@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPixmap>
+
 typedef quint64 dhash;
 
 //

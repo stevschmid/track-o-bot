@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPixmap>
+
 class WindowCapture
 {
 public:

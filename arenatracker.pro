@@ -1,4 +1,5 @@
-CONFIG += qt precompile_header debug
+CONFIG += qt console precompile_header debug
+CONFIG -= app_bundle
 
 PRECOMPILED_HEADER = src/local.h
 
@@ -13,14 +14,16 @@ HEADERS = src/local.h \
           src/dhasher.h \
           src/scene_manager.h \
           src/tracker.h \
-          src/window.h
+          src/window.h \
+          src/core.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
           src/dhasher.cpp \
           src/scene_manager.cpp \
           src/tracker.cpp \
-          src/window.cpp
+          src/window.cpp \
+          src/core.cpp
 
 RESOURCES = arenatracker.qrc
 

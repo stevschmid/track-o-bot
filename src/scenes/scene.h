@@ -3,6 +3,8 @@
 #include "../dhasher.h"
 #include "../hearthstone.h"
 
+#include <QPixmap>
+
 class Scene
 {
 protected:
