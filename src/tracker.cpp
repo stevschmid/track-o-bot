@@ -6,5 +6,4 @@ Tracker::Tracker() {
 }
 
 Tracker::~Tracker() {
-
 }

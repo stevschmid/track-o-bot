@@ -11,18 +11,18 @@ public:
   IngameScene()
     :Scene("Ingame")
   {
-    AddMarker("ingame", "../scenes/ingame_victory_v2.png", 972, 523, 31, 29);
-    AddMarker("going_first", "../scenes/ingame_mulligan_1st.png", 751, 354, 55, 55);
-    AddMarker("going_second", "../scenes/ingame_mulligan_2nd.png", 746, 355, 55, 55);
-    AddMarker("victory", "../scenes/ingame_victory_v2.png", 442, 148, 55, 55);
-    AddMarker("defeat", "../scenes/ingame_defeat_v2.png", 444, 547, 55, 55);
+    AddMarker("ingame", ":/scenes/ingame_victory_v2.png", 972, 523, 31, 29);
+    AddMarker("going_first", ":/scenes/ingame_mulligan_1st.png", 751, 354, 55, 55);
+    AddMarker("going_second", ":/scenes/ingame_mulligan_2nd.png", 746, 355, 55, 55);
+    AddMarker("victory", ":/scenes/ingame_victory_v2.png", 442, 148, 55, 55);
+    AddMarker("defeat", ":/scenes/ingame_defeat_v2.png", 444, 547, 55, 55);
 
     for(int i = 0; i < NUM_CLASSES; i++ ) {
       AddMarker(string("own_class_") + CLASS_NAMES[i],
-          string("../scenes/ingame_") + CLASS_NAMES[i] + ".png",
+          string(":/scenes/ingame_") + CLASS_NAMES[i] + ".png",
           487, 552, 50, 50);
       AddMarker(string("opponent_class_") + CLASS_NAMES[i],
-          string("../scenes/ingame_") + CLASS_NAMES[i] + ".png",
+          string(":/scenes/ingame_") + CLASS_NAMES[i] + ".png",
           487, 105, 50, 50);
     }
   }

@@ -1,5 +1,8 @@
 include(arenatracker.pro)
 
+CONFIG += console
+CONFIG -= app_bundle
+
 GMOCKPATH = /Users/spidy/dev/gmock-1.7.0
 GTESTPATH = /Users/spidy/dev/gmock-1.7.0/gtest
 
