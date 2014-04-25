@@ -3,7 +3,6 @@
 #include "window_capture.h"
 
 #include <ApplicationServices/ApplicationServices.h>
-
 #include <QElapsedTimer>
 
 // FindWindow is quite intensive in terms of performance

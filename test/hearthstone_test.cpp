@@ -11,7 +11,7 @@ using ::testing::Return;
 class HearthstoneTest : public ::testing::Test {
 protected:
   virtual void SetUp() {
-    Hearthstone::Instance()->SetWindowCapture(&window_capture);
+    Hearthstone::Instance()->SetWindowCapture(new MockWindowCapture);
 
     int argc = 0;
     app = new QApplication(argc, NULL);
@@ -22,8 +22,6 @@ protected:
   }
 
   QApplication *app;
-
-  MockWindowCapture window_capture;
 };
 
 TEST_F(HearthstoneTest, IsRunningWhenWindowFound) {

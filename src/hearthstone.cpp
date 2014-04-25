@@ -1,11 +1,16 @@
 #include "hearthstone.h"
 
+#include "osx_window_capture.h"
+
 DEFINE_SINGLETON_SCOPE(Hearthstone)
 
 Hearthstone::Hearthstone() {
+  capture = new OSXWindowCapture("Hearthstone");
 }
 
 Hearthstone::~Hearthstone() {
+  if(capture != NULL)
+    delete capture;
 }
 
 bool Hearthstone::IsRunning() {
@@ -56,5 +61,8 @@ QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh) {
 }
 
 void Hearthstone::SetWindowCapture(WindowCapture *wc) {
+  if(capture != NULL)
+    delete capture;
+
   capture = wc;
 }

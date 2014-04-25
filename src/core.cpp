@@ -3,10 +3,8 @@
 #include "tracker.h"
 
 Core::Core()
-  :capture("Hearthstone"), currentGameMode(MODE_UNKNOWN)
+  :currentGameMode(MODE_UNKNOWN)
 {
-  Hearthstone::Instance()->SetWindowCapture(&capture);
-
   sceneManager.RegisterObserver(this);
 
   timer = new QTimer(this);

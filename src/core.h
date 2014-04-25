@@ -13,8 +13,6 @@ private:
     QTimer *timer;
 
     SceneManager sceneManager;
-    OSXWindowCapture capture;
-
     GameMode currentGameMode;
 
 private slots:
