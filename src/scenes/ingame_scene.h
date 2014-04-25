@@ -5,7 +5,6 @@ protected:
   bool coin;
   Class ownClass;
   Class opponentClass;
-  GameMode mode;
 
 public:
   IngameScene()
@@ -28,7 +27,6 @@ public:
   }
 
   void Init() {
-    mode = MODE_UNKNOWN;
     outcome = OUTCOME_UNKNOWN;
     coin = false;
     ownClass = CLASS_UNKNOWN;
@@ -61,14 +59,6 @@ public:
 
   bool Active() {
     return FindMarker("ingame");
-  }
-
-  void SetGameMode(GameMode newMode) {
-    mode = newMode;
-  }
-
-  GameMode GetGameMode() {
-    return mode;
   }
 
   Outcome GetOutcome() const {

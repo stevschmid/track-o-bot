@@ -21,7 +21,7 @@ protected:
       :name(name), x(x), y(y), w(w), h(h)
     {
       QPixmap markerPixmap = QPixmap(sceneFileName.c_str()).copy(x, y, w, h);
-      markerPixmap.save((name + "_dbg.png").c_str());
+      /* markerPixmap.save((name + "_dbg.png").c_str()); */
       hash = DHasher::Instance()->HashOfPixmap(markerPixmap);
     }
   };

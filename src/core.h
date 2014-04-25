@@ -5,7 +5,7 @@
 
 #include <QTimer>
 
-class Core : public QObject
+class Core : public QObject, public SceneManagerObserver
 {
   Q_OBJECT
 
@@ -15,10 +15,14 @@ private:
     SceneManager sceneManager;
     OSXWindowCapture capture;
 
+    GameMode gameMode;
+
 private slots:
     void Tick();
 
 public:
     Core();
     ~Core();
+
+    void SceneChanged(Scene *oldScene, Scene *newScene);
 };

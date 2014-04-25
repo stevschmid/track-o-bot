@@ -39,35 +39,26 @@ void SceneManager::Update() {
   Scene *newScene = FindActiveScene();
   if(newScene && newScene != currentScene) {
     newScene->Init();
-    if(currentScene) {
-      Transition(currentScene, newScene);
-    }
+    Notify(currentScene, newScene);
     currentScene = newScene;
   }
 }
 
-void SceneManager::Transition(Scene *oldScene, Scene *newScene) {
-  cout << "Transition from " << oldScene->GetName() << " to " << newScene->GetName() << endl;
-
-  if(newScene->GetName() ==  "Ingame") {
-    IngameScene *ingame = (IngameScene*)newScene;
-
-    if(oldScene->GetName() == "Constructed") {
-      ConstructedScene *constructed = (ConstructedScene*)oldScene;
-      ingame->SetGameMode(constructed->GetGameMode());
-    }
-  }
-
-  if(oldScene->GetName() == "Ingame") {
-    IngameScene *ingame = (IngameScene*)oldScene;
-    Tracker::Instance()->AddResult(ingame->GetGameMode(),
-                                   ingame->GetOutcome(),
-                                   ingame->GetCoin(),
-                                   ingame->GetOwnClass(),
-                                   ingame->GetOpponentClass());
-  }
+const Scene* SceneManager::GetActiveScene() {
+  return currentScene;
 }
 
-const Scene* SceneManager::ActiveScene() {
-  return currentScene;
+void SceneManager::RegisterObserver(SceneManagerObserver *observer) {
+  observers.push_back(observer);
+}
+
+void SceneManager::UnregisterObserver(SceneManagerObserver *observer) {
+  observers.erase(remove(observers.begin(), observers.end(), observer), observers.end());
+}
+
+void SceneManager::Notify(Scene *oldScene, Scene *newScene) {
+  vector<SceneManagerObserver*>::iterator it;
+  for(it = observers.begin(); it != observers.end(); ++it) {
+    (*it)->SceneChanged(oldScene, newScene);
+  }
 }
