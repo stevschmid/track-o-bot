@@ -89,6 +89,7 @@ int OSXWindowCapture::FindWindow(const string& name) {
   }
 
   CFRelease(nameRef);
+  CFRelease(windowList);
 
   return winId;
 }
@@ -103,5 +104,6 @@ CGRect OSXWindowCapture::GetWindowRect(int windowId) {
     CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)CFDictionaryGetValue(info, kCGWindowBounds), &rect);
   }
 
+  CFRelease(windowList);
   return rect;
 }
