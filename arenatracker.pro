@@ -15,7 +15,8 @@ HEADERS = src/local.h \
           src/scene_manager.h \
           src/tracker.h \
           src/window.h \
-          src/core.h
+          src/core.h \
+          src/logger.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
@@ -23,7 +24,8 @@ SOURCES = src/main.cpp \
           src/scene_manager.cpp \
           src/tracker.cpp \
           src/window.cpp \
-          src/core.cpp
+          src/core.cpp \
+          src/logger.cpp
 
 RESOURCES = arenatracker.qrc
 

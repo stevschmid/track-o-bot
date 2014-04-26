@@ -1,7 +1,17 @@
 #include <QtGui>
 #include "window.h"
 
+WindowLogHandler::WindowLogHandler(Window *window)
+  :window(window)
+{
+}
+
+void WindowLogHandler::HandleLogEntry(const string& entry) {
+  window->addLogEntry(entry);
+}
+
 Window::Window()
+  :logHandler(this)
 {
   setWindowTitle("Arenatracker");
 
@@ -16,9 +26,18 @@ Window::Window()
   QVBoxLayout *mainLayout = new QVBoxLayout;
   setLayout(mainLayout);
 
+  logText = new QTextEdit;
+  mainLayout->addWidget(logText);
+
   trayIcon->show();
 
   setFixedSize(400, 300);
+
+  logger.RegisterObserver(&logHandler);
+}
+
+Window::~Window() {
+  logger.UnregisterObserver(&logHandler);
 }
 
 void Window::closeEvent(QCloseEvent *event)
@@ -27,6 +46,7 @@ void Window::closeEvent(QCloseEvent *event)
     hide();
     event->ignore();
   }
+
 }
 
 void Window::riseAndShine() {
@@ -56,4 +76,10 @@ void Window::createTrayIcon()
   QIcon icon = QIcon(":/icons/heart.svg");
   trayIcon->setIcon(icon);
   setWindowIcon(icon);
+}
+
+void Window::addLogEntry(const string& entry) {
+  logText->moveCursor (QTextCursor::End);
+  logText->insertPlainText(entry.c_str());
+  logText->moveCursor (QTextCursor::End);
 }

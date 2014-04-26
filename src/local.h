@@ -71,3 +71,6 @@ const char CLASS_NAMES[NUM_CLASSES][128] = {
   "shaman",
   "druid",
 };
+
+#include "logger.h"
+extern Logger logger;

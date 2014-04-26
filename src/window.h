@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSystemTrayIcon>
 #include <QDialog>
 
 #include "core.h"
@@ -9,7 +8,20 @@ QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
 class QMessageBox;
+class QSystemTrayIcon;
+class QTextEdit;
 QT_END_NAMESPACE
+
+#include "logger.h"
+class Window;
+class WindowLogHandler : public LoggingObserver {
+protected:
+  Window *window;
+
+public:
+  WindowLogHandler(Window *window);
+  void HandleLogEntry(const string& entry);
+};
 
 class Window : public QDialog
 {
@@ -17,6 +29,10 @@ class Window : public QDialog
 
 public:
   Window();
+  ~Window();
+
+  void addLogEntry(const string& entry);
+  WindowLogHandler& getLogHandler();
 
 protected:
   void closeEvent(QCloseEvent *event);
@@ -34,5 +50,10 @@ private:
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;
 
+  QTextEdit *logText;
+
+  WindowLogHandler logHandler;
+
   Core core;
 };
+
