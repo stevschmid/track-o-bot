@@ -38,7 +38,7 @@ void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
     IngameScene *ingame = (IngameScene*)oldScene;
     tracker.AddResult(currentGameMode,
         ingame->GetOutcome(),
-        ingame->GetCoin(),
+        ingame->GetGoingOrder(),
         ingame->GetOwnClass(),
         ingame->GetOpponentClass());
   }

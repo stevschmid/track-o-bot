@@ -2,7 +2,7 @@ class IngameScene : public Scene
 {
 protected:
   Outcome outcome;
-  bool coin;
+  GoingOrder order;
   Class ownClass;
   Class opponentClass;
 
@@ -28,31 +28,37 @@ public:
 
   void Init() {
     outcome = OUTCOME_UNKNOWN;
-    coin = false;
+    order = GOING_UNKNOWN;
     ownClass = CLASS_UNKNOWN;
     opponentClass = CLASS_UNKNOWN;
   }
 
   void Update() {
-    if(FindMarker("going_first")) {
-      coin = false;
-    }
-    if(FindMarker("going_second")) {
-      coin = true;
-    }
-    if(FindMarker("victory")) {
-      outcome = OUTCOME_VICTORY;
-    }
-    if(FindMarker("defeat")) {
-      outcome = OUTCOME_DEFEAT;
-    }
-    for(int i = 0; i < NUM_CLASSES; i++) {
-      string className = CLASS_NAMES[i];
-      if(FindMarker(string("own_class_") + className)) {
-        ownClass = (Class)i;
+    if(order == GOING_UNKNOWN) {
+      if(FindMarker("going_first")) {
+        order = GOING_FIRST;
       }
-      if(FindMarker(string("opponent_class_") + className)) {
-        opponentClass = (Class)i;
+      if(FindMarker("going_second")) {
+        order = GOING_SECOND;
+      }
+    }
+    if(outcome == OUTCOME_UNKNOWN) {
+      if(FindMarker("victory")) {
+        outcome = OUTCOME_VICTORY;
+      }
+      if(FindMarker("defeat")) {
+        outcome = OUTCOME_DEFEAT;
+      }
+    }
+    if(ownClass == CLASS_UNKNOWN || opponentClass == CLASS_UNKNOWN) {
+      for(int i = 0; i < NUM_CLASSES; i++) {
+        string className = CLASS_NAMES[i];
+        if(FindMarker(string("own_class_") + className)) {
+          ownClass = (Class)i;
+        }
+        if(FindMarker(string("opponent_class_") + className)) {
+          opponentClass = (Class)i;
+        }
       }
     }
   }
@@ -73,7 +79,7 @@ public:
     return opponentClass;
   }
 
-  bool GetCoin() const {
-    return coin;
+  GoingOrder GetGoingOrder() const {
+    return order;
   }
 };

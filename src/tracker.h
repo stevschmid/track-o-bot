@@ -3,6 +3,6 @@
 class Tracker
 {
 public:
-  void AddResult(GameMode mode, Outcome outcome, bool coin, Class ownClass, Class opponentClass);
+  void AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass);
 };
 

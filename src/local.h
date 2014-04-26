@@ -32,6 +32,12 @@ private: \
   CLASSNAME* CLASSNAME::_singletonptr = NULL;
 
 typedef enum {
+  GOING_FIRST = 0,
+  GOING_SECOND,
+  GOING_UNKNOWN
+} GoingOrder;
+
+typedef enum {
   MODE_RANKED = 0,
   MODE_CASUAL,
   MODE_PRACTICE,
