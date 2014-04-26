@@ -1,6 +1,8 @@
 CONFIG += qt console precompile_header debug
 CONFIG -= app_bundle
 
+QT += network
+
 PRECOMPILED_HEADER = src/local.h
 
 DESTDIR = build
@@ -16,7 +18,8 @@ HEADERS = src/local.h \
           src/tracker.h \
           src/window.h \
           src/core.h \
-          src/logger.h
+          src/logger.h \
+          src/json.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
@@ -25,7 +28,8 @@ SOURCES = src/main.cpp \
           src/tracker.cpp \
           src/window.cpp \
           src/core.cpp \
-          src/logger.cpp
+          src/logger.cpp \
+          src/json.cpp
 
 RESOURCES = arenatracker.qrc
 

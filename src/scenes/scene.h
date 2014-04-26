@@ -48,9 +48,7 @@ public:
   bool FindMarker(const string& name) {
     const Marker& marker = markers[name];
     const QPixmap& capture = Hearthstone::Instance()->Capture(marker.x, marker.y, marker.w, marker.h);
-
     dhash currentHash = dhash_for_pixmap(capture);
-
     return dhash_check_similarity(currentHash, marker.hash);
   }
 

@@ -5,6 +5,7 @@
 
 #include "file_logger.h"
 #include "window.h"
+#include "tracker.h"
 
 Logger logger;
 

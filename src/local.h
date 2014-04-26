@@ -45,6 +45,14 @@ typedef enum {
   MODE_UNKNOWN
 } GameMode;
 
+const char MODE_NAMES[][128] = {
+  "ranked",
+  "casual",
+  "practice",
+  "arena",
+  "unknown"
+};
+
 typedef enum {
   OUTCOME_VICTORY = 0,
   OUTCOME_DEFEAT,
@@ -64,9 +72,7 @@ typedef enum {
   CLASS_UNKNOWN
 } Class;
 
-#define NUM_CLASSES 9
-
-const char CLASS_NAMES[NUM_CLASSES][128] = {
+const char CLASS_NAMES[][128] = {
   "priest",
   "rogue",
   "mage",
@@ -76,7 +82,10 @@ const char CLASS_NAMES[NUM_CLASSES][128] = {
   "hunter",
   "shaman",
   "druid",
+  "unknown"
 };
+
+#define NUM_CLASSES 9
 
 #include "logger.h"
 extern Logger logger;
