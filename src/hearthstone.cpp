@@ -55,7 +55,7 @@ QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh) {
   y = realCanvasHeight/2 + dy * scaleRatioY;
 
   QPixmap realmap = capture->Capture(x, y, w, h);
-  QPixmap virtualmap = realmap.scaled(vw, vh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+  QPixmap virtualmap = realmap.scaled(vw, vh, Qt::IgnoreAspectRatio, Qt::FastTransformation);
 
   return virtualmap;
 }

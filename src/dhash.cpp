@@ -3,7 +3,7 @@
 dhash dhash_for_pixmap(const QPixmap& pixmap) {
   dhash hash = 0;
 
-  QImage image = pixmap.scaled(9, 8, Qt::IgnoreAspectRatio, Qt::SmoothTransformation).toImage();
+  QImage image = pixmap.scaled(9, 8, Qt::IgnoreAspectRatio, Qt::FastTransformation).toImage();
 
   int w = image.width();
   int h = image.height();
