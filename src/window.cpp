@@ -49,13 +49,13 @@ void Window::closeEvent(QCloseEvent *event)
 
 }
 
-void Window::riseAndShine() {
-  raise();
-  show();
-}
-
 void Window::createActions()
 {
+  autostartAction = new QAction(tr("Launch at Login"), this);
+  connect(autostartAction, SIGNAL(triggered()), this, SLOT(updateAutostart()));
+  autostartAction->setCheckable(true);
+  autostartAction->setChecked(autostart.IsActive());
+
   showAction = new QAction(tr("Show"), this);
   connect(showAction, SIGNAL(triggered()), this, SLOT(riseAndShine()));
 
@@ -67,6 +67,8 @@ void Window::createTrayIcon()
 {
   trayIconMenu = new QMenu(this);
   trayIconMenu->addAction(showAction);
+  trayIconMenu->addSeparator();
+  trayIconMenu->addAction(autostartAction);
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(quitAction);
 
@@ -82,4 +84,17 @@ void Window::addLogEntry(const string& entry) {
   logText->moveCursor (QTextCursor::End);
   logText->insertPlainText(entry.c_str());
   logText->moveCursor (QTextCursor::End);
+}
+
+void Window::riseAndShine() {
+  raise();
+  show();
+}
+
+void Window::updateAutostart() {
+  if(autostartAction->isChecked()) {
+    autostart.SetActive(true);
+  } else {
+    autostart.SetActive(false);
+  }
 }

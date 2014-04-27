@@ -3,6 +3,7 @@
 #include <QDialog>
 
 #include "core.h"
+#include "autostart.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -39,11 +40,13 @@ protected:
 
 private slots:
   void riseAndShine();
+  void updateAutostart();
 
 private:
   void createActions();
   void createTrayIcon();
 
+  QAction *autostartAction;
   QAction *showAction;
   QAction *quitAction;
 
@@ -55,5 +58,6 @@ private:
   WindowLogHandler logHandler;
 
   Core core;
+  Autostart autostart;
 };
 
