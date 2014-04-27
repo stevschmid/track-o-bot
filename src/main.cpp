@@ -1,7 +1,6 @@
-#include <QApplication.h>
+#include <QApplication>
 #include <QDir>
-
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "file_logger.h"
 #include "window.h"
@@ -14,7 +13,7 @@ int main(int argc, char **argv)
   QApplication app(argc, argv);
   app.setApplicationName("Arenatracker"); // for proper DataLocation handling
 
-  QString directory = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+  QString directory = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
   if(!QFile::exists(directory)) {
     QDir dir;
     dir.mkpath(directory);
@@ -23,9 +22,6 @@ int main(int argc, char **argv)
 
   FileLogger fileLogger(logFilePath);
   logger.RegisterObserver(&fileLogger);
-
-  /* Tracker tracker; */
-  /* tracker.AddResult(MODE_PRACTICE, OUTCOME_VICTORY, GOING_FIRST, CLASS_SHAMAN, CLASS_PRIEST); */
 
   Window window;
   return app.exec();

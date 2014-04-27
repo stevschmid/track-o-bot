@@ -1,6 +1,6 @@
 CONFIG += qt precompile_header debug
 
-QT += network
+QT += network widgets macextras
 
 PRECOMPILED_HEADER = src/local.h
 

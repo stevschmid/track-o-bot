@@ -10,7 +10,7 @@ protected:
 
 public:
   FileLogger(const string& path) {
-    of.open(path);
+    of.open(path.c_str());
   }
   ~FileLogger() {}
 

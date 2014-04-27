@@ -1,6 +1,13 @@
 #include <QtGui>
 #include "window.h"
 
+#include <QVBoxLayout>
+#include <QTextEdit>
+#include <QSystemTrayIcon>
+#include <QIcon>
+#include <QAction>
+#include <QMenu>
+
 WindowLogHandler::WindowLogHandler(Window *window)
   :window(window)
 {
