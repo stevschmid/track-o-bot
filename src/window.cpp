@@ -75,7 +75,7 @@ void Window::createTrayIcon()
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
 
-  QIcon icon = QIcon(":/icons/heart.svg");
+  QIcon icon = QIcon(":/icons/paw.svg");
   trayIcon->setIcon(icon);
   setWindowIcon(icon);
 }
