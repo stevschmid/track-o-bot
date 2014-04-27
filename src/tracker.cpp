@@ -18,7 +18,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     " OwnCl " << ownClass <<
     " OppCl " << opponentClass << endl;
 
-  QUrl url("http://webtracker.dev/results");
+  QUrl url("http://webtracker.dev/results.json");
   QNetworkRequest request(url);
 
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -38,9 +38,10 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 }
 
 void Tracker::OnNetworkReply(QNetworkReply *reply) {
-  if(reply->error() != QNetworkReply::NoError) {
-    logger << "Adding of the result as a success!" << endl;
+  if(reply->error() == QNetworkReply::NoError) {
+    logger << "Adding of the result was a success!" << endl;
   } else {
     logger << "There was a problem adding the result. Code: " << reply->error() << endl;
+    logger << QString(reply->readAll()).toStdString() << endl;
   }
 }

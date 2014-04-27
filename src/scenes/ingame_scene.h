@@ -57,7 +57,6 @@ public:
           ownClass = (Class)i;
         }
         if(FindMarker(string("opponent_class_") + className)) {
-          logger << " Set Opponent Class to " << opponentClass << endl;
           opponentClass = (Class)i;
         }
       }

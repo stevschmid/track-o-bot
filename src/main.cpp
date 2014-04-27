@@ -24,6 +24,9 @@ int main(int argc, char **argv)
   FileLogger fileLogger(logFilePath);
   logger.RegisterObserver(&fileLogger);
 
+  /* Tracker tracker; */
+  /* tracker.AddResult(MODE_PRACTICE, OUTCOME_VICTORY, GOING_FIRST, CLASS_SHAMAN, CLASS_PRIEST); */
+
   Window window;
   return app.exec();
 
