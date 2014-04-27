@@ -7,6 +7,7 @@ SceneManager::SceneManager()
   RegisterScene(new MainMenuScene);
   RegisterScene(new ConstructedScene);
   RegisterScene(new IngameScene);
+  RegisterScene(new ArenaScene);
 }
 
 SceneManager::~SceneManager() {

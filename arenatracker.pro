@@ -34,6 +34,9 @@ SOURCES = src/main.cpp \
 
 RESOURCES = arenatracker.qrc
 
+QMAKE_INFO_PLIST = Info.plist.app
+ICON = icons/paw.icns
+
 mac {
   HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp

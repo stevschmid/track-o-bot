@@ -30,9 +30,14 @@ void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
   logger << "NewScene " << newScene->GetName() << endl;
 
   if(newScene->GetName() ==  "Ingame") {
-    if(oldScene && oldScene->GetName() == "Constructed") {
-      ConstructedScene *constructed = (ConstructedScene*)oldScene;
-      currentGameMode = constructed->GetGameMode();
+    if(oldScene) {
+      if(oldScene->GetName() == "Constructed") {
+        ConstructedScene *constructed = (ConstructedScene*)oldScene;
+        currentGameMode = constructed->GetGameMode();
+      }
+      if(oldScene->GetName() == "Arena") {
+        currentGameMode = MODE_ARENA;
+      }
     }
   }
 
