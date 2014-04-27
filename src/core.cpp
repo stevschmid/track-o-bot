@@ -17,7 +17,9 @@ Core::~Core() {
 }
 
 void Core::Tick() {
-  sceneManager.Update();
+  if(Hearthstone::Instance()->IsRunning()) {
+    sceneManager.Update();
+  }
 }
 
 void Core::SceneChanged(Scene *oldScene, Scene *newScene) {

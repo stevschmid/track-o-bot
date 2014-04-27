@@ -87,8 +87,8 @@ void Window::addLogEntry(const string& entry) {
 }
 
 void Window::riseAndShine() {
-  raise();
   show();
+  raise();
 }
 
 void Window::updateAutostart() {
