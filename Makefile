@@ -558,25 +558,25 @@ compiler_rcc_make_all: tmp/qrc_arenatracker.cpp
 compiler_rcc_clean:
 	-$(DEL_FILE) tmp/qrc_arenatracker.cpp
 tmp/qrc_arenatracker.cpp: arenatracker.qrc \
-		icons/paw.svg \
-		scenes/ingame_defeat_v2.png \
-		scenes/ingame_paladin.png \
-		scenes/ingame_mulligan_2nd.png \
-		scenes/constructed_practice.png \
-		scenes/ingame_warlock.png \
-		scenes/constructed_casual.png \
-		scenes/constructed_ranked.png \
-		scenes/ingame_rogue.png \
-		scenes/ingame_mage.png \
 		scenes/ingame_shaman.png \
-		scenes/main_menu.png \
+		scenes/constructed_ranked.png \
+		scenes/ingame_paladin.png \
+		scenes/constructed_practice.png \
+		scenes/ingame_rogue.png \
+		scenes/ingame_mulligan_1st.png \
+		scenes/ingame_warlock.png \
 		scenes/ingame_hunter.png \
 		scenes/arena.png \
+		scenes/ingame_mulligan_2nd.png \
+		scenes/ingame_priest.png \
+		scenes/ingame_defeat_v2.png \
+		scenes/ingame_druid.png \
 		scenes/ingame_warrior.png \
 		scenes/ingame_victory_v2.png \
-		scenes/ingame_druid.png \
-		scenes/ingame_priest.png \
-		scenes/ingame_mulligan_1st.png
+		scenes/ingame_mage.png \
+		scenes/main_menu.png \
+		scenes/constructed_casual.png \
+		icons/paw.svg
 	/usr/local/Cellar/qt5/HEAD/bin/rcc -name arenatracker arenatracker.qrc -o tmp/qrc_arenatracker.cpp
 
 compiler_moc_header_make_all: tmp/moc_tracker.cpp tmp/moc_window.cpp tmp/moc_core.cpp
