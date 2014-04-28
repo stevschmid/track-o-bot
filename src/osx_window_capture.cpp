@@ -69,7 +69,9 @@ bool OSXWindowCapture::IsFullscreen() {
 int OSXWindowCapture::FindWindow(const string& name) {
   int winId = 0;
 
-  CFArrayRef windowList = CGWindowListCopyWindowInfo(kCGWindowListExcludeDesktopElements, kCGNullWindowID);
+  CFArrayRef windowList = CGWindowListCopyWindowInfo(
+      kCGWindowListExcludeDesktopElements | kCGWindowListOptionOnScreenOnly,
+      kCGNullWindowID);
   CFIndex numWindows = CFArrayGetCount(windowList);
 
   CFStringRef nameRef = CFStringCreateWithCString(kCFAllocatorDefault, name.c_str(), kCFStringEncodingMacRoman);

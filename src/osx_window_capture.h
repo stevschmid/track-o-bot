@@ -7,7 +7,7 @@
 #include <QtMacExtras>
 
 // FindWindow is quite intensive in terms of performance
-#define OSX_UPDATE_WINDOW_DATA_INTERVAL 1000 // ms
+#define OSX_UPDATE_WINDOW_DATA_INTERVAL 3000 // ms
 
 class OSXWindowCapture : public WindowCapture
 {
