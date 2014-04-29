@@ -7,18 +7,45 @@
 #include <QIcon>
 #include <QAction>
 #include <QMenu>
+#include <QTabWidget>
 
-WindowLogHandler::WindowLogHandler(Window *window)
-  :window(window)
+TabLogHandler::TabLogHandler(LogTab *logTab)
+  :tab(logTab)
 {
 }
 
-void WindowLogHandler::HandleLogEntry(const string& entry) {
-  window->addLogEntry(entry);
+void TabLogHandler::HandleLogEntry(const string& entry) {
+  tab->addLogEntry(entry);
+}
+
+SettingsTab::SettingsTab(QWidget *parent)
+  : QWidget(parent)
+{
+}
+
+LogTab::LogTab(QWidget *parent)
+  : QWidget(parent), logHandler(this)
+{
+  QVBoxLayout *layout = new QVBoxLayout;
+  logText = new QTextEdit;
+  layout->setSizeConstraint(QLayout::SetNoConstraint);
+  layout->addWidget(logText);
+  setLayout(layout);
+
+  logger.RegisterObserver(&logHandler);
+}
+
+LogTab::~LogTab() {
+  logger.UnregisterObserver(&logHandler);
+}
+
+void LogTab::addLogEntry(const string& entry) {
+  logText->moveCursor (QTextCursor::End);
+  logText->insertPlainText(entry.c_str());
+  logText->moveCursor (QTextCursor::End);
 }
 
 Window::Window()
-  :logHandler(this)
 {
   setWindowTitle(APP_NAME);
 
@@ -30,21 +57,19 @@ Window::Window()
   createActions();
   createTrayIcon();
 
+  tabWidget = new QTabWidget;
+  tabWidget->addTab(new SettingsTab, tr("Settings"));
+  tabWidget->addTab(new LogTab, tr("Log"));
+
   QVBoxLayout *mainLayout = new QVBoxLayout;
+  mainLayout->setSizeConstraint(QLayout::SetNoConstraint);
+  mainLayout->addWidget(tabWidget);
   setLayout(mainLayout);
 
-  logText = new QTextEdit;
-  mainLayout->addWidget(logText);
-
-  trayIcon->show();
-
   setFixedSize(400, 300);
-
-  logger.RegisterObserver(&logHandler);
 }
 
 Window::~Window() {
-  logger.UnregisterObserver(&logHandler);
 }
 
 void Window::closeEvent(QCloseEvent *event)
@@ -87,12 +112,7 @@ void Window::createTrayIcon()
 
   QIcon icon = QIcon(":/icons/paw.svg");
   trayIcon->setIcon(icon);
-}
-
-void Window::addLogEntry(const string& entry) {
-  logText->moveCursor (QTextCursor::End);
-  logText->insertPlainText(entry.c_str());
-  logText->moveCursor (QTextCursor::End);
+  trayIcon->show();
 }
 
 void Window::riseAndShine() {

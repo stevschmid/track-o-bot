@@ -11,17 +11,40 @@ class QMenu;
 class QMessageBox;
 class QSystemTrayIcon;
 class QTextEdit;
+class QTabWidget;
 QT_END_NAMESPACE
 
 #include "logger.h"
-class Window;
-class WindowLogHandler : public LoggingObserver {
+
+class SettingsTab : public QWidget
+{
+  Q_OBJECT
+public:
+  SettingsTab(QWidget *parent = 0);
+};
+
+class LogTab;
+class TabLogHandler : public LoggingObserver {
 protected:
-  Window *window;
+  LogTab *tab;
 
 public:
-  WindowLogHandler(Window *window);
+  TabLogHandler(LogTab *window);
   void HandleLogEntry(const string& entry);
+};
+
+class LogTab : public QWidget
+{
+  Q_OBJECT
+
+protected:
+  QTextEdit *logText;
+  TabLogHandler logHandler;
+
+public:
+  void addLogEntry(const string& entry);
+  LogTab(QWidget *parent = 0);
+  ~LogTab();
 };
 
 class Window : public QDialog
@@ -31,9 +54,6 @@ class Window : public QDialog
 public:
   Window();
   ~Window();
-
-  void addLogEntry(const string& entry);
-  WindowLogHandler& getLogHandler();
 
 protected:
   void closeEvent(QCloseEvent *event);
@@ -55,9 +75,7 @@ private:
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;
 
-  QTextEdit *logText;
-
-  WindowLogHandler logHandler;
+  QTabWidget *tabWidget;
 
   Core core;
   Autostart autostart;
