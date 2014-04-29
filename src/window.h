@@ -41,6 +41,7 @@ protected:
 private slots:
   void riseAndShine();
   void updateAutostart();
+  void openProfile();
 
 private:
   void createActions();
@@ -49,6 +50,7 @@ private:
   QAction *autostartAction;
   QAction *showAction;
   QAction *quitAction;
+  QAction *openProfileAction;
 
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;

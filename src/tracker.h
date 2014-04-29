@@ -21,11 +21,13 @@ private slots:
   void EnsureAccountIsSetUp();
   void AddResultHandleReply();
   void CreateAndStoreAccountHandleReply();
+  void OpenProfileHandleReply();
 
 public:
   Tracker();
   void AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass);
   void CreateAndStoreAccount();
+  void OpenProfile();
 
 };
 

@@ -6,8 +6,10 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QTimer>
+#include <QDesktopServices>
 
 Tracker::Tracker() {
+  // delay this func so logging system gets ready
   QTimer::singleShot(0, this, SLOT(EnsureAccountIsSetUp()));
 }
 
@@ -91,6 +93,32 @@ void Tracker::CreateAndStoreAccountHandleReply() {
   }
 }
 
+void Tracker::OpenProfile() {
+  QUrl url("http://webtracker.dev/one_time_auth.json");
+  url.setUserName(Username());
+  url.setPassword(Password());
+  QNetworkRequest request(url);
+  QNetworkReply *reply = networkManager.post(request, "");
+  connect(reply, SIGNAL(finished()), this, SLOT(OpenProfileHandleReply()));
+}
+
+void Tracker::OpenProfileHandleReply() {
+  QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+  if(reply->error() == QNetworkReply::NoError) {
+    QByteArray jsonData = reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+    if(doc.isNull()) {
+      logger << "Invalid data" << endl;
+    } else {
+      QJsonObject response = doc.object();
+      QString url = response["url"].toString();
+      QDesktopServices::openUrl(QUrl(url));
+    }
+  } else {
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    logger << "There was a problem creating an auth token. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+  }
+}
 
 QString Tracker::Username() {
   return settings.value("username").toString();

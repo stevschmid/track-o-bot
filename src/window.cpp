@@ -57,12 +57,15 @@ void Window::closeEvent(QCloseEvent *event)
 
 void Window::createActions()
 {
+  openProfileAction = new QAction(tr("Open Profile..."), this);
+  connect(openProfileAction, SIGNAL(triggered()), this, SLOT(openProfile()));
+
   autostartAction = new QAction(tr("Launch at Login"), this);
   connect(autostartAction, SIGNAL(triggered()), this, SLOT(updateAutostart()));
   autostartAction->setCheckable(true);
   autostartAction->setChecked(autostart.IsActive());
 
-  showAction = new QAction(tr("Show"), this);
+  showAction = new QAction(tr("Show..."), this);
   connect(showAction, SIGNAL(triggered()), this, SLOT(riseAndShine()));
 
   quitAction = new QAction(tr("Quit"), this);
@@ -72,6 +75,7 @@ void Window::createActions()
 void Window::createTrayIcon()
 {
   trayIconMenu = new QMenu(this);
+  trayIconMenu->addAction(openProfileAction);
   trayIconMenu->addAction(showAction);
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(autostartAction);
@@ -102,4 +106,8 @@ void Window::updateAutostart() {
   } else {
     autostart.SetActive(false);
   }
+}
+
+void Window::openProfile() {
+  core.Tracker().OpenProfile();
 }

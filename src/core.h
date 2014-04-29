@@ -24,5 +24,6 @@ public:
     Core();
     ~Core();
 
+    Tracker& Tracker() { return tracker; }
     void SceneChanged(Scene *oldScene, Scene *newScene);
 };
