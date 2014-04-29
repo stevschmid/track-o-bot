@@ -3,8 +3,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
-
-#include "json.h"
+#include <QJsonObject>
+#include <QJsonDocument>
 
 Tracker::Tracker() {
   connect(&networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(OnNetworkReply(QNetworkReply*)));
@@ -23,17 +23,18 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-  QtJson::JsonObject result;
+  QJsonObject result;
   result["coin"]     = (order == GOING_FIRST);
   result["hero"]     = CLASS_NAMES[ownClass];
   result["opponent"] = CLASS_NAMES[opponentClass];
   result["win"]      = (outcome == OUTCOME_VICTORY);
   result["mode"]     = MODE_NAMES[mode];
 
-  QtJson::JsonObject params;
+  QJsonObject params;
   params["result"] = result;
 
-  QByteArray data = QtJson::serialize(params);
+  QJsonDocument doc(params);
+  QByteArray data = doc.toJson();
   networkManager.post(request, data);
 }
 
