@@ -16,6 +16,7 @@ public:
 
   void HandleLogEntry(const string& entry) {
     of << entry;
+    of.flush();
   }
 };
 

@@ -5,9 +5,19 @@
 #include <QUrl>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QTimer>
 
 Tracker::Tracker() {
-  connect(&networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(OnNetworkReply(QNetworkReply*)));
+  QTimer::singleShot(0, this, SLOT(EnsureAccountIsSetUp()));
+}
+
+void Tracker::EnsureAccountIsSetUp() {
+  if(!IsAccountSetUp()) {
+    logger << "No account setup. Creating one for ye" << endl;
+    CreateAndStoreAccount();
+  } else {
+    logger << "Account " << Username().toStdString() << " found" << endl;
+  }
 }
 
 void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
@@ -19,8 +29,10 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     " OppCl " << opponentClass << endl;
 
   QUrl url("http://webtracker.dev/results.json");
-  QNetworkRequest request(url);
+  url.setUserName(Username());
+  url.setPassword(Password());
 
+  QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
   QJsonObject result;
@@ -35,14 +47,65 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 
   QJsonDocument doc(params);
   QByteArray data = doc.toJson();
-  networkManager.post(request, data);
+  QNetworkReply *reply = networkManager.post(request, data);
+  connect(reply, SIGNAL(finished()), this, SLOT(AddResultHandleReply()));
 }
 
-void Tracker::OnNetworkReply(QNetworkReply *reply) {
+void Tracker::AddResultHandleReply() {
+  QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
     logger << "Adding of the result was a success!" << endl;
   } else {
     logger << "There was a problem adding the result. Code: " << reply->error() << endl;
-    logger << QString(reply->readAll()).toStdString() << endl;
   }
+}
+
+void Tracker::CreateAndStoreAccount() {
+  QUrl url("http://webtracker.dev/users.json");
+  QNetworkRequest request(url);
+  QNetworkReply *reply = networkManager.post(request, "");
+  connect(reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()));
+}
+
+void Tracker::CreateAndStoreAccountHandleReply() {
+  QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+  if(reply->error() == QNetworkReply::NoError) {
+    logger << "Account creation was successful!" << endl;
+
+    QByteArray jsonData = reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+    if(doc.isNull()) {
+      logger << "Invalid data" << endl;
+    } else {
+      QJsonObject user = doc.object();
+      logger << "Welcome " << user["username"].toString().toStdString() << endl;
+
+      QSettings settings;
+      settings.setValue("username", user["username"].toString());
+      settings.setValue("password", user["password"].toString());
+    }
+  } else {
+    logger << "There was a problem creating an account. Code: " << reply->error() << endl;
+  }
+}
+
+
+QString Tracker::Username() {
+  return settings.value("username").toString();
+}
+
+QString Tracker::Password() {
+  return settings.value("password").toString();
+}
+
+void Tracker::SetUsername(const QString& username) {
+  settings.setValue("username", username);
+}
+
+void Tracker::SetPassword(const QString& password) {
+  settings.setValue("password", password);
+}
+
+bool Tracker::IsAccountSetUp() {
+  return settings.contains("username") && settings.contains("password");
 }

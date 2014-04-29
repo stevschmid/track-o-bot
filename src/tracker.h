@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QNetworkAccessManager>
+#include <QSettings>
 
 class Tracker : public QObject
 {
@@ -8,12 +9,23 @@ class Tracker : public QObject
 
 protected:
   QNetworkAccessManager networkManager;
+  QSettings settings;
+
+  QString Username();
+  QString Password();
+  void SetUsername(const QString& username);
+  void SetPassword(const QString& password);
+  bool IsAccountSetUp();
 
 private slots:
-  void OnNetworkReply(QNetworkReply *reply);
+  void EnsureAccountIsSetUp();
+  void AddResultHandleReply();
+  void CreateAndStoreAccountHandleReply();
 
 public:
   Tracker();
   void AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass);
+  void CreateAndStoreAccount();
+
 };
 

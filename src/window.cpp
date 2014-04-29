@@ -22,10 +22,10 @@ Window::Window()
 {
   setWindowTitle(APP_NAME);
 
-  /* Qt::WindowFlags flags = windowFlags(); */
-  /* flags |= Qt::CustomizeWindowHint; */
-  /* flags &= ~Qt::WindowMaximizeButtonHint; */
-  /* setWindowFlags(flags); */
+  Qt::WindowFlags flags = windowFlags();
+  flags |= Qt::CustomizeWindowHint;
+  flags &= ~Qt::WindowMaximizeButtonHint;
+  setWindowFlags(flags);
 
   createActions();
   createTrayIcon();
@@ -53,7 +53,6 @@ void Window::closeEvent(QCloseEvent *event)
     hide();
     event->ignore();
   }
-
 }
 
 void Window::createActions()
