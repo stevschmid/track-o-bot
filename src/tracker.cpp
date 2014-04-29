@@ -56,7 +56,8 @@ void Tracker::AddResultHandleReply() {
   if(reply->error() == QNetworkReply::NoError) {
     logger << "Adding of the result was a success!" << endl;
   } else {
-    logger << "There was a problem adding the result. Code: " << reply->error() << endl;
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    logger << "There was a problem adding the result. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
   }
 }
 
@@ -85,7 +86,8 @@ void Tracker::CreateAndStoreAccountHandleReply() {
       settings.setValue("password", user["password"].toString());
     }
   } else {
-    logger << "There was a problem creating an account. Code: " << reply->error() << endl;
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    logger << "There was a problem creating an account. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
   }
 }
 
