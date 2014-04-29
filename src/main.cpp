@@ -10,8 +10,10 @@ Logger logger;
 
 int main(int argc, char **argv)
 {
+  QIcon icon = QIcon(":/icons/paw.svg");
   QApplication app(argc, argv);
-  app.setApplicationName("Arenatracker"); // for proper DataLocation handling
+  app.setApplicationName(APP_NAME); // for proper DataLocation handling
+  app.setWindowIcon(icon);
 
   QString directory = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
   if(!QFile::exists(directory)) {

@@ -1,4 +1,4 @@
-include(arenatracker.pro)
+include(tracking.pro)
 
 CONFIG += console
 CONFIG -= app_bundle

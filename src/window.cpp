@@ -20,12 +20,12 @@ void WindowLogHandler::HandleLogEntry(const string& entry) {
 Window::Window()
   :logHandler(this)
 {
-  setWindowTitle("Arenatracker");
+  setWindowTitle(APP_NAME);
 
-  Qt::WindowFlags flags = windowFlags();
-  flags |= Qt::CustomizeWindowHint;
-  flags &= ~Qt::WindowMaximizeButtonHint;
-  setWindowFlags(flags);
+  /* Qt::WindowFlags flags = windowFlags(); */
+  /* flags |= Qt::CustomizeWindowHint; */
+  /* flags &= ~Qt::WindowMaximizeButtonHint; */
+  /* setWindowFlags(flags); */
 
   createActions();
   createTrayIcon();
@@ -84,7 +84,6 @@ void Window::createTrayIcon()
 
   QIcon icon = QIcon(":/icons/paw.svg");
   trayIcon->setIcon(icon);
-  setWindowIcon(icon);
 }
 
 void Window::addLogEntry(const string& entry) {

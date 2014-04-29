@@ -89,3 +89,5 @@ const char CLASS_NAMES[][128] = {
 
 #include "logger.h"
 extern Logger logger;
+
+#define APP_NAME "Tracking"

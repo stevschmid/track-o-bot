@@ -9,6 +9,8 @@ OBJECTS_DIR = tmp
 MOC_DIR = tmp
 RCC_DIR = tmp
 
+TARGET = Tracking
+
 HEADERS = src/local.h \
           src/window_capture.h \
           src/hearthstone.h \
@@ -35,11 +37,12 @@ SOURCES = src/main.cpp \
 RESOURCES = arenatracker.qrc
 
 QMAKE_INFO_PLIST = Info.plist.app
-ICON = icons/paw.icns
 
 mac {
   HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp
+
+  ICON = icons/paw.icns
 
   LIBS += -framework ApplicationServices
 }
