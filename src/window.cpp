@@ -8,6 +8,13 @@
 #include <QAction>
 #include <QMenu>
 #include <QTabWidget>
+#include <QLabel>
+#include <QLineEdit>
+#include <QFormLayout>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QPushButton>
 
 TabLogHandler::TabLogHandler(LogTab *logTab)
   :tab(logTab)
@@ -21,6 +28,57 @@ void TabLogHandler::HandleLogEntry(const string& entry) {
 SettingsTab::SettingsTab(QWidget *parent)
   : QWidget(parent)
 {
+  QVBoxLayout *layout = new QVBoxLayout;
+
+  layout->addWidget(new QLabel(tr("Username:")));
+  username = new QLineEdit;
+  layout->addWidget(username);
+
+  layout->addWidget(new QLabel(tr("Password:")));
+  password = new QLineEdit;
+
+  QHBoxLayout *row = new QHBoxLayout;
+  QPushButton *revealButton = new QPushButton(tr("Reveal"));
+  connect(revealButton, SIGNAL(clicked()), this, SLOT(reveal()));
+  row->addWidget(password);
+  row->addWidget(revealButton);
+
+  layout->addItem(row);
+
+  /* QSpacerItem* spacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding); */
+  /* layout->addItem(spacer); */
+
+  startAtLogin = new QCheckBox(tr("Start at Login"));
+  layout->addWidget(startAtLogin);
+
+  setLayout(layout);
+}
+
+void SettingsTab::reveal() {
+  password->setEchoMode(QLineEdit::Normal);
+}
+
+void SettingsTab::conceal() {
+  password->setEchoMode(QLineEdit::Password);
+}
+
+void SettingsTab::updateSettings() {
+  Autostart autostart;
+  QSettings settings;
+
+  username->setText(settings.value("username").toString());
+  password->setText(settings.value("password").toString());
+  conceal();
+
+  startAtLogin->setChecked(autostart.IsActive());
+}
+
+void SettingsTab::applySettings() {
+  QSettings settings;
+  Autostart autostart;
+  settings.setValue("username", username->text());
+  settings.setValue("password", password->text());
+  autostart.SetActive(startAtLogin->isChecked());
 }
 
 LogTab::LogTab(QWidget *parent)
@@ -58,25 +116,56 @@ Window::Window()
   createTrayIcon();
 
   tabWidget = new QTabWidget;
-  tabWidget->addTab(new SettingsTab, tr("Settings"));
-  tabWidget->addTab(new LogTab, tr("Log"));
+  settingsTab = new SettingsTab;
+  logTab = new LogTab;
+
+  tabWidget->addTab(settingsTab, tr("Settings"));
+  tabWidget->addTab(logTab, tr("Log"));
+
+  buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->setSizeConstraint(QLayout::SetNoConstraint);
   mainLayout->addWidget(tabWidget);
-  setLayout(mainLayout);
+  mainLayout->addWidget(buttonBox);
 
+  setLayout(mainLayout);
   setFixedSize(400, 300);
 }
 
 Window::~Window() {
 }
 
-void Window::closeEvent(QCloseEvent *event)
-{
+void Window::showEvent(QShowEvent *event) {
+  QDialog::showEvent(event);
+  settingsTab->updateSettings();
+}
+
+void Window::ok() {
+  hide();
+  settingsTab->applySettings();
+}
+
+void Window::cancel() {
+  hide();
+}
+
+void Window::closeEvent(QCloseEvent *event) {
   if(trayIcon->isVisible()) {
     hide();
     event->ignore();
+  }
+}
+
+// prevent esc from closing the app
+void Window::reject()
+{
+  if(trayIcon->isVisible()) {
+    hide();
+  } else {
+    QDialog::reject();
   }
 }
 
@@ -85,12 +174,7 @@ void Window::createActions()
   openProfileAction = new QAction(tr("Open Profile..."), this);
   connect(openProfileAction, SIGNAL(triggered()), this, SLOT(openProfile()));
 
-  autostartAction = new QAction(tr("Launch at Login"), this);
-  connect(autostartAction, SIGNAL(triggered()), this, SLOT(updateAutostart()));
-  autostartAction->setCheckable(true);
-  autostartAction->setChecked(autostart.IsActive());
-
-  showAction = new QAction(tr("Show..."), this);
+  showAction = new QAction(tr("Settings..."), this);
   connect(showAction, SIGNAL(triggered()), this, SLOT(riseAndShine()));
 
   quitAction = new QAction(tr("Quit"), this);
@@ -101,9 +185,8 @@ void Window::createTrayIcon()
 {
   trayIconMenu = new QMenu(this);
   trayIconMenu->addAction(openProfileAction);
-  trayIconMenu->addAction(showAction);
   trayIconMenu->addSeparator();
-  trayIconMenu->addAction(autostartAction);
+  trayIconMenu->addAction(showAction);
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(quitAction);
 
@@ -118,14 +201,6 @@ void Window::createTrayIcon()
 void Window::riseAndShine() {
   show();
   raise();
-}
-
-void Window::updateAutostart() {
-  if(autostartAction->isChecked()) {
-    autostart.SetActive(true);
-  } else {
-    autostart.SetActive(false);
-  }
 }
 
 void Window::openProfile() {

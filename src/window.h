@@ -12,6 +12,9 @@ class QMessageBox;
 class QSystemTrayIcon;
 class QTextEdit;
 class QTabWidget;
+class QDialogButtonBox;
+class QLineEdit;
+class QCheckBox;
 QT_END_NAMESPACE
 
 #include "logger.h"
@@ -19,6 +22,20 @@ QT_END_NAMESPACE
 class SettingsTab : public QWidget
 {
   Q_OBJECT
+
+protected:
+  QLineEdit *username;
+  QLineEdit *password;
+  QCheckBox *startAtLogin;
+
+private slots:
+  void reveal();
+  void conceal();
+
+public slots:
+  void updateSettings();
+  void applySettings();
+
 public:
   SettingsTab(QWidget *parent = 0);
 };
@@ -57,17 +74,20 @@ public:
 
 protected:
   void closeEvent(QCloseEvent *event);
+  void showEvent(QShowEvent *event);
+  void reject();
 
 private slots:
   void riseAndShine();
-  void updateAutostart();
   void openProfile();
+
+  void ok();
+  void cancel();
 
 private:
   void createActions();
   void createTrayIcon();
 
-  QAction *autostartAction;
   QAction *showAction;
   QAction *quitAction;
   QAction *openProfileAction;
@@ -76,8 +96,11 @@ private:
   QMenu *trayIconMenu;
 
   QTabWidget *tabWidget;
+  SettingsTab *settingsTab;
+  LogTab *logTab;
+
+  QDialogButtonBox *buttonBox;
 
   Core core;
-  Autostart autostart;
 };
 
