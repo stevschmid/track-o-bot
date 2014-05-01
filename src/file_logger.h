@@ -10,7 +10,7 @@ protected:
 
 public:
   FileLogger(const string& path) {
-    of.open(path.c_str());
+    of.open(path.c_str(), std::ios_base::app);
   }
   ~FileLogger() {}
 

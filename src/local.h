@@ -32,10 +32,16 @@ private: \
   CLASSNAME* CLASSNAME::_singletonptr = NULL;
 
 typedef enum {
-  GOING_FIRST = 0,
-  GOING_SECOND,
-  GOING_UNKNOWN
+  ORDER_FIRST = 0,
+  ORDER_SECOND,
+  ORDER_UNKNOWN
 } GoingOrder;
+
+const char ORDER_NAMES[][128] ={
+  "first",
+  "second",
+  "unknown"
+};
 
 typedef enum {
   MODE_RANKED = 0,
@@ -58,6 +64,12 @@ typedef enum {
   OUTCOME_DEFEAT,
   OUTCOME_UNKNOWN
 } Outcome;
+
+const char OUTCOME_NAMES[][128] = {
+  "victory",
+  "defeat",
+  "unknown"
+};
 
 typedef enum {
   CLASS_PRIEST = 0,

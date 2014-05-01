@@ -24,10 +24,12 @@ void Core::Tick() {
 
 void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
   // oldScene can be NULL
+#ifdef QT_DEBUG
   if(oldScene) {
-    logger() << "OldScene " << oldScene->GetName() << " ";
+    logger() << "Old Scene " << oldScene->GetName() << endl;
   }
-  logger() << "NewScene " << newScene->GetName() << endl;
+  logger() << "New Scene " << newScene->GetName() << endl;
+#endif
 
   if(newScene->GetName() ==  "Ingame") {
     if(oldScene) {

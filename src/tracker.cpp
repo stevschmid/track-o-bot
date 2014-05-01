@@ -15,20 +15,45 @@ Tracker::Tracker() {
 
 void Tracker::EnsureAccountIsSetUp() {
   if(!IsAccountSetUp()) {
-    logger() << "No account setup. Creating one for ye" << endl;
+    logger() << "No account setup. Creating one for you." << endl;
     CreateAndStoreAccount();
   } else {
-    logger() << "Account " << Username().toStdString() << " found" << endl;
+    logger() << "Account " << Username().toStdString() << " found." << endl;
   }
 }
 
 void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
-  // TODO DISALLOW API CALL WHEN ANYTHING IS UNKNOWN
-  logger() << "GameMode " << mode <<
-    " Outcome " << outcome <<
-    " Order " << order <<
-    " OwnCl " << ownClass <<
-    " OppCl " << opponentClass << endl;
+  logger() << "Upload Result" <<
+    " Mode: " << MODE_NAMES[mode] <<
+    " Outcome: " << OUTCOME_NAMES[outcome] <<
+    " Order: " << ORDER_NAMES[order] <<
+    " Class: " << CLASS_NAMES[ownClass] <<
+    " Opponent: " << CLASS_NAMES[opponentClass] << endl;
+
+  if(mode == MODE_UNKNOWN) {
+    logger() << "Mode unknown. Skip result" << endl;
+    return;
+  }
+
+  if(outcome == OUTCOME_UNKNOWN) {
+    logger() << "Outcome unknown. Skip result" << endl;
+    return;
+  }
+
+  if(order == ORDER_UNKNOWN) {
+    logger() << "Order unknown. Skip result" << endl;
+    return;
+  }
+
+  if(ownClass == CLASS_UNKNOWN) {
+    logger() << "Class unknown. Skip result" << endl;
+    return;
+  }
+
+  if(opponentClass == CLASS_UNKNOWN) {
+    logger() << "Opponent unknown. Skip result" << endl;
+    return;
+  }
 
   QUrl url("http://webtracker.dev/results.json");
   url.setUserName(Username());
@@ -38,7 +63,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
   QJsonObject result;
-  result["coin"]     = (order == GOING_FIRST);
+  result["coin"]     = (order == ORDER_FIRST);
   result["hero"]     = CLASS_NAMES[ownClass];
   result["opponent"] = CLASS_NAMES[opponentClass];
   result["win"]      = (outcome == OUTCOME_VICTORY);
@@ -56,10 +81,10 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 void Tracker::AddResultHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
-    logger() << "Adding of the result was a success!" << endl;
+    logger() << "Result was uploaded succesfully!" << endl;
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger() << "There was a problem adding the result. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    logger() << "There was a problem uploading the result. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
   }
 }
 

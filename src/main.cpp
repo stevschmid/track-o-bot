@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QSettings>
+#include <QDate>
 
 #include "file_logger.h"
 #include "window.h"
@@ -22,14 +23,17 @@ int main(int argc, char **argv)
 
   // Logging
   // Non-generic DataLocation includes the organization name, which we don't want
-  QString dataLocation = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+  QString dataLocation = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QDir::separator() + app.applicationName();
   if(!QFile::exists(dataLocation)) {
     QDir dir;
     dir.mkpath(dataLocation);
   }
-  string logFilePath = (dataLocation + QDir::separator() + app.applicationName() + QDir::separator() + app.applicationName() + ".log").toStdString();
+  string logFilePath = (dataLocation + QDir::separator() + app.applicationName() + ".log").toStdString();
   FileLogger fileLogger(logFilePath);
   gLogger.RegisterObserver(&fileLogger);
+
+  // Start
+  logger() << "=== Launched on " << QDate::currentDate().toString(Qt::ISODate).toStdString() << " ===" << endl;
 
   // Initalize Windows n stuff
   Window window;
@@ -38,6 +42,7 @@ int main(int argc, char **argv)
   int exitCode = app.exec();
 
   // Tear down
+  logger() << "=== Shutdown ===" << endl;
   gLogger.UnregisterObserver(&fileLogger);
 
   return exitCode;

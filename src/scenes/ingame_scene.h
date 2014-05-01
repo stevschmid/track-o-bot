@@ -28,18 +28,18 @@ public:
 
   void Init() {
     outcome = OUTCOME_UNKNOWN;
-    order = GOING_UNKNOWN;
+    order = ORDER_UNKNOWN;
     ownClass = CLASS_UNKNOWN;
     opponentClass = CLASS_UNKNOWN;
   }
 
   void Update() {
-    if(order == GOING_UNKNOWN) {
+    if(order == ORDER_UNKNOWN) {
       if(FindMarker("going_first")) {
-        order = GOING_FIRST;
+        order = ORDER_FIRST;
       }
       if(FindMarker("going_second")) {
-        order = GOING_SECOND;
+        order = ORDER_SECOND;
       }
     }
     if(outcome == OUTCOME_UNKNOWN) {
