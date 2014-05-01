@@ -25,9 +25,9 @@ void Core::Tick() {
 void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
   // oldScene can be NULL
   if(oldScene) {
-    logger << "OldScene " << oldScene->GetName() << " ";
+    logger() << "OldScene " << oldScene->GetName() << " ";
   }
-  logger << "NewScene " << newScene->GetName() << endl;
+  logger() << "NewScene " << newScene->GetName() << endl;
 
   if(newScene->GetName() ==  "Ingame") {
     if(oldScene) {

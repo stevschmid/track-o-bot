@@ -45,9 +45,6 @@ SettingsTab::SettingsTab(QWidget *parent)
 
   layout->addItem(row);
 
-  /* QSpacerItem* spacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding); */
-  /* layout->addItem(spacer); */
-
   startAtLogin = new QCheckBox(tr("Start at Login"));
   layout->addWidget(startAtLogin);
 
@@ -85,22 +82,24 @@ LogTab::LogTab(QWidget *parent)
   : QWidget(parent), logHandler(this)
 {
   QVBoxLayout *layout = new QVBoxLayout;
+
   logText = new QTextEdit;
-  layout->setSizeConstraint(QLayout::SetNoConstraint);
+  logText->setReadOnly(true);
   layout->addWidget(logText);
+
   setLayout(layout);
 
-  logger.RegisterObserver(&logHandler);
+  gLogger.RegisterObserver(&logHandler);
 }
 
 LogTab::~LogTab() {
-  logger.UnregisterObserver(&logHandler);
+  gLogger.UnregisterObserver(&logHandler);
 }
 
 void LogTab::addLogEntry(const string& entry) {
-  logText->moveCursor (QTextCursor::End);
+  logText->moveCursor(QTextCursor::End);
   logText->insertPlainText(entry.c_str());
-  logText->moveCursor (QTextCursor::End);
+  logText->moveCursor(QTextCursor::End);
 }
 
 Window::Window()

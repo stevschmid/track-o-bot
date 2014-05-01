@@ -8,7 +8,7 @@
 #include "tracker.h"
 
 // Global logger
-Logger logger;
+Logger gLogger;
 
 int main(int argc, char **argv)
 {
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   }
   string logFilePath = (dataLocation + QDir::separator() + app.applicationName() + QDir::separator() + app.applicationName() + ".log").toStdString();
   FileLogger fileLogger(logFilePath);
-  logger.RegisterObserver(&fileLogger);
+  gLogger.RegisterObserver(&fileLogger);
 
   // Initalize Windows n stuff
   Window window;
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   int exitCode = app.exec();
 
   // Tear down
-  logger.UnregisterObserver(&fileLogger);
+  gLogger.UnregisterObserver(&fileLogger);
 
   return exitCode;
 }

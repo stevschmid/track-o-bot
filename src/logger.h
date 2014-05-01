@@ -14,10 +14,16 @@ protected:
   vector<LoggingObserver*> observers;
   void Notify(const string& message);
 
+  string Timestamp();
+
 public:
   void RegisterObserver(LoggingObserver *observer);
   void UnregisterObserver(LoggingObserver *observer);
   void Add(const string& message);
+
+  Logger& ts() {
+    return (*this) << Timestamp();
+  }
 
   template <typename T>
   friend Logger& operator<<(Logger& logger, T thing) {

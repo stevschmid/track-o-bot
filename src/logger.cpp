@@ -1,4 +1,13 @@
 #include "logger.h"
+#include <ctime>
+
+string Logger::Timestamp() {
+  char buffer[256];
+  time_t t = time(0);
+  struct tm *now = localtime(&t);
+  strftime(buffer, sizeof(buffer), "[%T] ", now);
+  return buffer;
+}
 
 void Logger::Add(const string& message) {
   Notify(message);

@@ -15,16 +15,16 @@ Tracker::Tracker() {
 
 void Tracker::EnsureAccountIsSetUp() {
   if(!IsAccountSetUp()) {
-    logger << "No account setup. Creating one for ye" << endl;
+    logger() << "No account setup. Creating one for ye" << endl;
     CreateAndStoreAccount();
   } else {
-    logger << "Account " << Username().toStdString() << " found" << endl;
+    logger() << "Account " << Username().toStdString() << " found" << endl;
   }
 }
 
 void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
   // TODO DISALLOW API CALL WHEN ANYTHING IS UNKNOWN
-  logger << "GameMode " << mode <<
+  logger() << "GameMode " << mode <<
     " Outcome " << outcome <<
     " Order " << order <<
     " OwnCl " << ownClass <<
@@ -56,10 +56,10 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 void Tracker::AddResultHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
-    logger << "Adding of the result was a success!" << endl;
+    logger() << "Adding of the result was a success!" << endl;
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger << "There was a problem adding the result. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    logger() << "There was a problem adding the result. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
   }
 }
 
@@ -73,15 +73,15 @@ void Tracker::CreateAndStoreAccount() {
 void Tracker::CreateAndStoreAccountHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
-    logger << "Account creation was successful!" << endl;
+    logger() << "Account creation was successful!" << endl;
 
     QByteArray jsonData = reply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(jsonData);
     if(doc.isNull()) {
-      logger << "Invalid data" << endl;
+      logger() << "Invalid data" << endl;
     } else {
       QJsonObject user = doc.object();
-      logger << "Welcome " << user["username"].toString().toStdString() << endl;
+      logger() << "Welcome " << user["username"].toString().toStdString() << endl;
 
       QSettings settings;
       settings.setValue("username", user["username"].toString());
@@ -89,7 +89,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     }
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger << "There was a problem creating an account. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    logger() << "There was a problem creating an account. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
   }
 }
 
@@ -108,7 +108,7 @@ void Tracker::OpenProfileHandleReply() {
     QByteArray jsonData = reply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(jsonData);
     if(doc.isNull()) {
-      logger << "Invalid data" << endl;
+      logger() << "Invalid data" << endl;
     } else {
       QJsonObject response = doc.object();
       QString url = response["url"].toString();
@@ -116,7 +116,7 @@ void Tracker::OpenProfileHandleReply() {
     }
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger << "There was a problem creating an auth token. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    logger() << "There was a problem creating an auth token. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
   }
 }
 
