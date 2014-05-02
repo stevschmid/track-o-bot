@@ -33,15 +33,22 @@ Scene* SceneManager::FindActiveScene() {
 }
 
 void SceneManager::Update() {
+  bool findNewScene = (currentScene == NULL);
+
   if(currentScene) {
     currentScene->Update();
+    findNewScene |= !currentScene->Active();
   }
 
-  Scene *newScene = FindActiveScene();
-  if(newScene && newScene != currentScene) {
-    newScene->Init();
-    Notify(currentScene, newScene);
-    currentScene = newScene;
+  // Keep the current scene if no other scene is detected yet.
+  // Scene should never be NULL except at the beginning.
+  if(findNewScene) {
+    Scene *newScene = FindActiveScene();
+    if(newScene && newScene != currentScene) {
+      newScene->Init();
+      Notify(currentScene, newScene);
+      currentScene = newScene;
+    }
   }
 }
 
