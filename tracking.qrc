@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
    <file>icons/paw.svg</file>
+   <file>icons/paw_inverted.svg</file>
    <file>scenes/constructed_casual.png</file>
    <file>scenes/constructed_ranked.png</file>
    <file>scenes/constructed_practice.png</file>

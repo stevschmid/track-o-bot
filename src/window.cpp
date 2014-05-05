@@ -193,6 +193,9 @@ void Window::createTrayIcon()
   trayIcon->setContextMenu(trayIconMenu);
 
   QIcon icon = QIcon(":/icons/paw.svg");
+#ifdef Q_WS_MAC
+  icon.addFile(":/icons/paw_inverted.svg", QSize(), QIcon::Selected);
+#endif
   trayIcon->setIcon(icon);
   trayIcon->show();
 }
