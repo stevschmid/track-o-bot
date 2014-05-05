@@ -1,21 +1,6 @@
 #include <QtGui>
 #include "window.h"
 
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QSystemTrayIcon>
-#include <QIcon>
-#include <QAction>
-#include <QMenu>
-#include <QTabWidget>
-#include <QLabel>
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
-#include <QPushButton>
-
 TabLogHandler::TabLogHandler(LogTab *logTab)
   :tab(logTab)
 {
