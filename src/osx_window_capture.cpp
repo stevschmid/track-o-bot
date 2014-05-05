@@ -52,7 +52,7 @@ QPixmap OSXWindowCapture::Capture(int x, int y, int w, int h) {
       winId,
       kCGWindowImageNominalResolution |  kCGWindowImageBoundsIgnoreFraming);
 
-  QPixmap pixmap = QtMac::fromCGImageRef(image);
+  QPixmap pixmap = QPixmap::fromMacCGImageRef(image);
 
   CGImageRelease(image);
 

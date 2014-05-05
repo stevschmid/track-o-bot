@@ -3,10 +3,10 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
-#include <QJsonObject>
-#include <QJsonDocument>
 #include <QTimer>
 #include <QDesktopServices>
+
+#include "json.h"
 
 Tracker::Tracker() {
   // delay this func so logging system gets ready
@@ -62,18 +62,17 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   QNetworkRequest request(url);
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-  QJsonObject result;
+  QtJson::JsonObject result;
   result["coin"]     = (order == ORDER_FIRST);
   result["hero"]     = CLASS_NAMES[ownClass];
   result["opponent"] = CLASS_NAMES[opponentClass];
   result["win"]      = (outcome == OUTCOME_VICTORY);
   result["mode"]     = MODE_NAMES[mode];
 
-  QJsonObject params;
+  QtJson::JsonObject params;
   params["result"] = result;
 
-  QJsonDocument doc(params);
-  QByteArray data = doc.toJson();
+  QByteArray data = QtJson::serialize(params);
   QNetworkReply *reply = networkManager.post(request, data);
   connect(reply, SIGNAL(finished()), this, SLOT(AddResultHandleReply()));
 }
@@ -101,11 +100,13 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     logger() << "Account creation was successful!" << endl;
 
     QByteArray jsonData = reply->readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-    if(doc.isNull()) {
-      logger() << "Invalid data" << endl;
+
+    bool ok;
+    QtJson::JsonObject user = QtJson::parse(jsonData, ok).toMap();
+
+    if(!ok) {
+      logger() << "Couldn't parse response" << endl;
     } else {
-      QJsonObject user = doc.object();
       logger() << "Welcome " << user["username"].toString().toStdString() << endl;
 
       QSettings settings;
@@ -131,11 +132,13 @@ void Tracker::OpenProfileHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
     QByteArray jsonData = reply->readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-    if(doc.isNull()) {
-      logger() << "Invalid data" << endl;
+
+    bool ok;
+    QtJson::JsonObject response = QtJson::parse(jsonData, ok).toMap();
+
+    if(!ok) {
+      logger() << "Couldn't parse response" << endl;
     } else {
-      QJsonObject response = doc.object();
       QString url = response["url"].toString();
       QDesktopServices::openUrl(QUrl(url));
     }

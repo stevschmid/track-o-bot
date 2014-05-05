@@ -1,8 +1,9 @@
 #include <QApplication>
 #include <QDir>
-#include <QStandardPaths>
+#include <QDesktopServices>
 #include <QSettings>
 #include <QDate>
+#include <QIcon>
 
 #include "file_logger.h"
 #include "window.h"
@@ -23,7 +24,7 @@ int main(int argc, char **argv)
 
   // Logging
   // Non-generic DataLocation includes the organization name, which we don't want
-  QString dataLocation = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QDir::separator() + app.applicationName();
+  QString dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + QDir::separator() + app.applicationName();
   if(!QFile::exists(dataLocation)) {
     QDir dir;
     dir.mkpath(dataLocation);

@@ -4,7 +4,6 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <QElapsedTimer>
-#include <QtMacExtras>
 
 // FindWindow is quite intensive in terms of performance
 #define OSX_UPDATE_WINDOW_DATA_INTERVAL 3000 // ms

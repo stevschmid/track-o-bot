@@ -1,6 +1,6 @@
 CONFIG += qt precompile_header debug
 
-QT += core network widgets macextras
+QT += network
 
 PRECOMPILED_HEADER = src/local.h
 
@@ -20,6 +20,7 @@ HEADERS = src/local.h \
           src/window.h \
           src/core.h \
           src/logger.h \
+          src/json.h \
           src/autostart.h
 
 SOURCES = src/main.cpp \
@@ -30,9 +31,10 @@ SOURCES = src/main.cpp \
           src/window.cpp \
           src/core.cpp \
           src/logger.cpp \
+          src/json.cpp \
           src/autostart.cpp
 
-RESOURCES = arenatracker.qrc
+RESOURCES = tracking.qrc
 
 QMAKE_INFO_PLIST = Info.plist.app
 
