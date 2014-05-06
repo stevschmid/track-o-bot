@@ -31,8 +31,7 @@ int main(int argc, char **argv)
   app.setWindowIcon(icon);
 
   // Logging
-  // Non-generic DataLocation includes the organization name, which we don't want
-  QString dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + QDir::separator() + app.applicationName();
+  QString dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
   if(!QFile::exists(dataLocation)) {
     QDir dir;
     dir.mkpath(dataLocation);
