@@ -1,13 +1,11 @@
 #include <QApplication>
 #include <QDir>
 #include <QDesktopServices>
-#include <QSettings>
 #include <QDate>
 #include <QIcon>
 #include <QPointer>
 
 #include "window.h"
-#include "tracker.h"
 
 QPointer<Window> window;
 

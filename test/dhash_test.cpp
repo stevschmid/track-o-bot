@@ -1,21 +1,21 @@
-#include "dhasher.h"
+#include "dhash.h"
 #include "gtest/gtest.h"
 
 #include <QApplication>
 
-TEST(DHasherTest, HammingTrivial) {
+TEST(DHashTest, HammingTrivial) {
   dhash v1 = 0b1001;
   dhash v2 = 0b0101;
-  EXPECT_EQ(DHasher::Instance()->CalculateHammingDistance(v1, v2), 2);
+  EXPECT_EQ(dhash_calculate_hamming_distance(v1, v2), 2);
 }
 
-TEST(DHasherTest, HammingFull64BitRange) {
+TEST(DHashTest, HammingFull64BitRange) {
   dhash v1 = (dhash)0x0300000000000010;
   dhash v2 = (dhash)0x0400000000000020;
-  EXPECT_EQ(DHasher::Instance()->CalculateHammingDistance(v1, v2), 5);
+  EXPECT_EQ(dhash_calculate_hamming_distance(v1, v2), 5);
 }
 
-TEST(DHasherTest, HashOfSimplePixmap) {
+TEST(DHashTest, HashOfSimplePixmap) {
   int argc = 0;
   char **argv = NULL;
   QApplication app(argc, argv);
@@ -35,7 +35,7 @@ TEST(DHasherTest, HashOfSimplePixmap) {
   test.setPixel(7, 6, white);
   test.setPixel(8, 7, white);
 
-  dhash value = DHasher::Instance()->HashOfPixmap(QPixmap::fromImage(test));
+  dhash value = dhash_for_pixmap(QPixmap::fromImage(test));
 
   EXPECT_EQ(value, 0x8040201008040201);
 }
