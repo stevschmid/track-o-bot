@@ -10,9 +10,17 @@ OSXWindowCapture::OSXWindowCapture(const string& windowName)
 }
 
 void OSXWindowCapture::Update(bool forced) {
-  if(forced || updateTimer.hasExpired(OSX_UPDATE_WINDOW_DATA_INTERVAL)) {
+  // Update WinId if forced or 0
+  if(forced || winId == 0) {
     winId = FindWindow(name);
-    rect = GetWindowRect(winId);
+  }
+
+  // Update Rect
+  if(winId && (forced || updateTimer.hasExpired(OSX_UPDATE_WINDOW_DATA_INTERVAL))) {
+    if(!GetWindowRect(winId, &rect)) {
+      // Window became invalid
+      winId = 0;
+    }
 
     updateTimer.restart();
   }
@@ -38,9 +46,6 @@ int OSXWindowCapture::GetHeight() {
 
 QPixmap OSXWindowCapture::Capture(int x, int y, int w, int h) {
   Update();
-
-  if(!w) w = GetWidth();
-  if(!w) h = GetHeight();
 
   CGRect captureRect = CGRectMake(x + CGRectGetMinX(rect),
       y + CGRectGetMinY(rect) + (IsFullscreen() ? 0 : OSX_WINDOW_TITLE_BAR_HEIGHT),
@@ -96,16 +101,15 @@ int OSXWindowCapture::FindWindow(const string& name) {
   return winId;
 }
 
-CGRect OSXWindowCapture::GetWindowRect(int windowId) {
-  CGRect rect = CGRectMake(0, 0, 0, 0);
-
+bool OSXWindowCapture::GetWindowRect(int windowId, CGRect *rect) {
   CFArrayRef windowList = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, windowId);
   CFIndex numWindows = CFArrayGetCount(windowList);
-  if( numWindows > 0 ) {
+
+  if(numWindows > 0) {
     CFDictionaryRef info = (CFDictionaryRef)CFArrayGetValueAtIndex(windowList, 0);
-    CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)CFDictionaryGetValue(info, kCGWindowBounds), &rect);
+    CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)CFDictionaryGetValue(info, kCGWindowBounds), rect);
   }
 
   CFRelease(windowList);
-  return rect;
+  return numWindows > 0;
 }

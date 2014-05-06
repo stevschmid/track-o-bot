@@ -17,7 +17,7 @@ protected:
   CGRect rect;
 
   static int FindWindow(const string& name);
-  static CGRect GetWindowRect(int windowId);
+  static bool GetWindowRect(int windowId, CGRect *rect);
 
   bool IsFullscreen();
 
@@ -31,5 +31,5 @@ public:
   int GetWidth();
   int GetHeight();
 
-  QPixmap Capture(int x, int y, int w = 0, int h = 0);
+  QPixmap Capture(int x, int y, int w, int h);
 };
