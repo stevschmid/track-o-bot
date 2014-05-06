@@ -2,43 +2,48 @@
 
 #include <vector>
 #include <sstream>
+#include <fstream>
 
-class LoggingObserver {
-public:
-  virtual ~LoggingObserver() { }
-  virtual void HandleLogEntry(const string& message) = 0;
-};
+#include <QDebug>
 
 class Logger {
-protected:
-  vector<LoggingObserver*> observers;
-  void Notify(const string& message);
+DEFINE_SINGLETON(Logger)
 
-  string Timestamp();
+protected:
+  ofstream of;
 
 public:
-  void RegisterObserver(LoggingObserver *observer);
-  void UnregisterObserver(LoggingObserver *observer);
-  void Add(const string& message);
-
-  Logger& ts() {
-    return (*this) << Timestamp();
+  void SetLogPath(const string& path) {
+    of.open(path.c_str(), std::ios_base::app);
   }
 
-  template <typename T>
-  friend Logger& operator<<(Logger& logger, T thing) {
-    stringstream ss;
-    ss << thing;
-    logger.Add(ss.str());
-    return logger;
+  void Add(const char *fmt, ...) {
+    char buffer[4096];
+
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    Add(string(buffer));
   }
 
-  friend Logger& operator<<(Logger& logger, ostream& (*pf) (ostream&))
-  {
-    stringstream ss;
-    ss << *pf;
-    logger.Add(ss.str());
-    return logger;
+  void Add(const string& message) {
+    // Timestamp
+    char timestamp[256];
+    time_t t = time(0);
+    struct tm *now = localtime(&t);
+    strftime(timestamp, sizeof(timestamp), "[%T] ", now);
+
+    string line = string(timestamp) + message;
+
+    // Add to file
+    if(of.is_open()) {
+      of << line << endl;
+      of.flush();
+    }
+    // Add to QT
+    qDebug() << qPrintable(QString::fromStdString(line)) << endl;
   }
 };
 

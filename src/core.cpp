@@ -25,7 +25,7 @@ void Core::Tick() {
 void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
   // oldScene can be NULL
 #ifdef QT_DEBUG
-  logger() << "Detected Scene " << newScene->GetName() << endl;
+  LOG("Detected Scene %s", newScene->GetName().c_str());
 #endif
 
   if(newScene->GetName() ==  "Ingame") {

@@ -1,15 +1,6 @@
 #include <QtGui>
 #include "window.h"
 
-TabLogHandler::TabLogHandler(LogTab *logTab)
-  :tab(logTab)
-{
-}
-
-void TabLogHandler::HandleLogEntry(const string& entry) {
-  tab->addLogEntry(entry);
-}
-
 SettingsTab::SettingsTab(QWidget *parent)
   : QWidget(parent)
 {
@@ -64,7 +55,7 @@ void SettingsTab::applySettings() {
 }
 
 LogTab::LogTab(QWidget *parent)
-  : QWidget(parent), logHandler(this)
+  : QWidget(parent)
 {
   QVBoxLayout *layout = new QVBoxLayout;
 
@@ -73,24 +64,23 @@ LogTab::LogTab(QWidget *parent)
   layout->addWidget(logText);
 
   setLayout(layout);
-
-  gLogger.RegisterObserver(&logHandler);
 }
 
 LogTab::~LogTab() {
-  gLogger.UnregisterObserver(&logHandler);
 }
 
-void LogTab::addLogEntry(const string& entry) {
+void LogTab::addLogEntry(QtMsgType type, const char *msg) {
   logText->moveCursor(QTextCursor::End);
-  logText->insertPlainText(entry.c_str());
+  logText->insertPlainText(msg);
   logText->moveCursor(QTextCursor::End);
+}
+
+void Window::addLogEntry(QtMsgType type, const char *msg) {
+  logTab->addLogEntry(type, msg);
 }
 
 Window::Window()
 {
-  setWindowTitle(APP_NAME);
-
   Qt::WindowFlags flags = windowFlags();
   flags |= Qt::CustomizeWindowHint;
   flags &= ~Qt::WindowMaximizeButtonHint;

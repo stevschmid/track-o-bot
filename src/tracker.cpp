@@ -15,43 +15,39 @@ Tracker::Tracker() {
 
 void Tracker::EnsureAccountIsSetUp() {
   if(!IsAccountSetUp()) {
-    logger() << "No account setup. Creating one for you." << endl;
+    LOG("No account setup. Creating one for you.");
     CreateAndStoreAccount();
   } else {
-    logger() << "Account " << Username().toStdString() << " found." << endl;
+    LOG("Account %s found", Username().toStdString().c_str());
   }
 }
 
 void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
-  logger() << "Upload Result" <<
-    " Mode: " << MODE_NAMES[mode] <<
-    " Outcome: " << OUTCOME_NAMES[outcome] <<
-    " Order: " << ORDER_NAMES[order] <<
-    " Class: " << CLASS_NAMES[ownClass] <<
-    " Opponent: " << CLASS_NAMES[opponentClass] << endl;
+  LOG("Upload Result. Mode: %s. Outcome %s: Order: %s. Class: %s. Opponent %s",
+      MODE_NAMES[mode], OUTCOME_NAMES[outcome], ORDER_NAMES[order], CLASS_NAMES[ownClass], CLASS_NAMES[opponentClass]);
 
   if(mode == MODE_UNKNOWN) {
-    logger() << "Mode unknown. Skip result" << endl;
+    LOG("Mode unknown. Skip result");
     return;
   }
 
   if(outcome == OUTCOME_UNKNOWN) {
-    logger() << "Outcome unknown. Skip result" << endl;
+    LOG("Outcome unknown. Skip result");
     return;
   }
 
   if(order == ORDER_UNKNOWN) {
-    logger() << "Order unknown. Skip result" << endl;
+    LOG("Order unknown. Skip result");
     return;
   }
 
   if(ownClass == CLASS_UNKNOWN) {
-    logger() << "Class unknown. Skip result" << endl;
+    LOG("Own Class unknown. Skip result");
     return;
   }
 
   if(opponentClass == CLASS_UNKNOWN) {
-    logger() << "Opponent unknown. Skip result" << endl;
+    LOG("Class of Opponent unknown. Skip result");
     return;
   }
 
@@ -80,10 +76,10 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 void Tracker::AddResultHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
-    logger() << "Result was uploaded succesfully!" << endl;
+    LOG("Result was uploaded succesfully!");
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger() << "There was a problem uploading the result. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    LOG("There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode);
   }
 }
 
@@ -97,7 +93,7 @@ void Tracker::CreateAndStoreAccount() {
 void Tracker::CreateAndStoreAccountHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
-    logger() << "Account creation was successful!" << endl;
+    LOG("Account creation was successful!");
 
     QByteArray jsonData = reply->readAll();
 
@@ -105,9 +101,9 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     QtJson::JsonObject user = QtJson::parse(jsonData, ok).toMap();
 
     if(!ok) {
-      logger() << "Couldn't parse response" << endl;
+      LOG("Couldn't parse response");
     } else {
-      logger() << "Welcome " << user["username"].toString().toStdString() << endl;
+      LOG("Welcome %s", user["username"].toString().toStdString().c_str());
 
       QSettings settings;
       settings.setValue("username", user["username"].toString());
@@ -115,7 +111,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     }
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger() << "There was a problem creating an account. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    LOG("There was a problem creating an account. Error: %i HTTP Status Code: %i", reply->error(), statusCode);
   }
 }
 
@@ -137,14 +133,14 @@ void Tracker::OpenProfileHandleReply() {
     QtJson::JsonObject response = QtJson::parse(jsonData, ok).toMap();
 
     if(!ok) {
-      logger() << "Couldn't parse response" << endl;
+      LOG("Couldn't parse response");
     } else {
       QString url = response["url"].toString();
       QDesktopServices::openUrl(QUrl(url));
     }
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    logger() << "There was a problem creating an auth token. Error: " << reply->error() << " HTTP Status Code: " << statusCode << endl;
+    LOG("There was a problem creating an auth token. Error: %i HTTP Status Code: %i", reply->error(), statusCode);
   }
 }
 

@@ -4,16 +4,24 @@
 #include <QSettings>
 #include <QDate>
 #include <QIcon>
+#include <QPointer>
 
-#include "file_logger.h"
 #include "window.h"
 #include "tracker.h"
 
-// Global logger
-Logger gLogger;
+QPointer<Window> window;
+
+void redirectLogMessages(QtMsgType type, const char *msg)
+{
+  if(window) {
+    window->addLogEntry(type, msg);
+  }
+}
 
 int main(int argc, char **argv)
 {
+  qInstallMsgHandler(redirectLogMessages);
+
   // Basic setup
   QApplication app(argc, argv);
   QIcon icon = QIcon(":/icons/paw.svg");
@@ -30,21 +38,21 @@ int main(int argc, char **argv)
     dir.mkpath(dataLocation);
   }
   string logFilePath = (dataLocation + QDir::separator() + app.applicationName() + ".log").toStdString();
-  FileLogger fileLogger(logFilePath);
-  gLogger.RegisterObserver(&fileLogger);
+  Logger::Instance()->SetLogPath(logFilePath);
 
   // Start
-  logger() << "=== Launched on " << QDate::currentDate().toString(Qt::ISODate).toStdString() << " ===" << endl;
+  LOG("--> Launched On %s", QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
   // Initalize Windows n stuff
-  Window window;
+  window = new Window();
 
   // Main Loop
   int exitCode = app.exec();
 
   // Tear down
-  logger() << "=== Shutdown ===" << endl;
-  gLogger.UnregisterObserver(&fileLogger);
+  LOG("<-- Shutdown");
+
+  delete window;
 
   return exitCode;
 }

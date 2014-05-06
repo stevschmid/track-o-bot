@@ -100,7 +100,6 @@ const char CLASS_NAMES[][128] = {
 #define NUM_CLASSES 9
 
 #include "logger.h"
-extern Logger gLogger;
-#define logger() gLogger.ts()
+#define LOG(str, ...) Logger::Instance()->Add(str, ##__VA_ARGS__)
 
 #define APP_NAME "Tracking"

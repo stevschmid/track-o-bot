@@ -40,26 +40,15 @@ public:
   SettingsTab(QWidget *parent = 0);
 };
 
-class LogTab;
-class TabLogHandler : public LoggingObserver {
-protected:
-  LogTab *tab;
-
-public:
-  TabLogHandler(LogTab *window);
-  void HandleLogEntry(const string& entry);
-};
-
 class LogTab : public QWidget
 {
   Q_OBJECT
 
 protected:
   QTextEdit *logText;
-  TabLogHandler logHandler;
 
 public:
-  void addLogEntry(const string& entry);
+  void addLogEntry(QtMsgType type, const char *msg);
   LogTab(QWidget *parent = 0);
   ~LogTab();
 };
@@ -71,6 +60,8 @@ class Window : public QDialog
 public:
   Window();
   ~Window();
+
+  void addLogEntry(QtMsgType type, const char *msg);
 
 protected:
   void closeEvent(QCloseEvent *event);
