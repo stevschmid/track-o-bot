@@ -23,8 +23,7 @@ void Core::Tick() {
 }
 
 void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
-  // oldScene can be NULL
-#ifdef QT_DEBUG
+#ifdef _DEBUG
   LOG("Detected Scene %s", newScene->GetName().c_str());
 #endif
 

@@ -23,6 +23,13 @@ void Tracker::EnsureAccountIsSetUp() {
 }
 
 void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
+#ifndef _DEBUG
+  if(mode == MODE_PRACTICE) {
+    Log("Ignore practice game."); // only in Non Debug Versions
+    return;
+  }
+#endif
+
   LOG("Upload Result. Mode: %s. Outcome %s: Order: %s. Class: %s. Opponent %s",
       MODE_NAMES[mode], OUTCOME_NAMES[outcome], ORDER_NAMES[order], CLASS_NAMES[ownClass], CLASS_NAMES[opponentClass]);
 
