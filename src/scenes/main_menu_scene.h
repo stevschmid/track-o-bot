@@ -6,7 +6,7 @@ class MainMenuScene : public Scene
 {
 public:
   MainMenuScene():Scene("MainMenu") {
-    AddMarker("main_menu", ":/scenes/main_menu.png", 86, 0, 218, 218);
+    ADD_GENERATED_MARKER("main_menu", MAIN_MENU_ID);
   }
 
   bool Active() {

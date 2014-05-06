@@ -11,9 +11,9 @@ public:
   ConstructedScene()
     :Scene("Constructed")
   {
-    AddMarker("constructed_casual_selected", ":/scenes/constructed_casual.png", 796, 24, 59, 65);
-    AddMarker("constructed_ranked_selected", ":/scenes/constructed_ranked.png", 796, 24, 59, 65);
-    AddMarker("constructed_practice_selected", ":/scenes/constructed_practice.png", 726, 125, 52, 52);
+    ADD_GENERATED_MARKER("constructed_casual_selected", CONSTRUCTED_CASUAL_ID);
+    ADD_GENERATED_MARKER("constructed_ranked_selected", CONSTRUCTED_RANKED_ID);
+    ADD_GENERATED_MARKER("constructed_practice_selected", CONSTRUCTED_PRACTICE_ID);
   }
 
   void Init() {

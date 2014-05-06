@@ -2,8 +2,11 @@
 
 #include "../dhash.h"
 #include "../hearthstone.h"
+#include "../generated_markers.h"
 
 #include <QPixmap>
+
+#define ADD_GENERATED_MARKER(NAME, DEF) AddMarker(NAME, DEF##_PATH, DEF##_X, DEF##_Y, DEF##_WIDTH, DEF##_HEIGHT)
 
 class Scene
 {
@@ -17,12 +20,10 @@ protected:
     Marker():name(""), x(0), y(0), w(0), h(0) {
     }
 
-    Marker(const string& name, const string& sceneFileName, int x, int y, int w, int h)
+    Marker(const string& name, const string& templateImagePath, int x, int y, int w, int h)
       :name(name), x(x), y(y), w(w), h(h)
     {
-      QPixmap markerPixmap = QPixmap(sceneFileName.c_str()).copy(x, y, w, h);
-      /* markerPixmap.save((name + "_dbg.png").c_str()); */
-      hash = dhash_for_pixmap(markerPixmap);
+      hash = dhash_for_pixmap(QPixmap(templateImagePath.c_str()));
     }
   };
 
@@ -37,12 +38,8 @@ public:
   virtual ~Scene() {
   }
 
-  void AddMarker(const Marker& marker) {
-    markers[marker.name] = marker;
-  }
-
-  void AddMarker(const string& name, const string& sceneFileName, int x, int y, int w, int h) {
-    AddMarker(Marker(name, sceneFileName, x, y, w, h));
+  void AddMarker(const string& name, const string& templateImagePath, int x, int y, int w, int h) {
+    markers[name] = Marker(name, templateImagePath, x, y, w, h);
   }
 
   bool FindMarker(const string& name) {

@@ -25,7 +25,8 @@ SOURCES = src/main.cpp \
           src/json.cpp \
           src/autostart.cpp
 
-RESOURCES = tracking.qrc
+RESOURCES += tracking.qrc
+RESOURCES += markers.qrc
 
 mac {
   HEADERS += src/osx_window_capture.h

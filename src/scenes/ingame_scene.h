@@ -10,20 +10,38 @@ public:
   IngameScene()
     :Scene("Ingame")
   {
-    AddMarker("ingame", ":/scenes/ingame_victory_v2.png", 972, 523, 31, 29);
-    AddMarker("going_first", ":/scenes/ingame_mulligan_1st.png", 751, 354, 55, 55);
-    AddMarker("going_second", ":/scenes/ingame_mulligan_2nd.png", 746, 355, 55, 55);
-    AddMarker("victory", ":/scenes/ingame_victory_v2.png", 442, 148, 55, 55);
-    AddMarker("defeat", ":/scenes/ingame_defeat_v2.png", 444, 547, 55, 55);
+    ADD_GENERATED_MARKER("ingame", INGAME_ID);
+    ADD_GENERATED_MARKER("going_first", INGAME_MULLIGAN_1ST_ID);
+    ADD_GENERATED_MARKER("going_second", INGAME_MULLIGAN_2ND_ID);
+    ADD_GENERATED_MARKER("victory", INGAME_VICTORY_ID);
+    ADD_GENERATED_MARKER("defeat", INGAME_DEFEAT_ID);
 
-    for(int i = 0; i < NUM_CLASSES; i++ ) {
-      AddMarker(string("own_class_") + CLASS_NAMES[i],
-          string(":/scenes/ingame_") + CLASS_NAMES[i] + ".png",
-          487, 552, 50, 50);
-      AddMarker(string("opponent_class_") + CLASS_NAMES[i],
-          string(":/scenes/ingame_") + CLASS_NAMES[i] + ".png",
-          487, 105, 50, 50);
-    }
+    ADD_GENERATED_MARKER("own_class_priest", INGAME_PRIEST_ME);
+    ADD_GENERATED_MARKER("opponent_class_priest", INGAME_PRIEST_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_rogue", INGAME_ROGUE_ME);
+    ADD_GENERATED_MARKER("opponent_class_rogue", INGAME_ROGUE_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_shaman", INGAME_SHAMAN_ME);
+    ADD_GENERATED_MARKER("opponent_class_shaman", INGAME_SHAMAN_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_paladin", INGAME_PALADIN_ME);
+    ADD_GENERATED_MARKER("opponent_class_paladin", INGAME_PALADIN_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_warlock", INGAME_WARLOCK_ME);
+    ADD_GENERATED_MARKER("opponent_class_warlock", INGAME_WARLOCK_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_warrior", INGAME_WARRIOR_ME);
+    ADD_GENERATED_MARKER("opponent_class_warrior", INGAME_WARRIOR_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_mage", INGAME_MAGE_ME);
+    ADD_GENERATED_MARKER("opponent_class_mage", INGAME_MAGE_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_druid", INGAME_DRUID_ME);
+    ADD_GENERATED_MARKER("opponent_class_druid", INGAME_DRUID_OPPONENT);
+
+    ADD_GENERATED_MARKER("own_class_hunter", INGAME_HUNTER_ME);
+    ADD_GENERATED_MARKER("opponent_class_hunter", INGAME_HUNTER_OPPONENT);
   }
 
   void Init() {

@@ -4,7 +4,7 @@ public:
   ArenaScene()
     :Scene("Arena")
   {
-    AddMarker("arena", ":/scenes/arena.png", 240, 627, 50, 50);
+    ADD_GENERATED_MARKER("arena", ARENA_ID);
   }
 
   void Init() {

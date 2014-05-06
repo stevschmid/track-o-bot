@@ -2,23 +2,5 @@
 <qresource>
    <file>icons/paw.svg</file>
    <file>icons/paw_inverted.svg</file>
-   <file>scenes/constructed_casual.png</file>
-   <file>scenes/constructed_ranked.png</file>
-   <file>scenes/constructed_practice.png</file>
-   <file>scenes/ingame_victory_v2.png</file>
-   <file>scenes/ingame_defeat_v2.png</file>
-   <file>scenes/ingame_mulligan_1st.png</file>
-   <file>scenes/ingame_mulligan_2nd.png</file>
-   <file>scenes/main_menu.png</file>
-   <file>scenes/ingame_paladin.png</file>
-   <file>scenes/ingame_priest.png</file>
-   <file>scenes/ingame_rogue.png</file>
-   <file>scenes/ingame_shaman.png</file>
-   <file>scenes/ingame_druid.png</file>
-   <file>scenes/ingame_warlock.png</file>
-   <file>scenes/ingame_warrior.png</file>
-   <file>scenes/ingame_mage.png</file>
-   <file>scenes/ingame_hunter.png</file>
-   <file>scenes/arena.png</file>
 </qresource>
 </RCC>
