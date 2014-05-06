@@ -127,6 +127,7 @@ void Tracker::OpenProfile() {
   url.setUserName(Username());
   url.setPassword(Password());
   QNetworkRequest request(url);
+  request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/x-www-form-urlencoded"));
   QNetworkReply *reply = networkManager.post(request, "");
   connect(reply, SIGNAL(finished()), this, SLOT(OpenProfileHandleReply()));
 }
