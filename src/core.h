@@ -24,6 +24,6 @@ public:
   Core();
   ~Core();
 
-  Tracker& Tracker() { return tracker; }
+  void OpenProfile() { tracker.OpenProfile(); }
   void SceneChanged(Scene *oldScene, Scene *newScene);
 };

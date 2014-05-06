@@ -181,5 +181,5 @@ void Window::riseAndShine() {
 }
 
 void Window::openProfile() {
-  core.Tracker().OpenProfile();
+  core.OpenProfile();
 }
