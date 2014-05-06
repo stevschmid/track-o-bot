@@ -11,19 +11,19 @@ class Core : public QObject, public SceneManagerObserver
   Q_OBJECT
 
 private:
-    QTimer *timer;
+  QTimer *timer;
 
-    SceneManager sceneManager;
-    GameMode currentGameMode;
-    Tracker tracker;
+  SceneManager sceneManager;
+  GameMode currentGameMode;
+  Tracker tracker;
 
 private slots:
-    void Tick();
+  void Tick();
 
 public:
-    Core();
-    ~Core();
+  Core();
+  ~Core();
 
-    Tracker& Tracker() { return tracker; }
-    void SceneChanged(Scene *oldScene, Scene *newScene);
+  Tracker& Tracker() { return tracker; }
+  void SceneChanged(Scene *oldScene, Scene *newScene);
 };

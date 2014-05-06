@@ -1,27 +1,18 @@
+TARGET = Tracking
+
 CONFIG += qt precompile_header debug
-
 QT += network
-
-PRECOMPILED_HEADER = src/local.h
 
 DESTDIR = build
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
 RCC_DIR = tmp
 
-TARGET = Tracking
-
+PRECOMPILED_HEADER = src/local.h
 HEADERS = src/local.h \
-          src/window_capture.h \
-          src/hearthstone.h \
-          src/dhash.h \
-          src/scene_manager.h \
-          src/tracker.h \
           src/window.h \
           src/core.h \
-          src/logger.h \
-          src/json.h \
-          src/autostart.h
+          src/tracker.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
@@ -36,13 +27,14 @@ SOURCES = src/main.cpp \
 
 RESOURCES = tracking.qrc
 
-QMAKE_INFO_PLIST = Info.plist.app
-
 mac {
   HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp
 
+  LIBS += -framework ApplicationServices
+
   ICON = icons/paw.icns
 
-  LIBS += -framework ApplicationServices
+  # Custom Info.plist to make systray app only
+  QMAKE_INFO_PLIST = Info.plist.app
 }
