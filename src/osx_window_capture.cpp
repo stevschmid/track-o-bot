@@ -75,7 +75,7 @@ int OSXWindowCapture::FindWindow(const string& name) {
   int winId = 0;
 
   CFArrayRef windowList = CGWindowListCopyWindowInfo(
-      kCGWindowListExcludeDesktopElements | kCGWindowListOptionOnScreenOnly,
+      kCGWindowListExcludeDesktopElements,
       kCGNullWindowID);
   CFIndex numWindows = CFArrayGetCount(windowList);
 
