@@ -134,6 +134,8 @@ AboutTab::AboutTab(QWidget *parent)
 
 Window::Window()
 {
+  setWindowTitle(qApp->applicationName());
+
   Qt::WindowFlags flags = windowFlags();
   flags |= Qt::CustomizeWindowHint;
   flags &= ~Qt::WindowMaximizeButtonHint;
