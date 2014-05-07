@@ -125,7 +125,7 @@ AboutTab::AboutTab(QWidget *parent)
   QPixmap logoImage(":/icons/logo.png");
   QLabel *logo = new QLabel();
   logo->setAlignment(Qt::AlignHCenter);
-  logo->setPixmap(logoImage.scaled(64, 64, Qt::KeepAspectRatio));
+  logo->setPixmap(logoImage.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
   layout->addItem(topSpacer);
   layout->addWidget(logo);
