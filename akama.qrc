@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+   <file>icons/tray_icon.png</file>
+   <file>icons/tray_icon_selected.png</file>
+   <file>icons/logo.png</file>
+</qresource>
+</RCC>

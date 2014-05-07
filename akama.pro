@@ -1,4 +1,4 @@
-TARGET = Tracking
+TARGET = Akama
 VERSION = 0.0.1
 
 CONFIG += qt precompile_header debug
@@ -28,7 +28,7 @@ SOURCES = src/main.cpp \
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
-RESOURCES += tracking.qrc
+RESOURCES += akama.qrc
 RESOURCES += markers.qrc
 
 mac {
@@ -37,7 +37,7 @@ mac {
 
   LIBS += -framework ApplicationServices
 
-  ICON = icons/paw.icns
+  ICON = icons/logo.icns
 
   # Custom Info.plist to make systray app only
   QMAKE_INFO_PLIST = Info.plist.app

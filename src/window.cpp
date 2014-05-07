@@ -124,7 +124,13 @@ AboutTab::AboutTab(QWidget *parent)
   QLabel *version = new QLabel(VERSION);
   version->setAlignment(Qt::AlignHCenter);
 
+  QPixmap logoImage(":/icons/logo.png");
+  QLabel *logo = new QLabel();
+  logo->setAlignment(Qt::AlignHCenter);
+  logo->setPixmap(logoImage.scaled(64, 64, Qt::KeepAspectRatio));
+
   layout->addItem(topSpacer);
+  layout->addWidget(logo);
   layout->addWidget(name);
   layout->addWidget(version);
   layout->addItem(bottomSpacer);
@@ -210,9 +216,9 @@ void Window::createTrayIcon()
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
 
-  QIcon icon = QIcon(":/icons/paw.svg");
+  QIcon icon = QIcon(":/icons/tray_icon.png");
 #ifdef Q_WS_MAC
-  icon.addFile(":/icons/paw_inverted.svg", QSize(), QIcon::Selected);
+  icon.addFile(":/icons/tray_icon_selected.png", QSize(), QIcon::Selected);
 #endif
   trayIcon->setIcon(icon);
   trayIcon->show();
