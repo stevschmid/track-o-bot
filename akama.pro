@@ -13,6 +13,7 @@ PRECOMPILED_HEADER = src/local.h
 HEADERS = src/local.h \
           src/window.h \
           src/core.h \
+          src/logger.h \
           src/tracker.h
 
 SOURCES = src/main.cpp \

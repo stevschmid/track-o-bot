@@ -6,7 +6,9 @@
 
 #include <QDebug>
 
-class Logger {
+class Logger : public QObject {
+  Q_OBJECT;
+
 DEFINE_SINGLETON(Logger)
 
 protected:
@@ -35,15 +37,18 @@ public:
     struct tm *now = localtime(&t);
     strftime(timestamp, sizeof(timestamp), "[%T] ", now);
 
-    string line = string(timestamp) + message;
+    string line = string(timestamp) + message + "\n";
 
     // Add to file
     if(of.is_open()) {
-      of << line << endl;
+      of << line;
       of.flush();
     }
-    // Add to QT
-    qDebug() << qPrintable(QString::fromStdString(line)) << endl;
+
+    emit NewMessage(line);
   }
+
+signals:
+  void NewMessage(const string& message);
 };
 

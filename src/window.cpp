@@ -97,16 +97,14 @@ LogTab::LogTab(QWidget *parent)
   layout->addWidget(logText);
 
   setLayout(layout);
+
+  connect(Logger::Instance(), SIGNAL(NewMessage(const string&)), this, SLOT(addLogEntry(const string&)));
 }
 
-void LogTab::addLogEntry(QtMsgType type, const char *msg) {
+void LogTab::addLogEntry(const string& msg) {
   logText->moveCursor(QTextCursor::End);
-  logText->insertPlainText(msg);
+  logText->insertPlainText(msg.c_str());
   logText->moveCursor(QTextCursor::End);
-}
-
-void Window::addLogEntry(QtMsgType type, const char *msg) {
-  logTab->addLogEntry(type, msg);
 }
 
 AboutTab::AboutTab(QWidget *parent)

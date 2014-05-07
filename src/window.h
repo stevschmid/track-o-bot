@@ -50,8 +50,10 @@ protected:
   QTextEdit *logText;
 
 public:
-  void addLogEntry(QtMsgType type, const char *msg);
   LogTab(QWidget *parent = 0);
+
+private slots:
+  void addLogEntry(const string& message);
 };
 
 class AboutTab : public QWidget
@@ -69,8 +71,6 @@ class Window : public QDialog
 public:
   Window();
   ~Window();
-
-  void addLogEntry(QtMsgType type, const char *msg);
 
 protected:
   void closeEvent(QCloseEvent *event);
