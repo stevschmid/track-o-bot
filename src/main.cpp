@@ -23,7 +23,7 @@ int main(int argc, char **argv)
   // Basic setup
   QApplication app(argc, argv);
   QIcon icon = QIcon(":/icons/paw.svg");
-  app.setApplicationName(APP_NAME); // for proper DataLocation handling
+  app.setApplicationName("Tracking"); // for proper DataLocation handling
   app.setOrganizationName("spidy.ch");
   app.setOrganizationDomain("spidy.ch");
   app.setWindowIcon(icon);
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   Logger::Instance()->SetLogPath(logFilePath);
 
   // Start
-  LOG("--> Launched On %s", QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
+  LOG("--> Launched v%s On %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
   // Initalize Windows n stuff
   window = new Window();

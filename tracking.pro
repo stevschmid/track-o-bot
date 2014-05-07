@@ -1,4 +1,5 @@
 TARGET = Tracking
+VERSION = 0.0.1
 
 CONFIG += qt precompile_header debug
 QT += network
@@ -24,6 +25,8 @@ SOURCES = src/main.cpp \
           src/logger.cpp \
           src/json.cpp \
           src/autostart.cpp
+
+DEFINES += VERSION=\\\"$$VERSION\\\"
 
 RESOURCES += tracking.qrc
 RESOURCES += markers.qrc

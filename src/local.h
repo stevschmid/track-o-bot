@@ -108,4 +108,3 @@ const char CLASS_NAMES[][128] = {
   #endif
 #endif
 
-#define APP_NAME "Tracking"

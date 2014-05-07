@@ -4,27 +4,50 @@
 SettingsTab::SettingsTab(QWidget *parent)
   : QWidget(parent)
 {
-  QVBoxLayout *layout = new QVBoxLayout;
 
-  layout->addWidget(new QLabel(tr("Username:")));
+  QLabel *usernameLabel = new QLabel(tr("Username:"));
   username = new QLineEdit;
-  layout->addWidget(username);
+  usernameLabel->setBuddy(username);
 
-  layout->addWidget(new QLabel(tr("Password:")));
+  QLabel *passwordLabel = new QLabel(tr("Password:"));
   password = new QLineEdit;
+  passwordLabel->setBuddy(password);
 
-  QHBoxLayout *row = new QHBoxLayout;
+  QGridLayout *layout = new QGridLayout;
+  setLayout(layout);
+  layout->setVerticalSpacing(15);
+
+  layout->addWidget(usernameLabel, 0, 0);
+  layout->addWidget(username, 0, 1);
+
+  layout->addWidget(passwordLabel, 1, 0);
+  layout->addWidget(password, 1, 1);
+
   QPushButton *revealButton = new QPushButton(tr("Reveal"));
   connect(revealButton, SIGNAL(clicked()), this, SLOT(reveal()));
-  row->addWidget(password);
-  row->addWidget(revealButton);
+  layout->addWidget(revealButton, 1, 2);
 
-  layout->addItem(row);
+  QFrame *line = new QFrame;
+  line->setObjectName(QString::fromUtf8("line"));
+  line->setGeometry(QRect(320, 150, 118, 30));
+  line->setFrameShape(QFrame::HLine);
+  line->setFrameShadow(QFrame::Sunken);
+  layout->addWidget(line, 2, 0, 1, 3);
+
+
+  QLabel *systemLabel = new QLabel(tr("System:"));
+  layout->addWidget(systemLabel, 4, 0);
 
   startAtLogin = new QCheckBox(tr("Start at Login"));
-  layout->addWidget(startAtLogin);
+  layout->addWidget(startAtLogin, 4, 1);
 
-  setLayout(layout);
+  QSpacerItem *spacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  layout->addItem(spacer, 5, 0);
+
+  QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
+  layout->addWidget(buttonBox, 6, 0, 1, 3);
 }
 
 void SettingsTab::reveal() {
@@ -54,6 +77,16 @@ void SettingsTab::applySettings() {
   autostart.SetActive(startAtLogin->isChecked());
 }
 
+void SettingsTab::ok() {
+  applySettings();
+  window()->hide();
+}
+
+void SettingsTab::cancel() {
+  window()->hide();
+}
+
+
 LogTab::LogTab(QWidget *parent)
   : QWidget(parent)
 {
@@ -66,9 +99,6 @@ LogTab::LogTab(QWidget *parent)
   setLayout(layout);
 }
 
-LogTab::~LogTab() {
-}
-
 void LogTab::addLogEntry(QtMsgType type, const char *msg) {
   logText->moveCursor(QTextCursor::End);
   logText->insertPlainText(msg);
@@ -77,6 +107,29 @@ void LogTab::addLogEntry(QtMsgType type, const char *msg) {
 
 void Window::addLogEntry(QtMsgType type, const char *msg) {
   logTab->addLogEntry(type, msg);
+}
+
+AboutTab::AboutTab(QWidget *parent)
+  : QWidget(parent)
+{
+  QVBoxLayout *layout = new QVBoxLayout;
+
+  QSpacerItem *topSpacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  QSpacerItem *bottomSpacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+  QLabel *name = new QLabel(qApp->applicationName());
+  name->setStyleSheet("QLabel { font-size: 20px; }");
+  name->setAlignment(Qt::AlignHCenter);
+
+  QLabel *version = new QLabel(VERSION);
+  version->setAlignment(Qt::AlignHCenter);
+
+  layout->addItem(topSpacer);
+  layout->addWidget(name);
+  layout->addWidget(version);
+  layout->addItem(bottomSpacer);
+
+  setLayout(layout);
 }
 
 Window::Window()
@@ -92,21 +145,18 @@ Window::Window()
   tabWidget = new QTabWidget;
   settingsTab = new SettingsTab;
   logTab = new LogTab;
+  aboutTab = new AboutTab;
 
   tabWidget->addTab(settingsTab, tr("Settings"));
   tabWidget->addTab(logTab, tr("Log"));
-
-  buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-  connect(buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-  connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
+  tabWidget->addTab(aboutTab, tr("About"));
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->setSizeConstraint(QLayout::SetNoConstraint);
   mainLayout->addWidget(tabWidget);
-  mainLayout->addWidget(buttonBox);
 
   setLayout(mainLayout);
-  setFixedSize(400, 300);
+  setFixedSize(400, 250);
 }
 
 Window::~Window() {
@@ -115,15 +165,6 @@ Window::~Window() {
 void Window::showEvent(QShowEvent *event) {
   QDialog::showEvent(event);
   settingsTab->updateSettings();
-}
-
-void Window::ok() {
-  hide();
-  settingsTab->applySettings();
-}
-
-void Window::cancel() {
-  hide();
 }
 
 void Window::closeEvent(QCloseEvent *event) {
