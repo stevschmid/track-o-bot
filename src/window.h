@@ -39,7 +39,7 @@ public slots:
   void applySettings();
 
 public:
-  SettingsTab(QWidget *parent = 0);
+  explicit SettingsTab(QWidget *parent = 0);
 };
 
 class LogTab : public QWidget
@@ -50,7 +50,7 @@ protected:
   QTextEdit *logText;
 
 public:
-  LogTab(QWidget *parent = 0);
+  explicit LogTab(QWidget *parent = 0);
 
 private slots:
   void addLogEntry(const string& message);
@@ -61,7 +61,7 @@ class AboutTab : public QWidget
   Q_OBJECT
 
 public:
-  AboutTab(QWidget *parent = 0);
+  explicit AboutTab(QWidget *parent = 0);
 };
 
 class Window : public QDialog
@@ -69,7 +69,7 @@ class Window : public QDialog
   Q_OBJECT
 
 public:
-  Window();
+  explicit Window();
   ~Window();
 
 protected:
