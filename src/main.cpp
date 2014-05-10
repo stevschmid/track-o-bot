@@ -12,7 +12,7 @@ int main(int argc, char **argv)
   // Basic setup
   QApplication app(argc, argv);
   QIcon icon = QIcon(":/icons/tray_icon.png");
-  app.setApplicationName("Akama"); // for proper DataLocation handling
+  app.setApplicationName("Track-o-Bot"); // for proper DataLocation handling
   app.setOrganizationName("spidy.ch");
   app.setOrganizationDomain("spidy.ch");
   app.setWindowIcon(icon);

@@ -1,4 +1,4 @@
-TARGET = Akama
+TARGET = Track-o-Bot
 VERSION = 0.0.1
 
 CONFIG += qt precompile_header debug
@@ -29,7 +29,7 @@ SOURCES = src/main.cpp \
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
-RESOURCES += akama.qrc
+RESOURCES += app.qrc
 RESOURCES += markers.qrc
 
 mac {
