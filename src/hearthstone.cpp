@@ -1,11 +1,19 @@
 #include "hearthstone.h"
 
+#ifdef Q_WS_MAC
 #include "osx_window_capture.h"
+#elif defined Q_WS_WIN
+#include "win_window_capture.h"
+#endif
 
 DEFINE_SINGLETON_SCOPE(Hearthstone)
 
 Hearthstone::Hearthstone() {
+#ifdef Q_WS_MAC
   capture = new OSXWindowCapture("Hearthstone");
+#elif defined Q_WS_WIN
+  capture = new WinWindowCapture("Hearthstone");
+#endif
 }
 
 Hearthstone::~Hearthstone() {
@@ -16,6 +24,12 @@ Hearthstone::~Hearthstone() {
 bool Hearthstone::IsRunning() {
   return capture->WindowFound();
 }
+
+#ifdef Q_WS_WIN
+inline float roundf(float x) {
+   return x >= 0.0f ? floorf(x + 0.5f) : ceilf(x - 0.5f);
+}
+#endif
 
 QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh) {
   int x, y, w, h;

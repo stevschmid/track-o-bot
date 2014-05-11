@@ -1,4 +1,9 @@
 tmp/
 .qmake.stash
 Makefile
-
+build/
+*.rc
+*.pdb
+Makefile
+Makefile.*
+*.swp

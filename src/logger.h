@@ -1,5 +1,7 @@
 #pragma once
 
+#include <time.h>
+
 #include <vector>
 #include <sstream>
 #include <fstream>
@@ -35,7 +37,7 @@ public:
     char timestamp[256];
     time_t t = time(0);
     struct tm *now = localtime(&t);
-    strftime(timestamp, sizeof(timestamp), "[%T] ", now);
+    strftime(timestamp, sizeof(timestamp), "[%Y-%m-%d %H:%M:%S] ", now);
 
     string line = string(timestamp) + message + "\n";
 

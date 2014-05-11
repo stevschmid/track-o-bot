@@ -214,10 +214,13 @@ void Window::createTrayIcon()
   trayIcon = new QSystemTrayIcon(this);
   trayIcon->setContextMenu(trayIconMenu);
 
-  QIcon icon = QIcon(":/icons/tray_icon.png");
 #ifdef Q_WS_MAC
+  QIcon icon = QIcon(":/icons/tray_icon.png");
   icon.addFile(":/icons/tray_icon_selected.png", QSize(), QIcon::Selected);
+#elif defined Q_WS_WIN
+  QIcon icon = QIcon(":/icons/tray_icon_color.png");
 #endif
+
   trayIcon->setIcon(icon);
   trayIcon->show();
 }

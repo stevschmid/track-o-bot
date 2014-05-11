@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene_manager.h"
-#include "osx_window_capture.h"
 #include "tracker.h"
 
 #include <QTimer>

@@ -33,7 +33,6 @@ RESOURCES += app.qrc
 RESOURCES += markers.qrc
 
 mac {
-  HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp
 
   LIBS += -framework ApplicationServices -framework Sparkle -framework AppKit
@@ -48,4 +47,12 @@ mac {
 
   QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $${VERSION}\" $${DESTDIR}/$${TARGET}.app/Contents/Info.plist;
   QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $${VERSION}\" $${DESTDIR}/$${TARGET}.app/Contents/Info.plist;
+}
+
+win32 {
+  SOURCES += src/win_window_capture.cpp
+
+  LIBS += user32.lib Gdi32.lib
+
+  QMAKE_LFLAGS += /VERBOSE
 }

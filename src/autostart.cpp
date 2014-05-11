@@ -1,5 +1,6 @@
 #include "Autostart.h"
 
+#include <QApplication>
 #include <QDir>
 #include <QString>
 #include <QSettings>
@@ -40,7 +41,7 @@ LSSharedFileListItemRef FindLoginItemForCurrentBundle(CFArrayRef currentLoginIte
 bool Autostart::IsActive()
 {
 #ifdef Q_WS_WIN
-  const QString& applicationName = qApp->getApplicationName();
+  const QString& applicationName = qApp->applicationName();
   QSettings tmpSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
   return !tmpSettings.value(applicationName).toString().isEmpty();
 #elif defined(Q_OS_MAC)
@@ -68,7 +69,7 @@ bool Autostart::IsActive()
 void Autostart::SetActive(bool active)
 {
 #ifdef Q_WS_WIN
-  const QString& applicationName = qApp->getApplicationName();
+  const QString& applicationName = qApp->applicationName();
 
   QSettings tmpSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
   if(active) {
