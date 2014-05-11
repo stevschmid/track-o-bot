@@ -13,7 +13,7 @@ class Logger : public QObject {
 
 DEFINE_SINGLETON(Logger)
 
-protected:
+private:
   ofstream of;
 
 public:

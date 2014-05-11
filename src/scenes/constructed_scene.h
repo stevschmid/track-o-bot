@@ -4,7 +4,7 @@
 
 class ConstructedScene : public Scene
 {
-protected:
+private:
   GameMode mode;
 
 public:

@@ -22,7 +22,7 @@ class SettingsTab : public QWidget
 {
   Q_OBJECT
 
-protected:
+private:
   QLineEdit *username;
   QLineEdit *password;
   QCheckBox *startAtLogin;
@@ -46,7 +46,7 @@ class LogTab : public QWidget
 {
   Q_OBJECT
 
-protected:
+private:
   QTextEdit *logText;
 
 public:
@@ -72,16 +72,15 @@ public:
   explicit Window();
   ~Window();
 
-protected:
-  void closeEvent(QCloseEvent *event);
-  void showEvent(QShowEvent *event);
-  void reject();
-
 private slots:
   void riseAndShine();
   void openProfile();
 
 private:
+  void closeEvent(QCloseEvent *event);
+  void showEvent(QShowEvent *event);
+  void reject();
+
   void createActions();
   void createTrayIcon();
 

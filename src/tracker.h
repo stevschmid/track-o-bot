@@ -7,7 +7,7 @@ class Tracker : public QObject
 {
   Q_OBJECT
 
-protected:
+private:
   QNetworkAccessManager networkManager;
   QSettings settings;
 

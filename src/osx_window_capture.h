@@ -10,7 +10,7 @@
 
 class OSXWindowCapture : public WindowCapture
 {
-protected:
+private:
 
   string name;
   int winId;

@@ -10,7 +10,7 @@
 
 class Scene
 {
-protected:
+private:
   class Marker {
   public:
     string name;

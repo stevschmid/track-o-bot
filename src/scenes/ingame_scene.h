@@ -1,6 +1,6 @@
 class IngameScene : public Scene
 {
-protected:
+private:
   Outcome outcome;
   GoingOrder order;
   Class ownClass;

@@ -9,7 +9,7 @@
 using ::testing::Return;
 
 class HearthstoneTest : public ::testing::Test {
-protected:
+private:
   virtual void SetUp() {
     window_capture = new MockWindowCapture;
     Hearthstone::Instance()->SetWindowCapture(window_capture);

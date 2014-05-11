@@ -13,7 +13,7 @@ public:
 
 class SceneManager
 {
-protected:
+private:
   vector<SceneManagerObserver*> observers;
 
   Scene *currentScene;

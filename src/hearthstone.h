@@ -14,7 +14,7 @@ class Hearthstone
 {
   DEFINE_SINGLETON(Hearthstone)
 
-protected:
+private:
   WindowCapture *capture;
 
 public:
