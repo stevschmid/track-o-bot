@@ -7,6 +7,12 @@
 
 #include "window.h"
 
+#include "updater.h"
+#ifdef Q_WS_MAC
+#include "cocoa_initializer.h"
+#include "sparkle_updater.h"
+#endif
+
 int main(int argc, char **argv)
 {
   // Basic setup
@@ -28,6 +34,12 @@ int main(int argc, char **argv)
 
   // Start
   LOG("--> Launched v%s On %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
+
+  Updater *updater = NULL;
+#ifdef Q_WS_MAC
+  CocoaInitializer cocoaInitiarizer;
+  updater = new SparkleUpdater("http://andymatuschak.org/files/sparkletestcast.xml");
+#endif
 
   // Initalize Windows n stuff
   Window window;
