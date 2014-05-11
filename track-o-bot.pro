@@ -53,6 +53,4 @@ win32 {
   SOURCES += src/win_window_capture.cpp
 
   LIBS += user32.lib Gdi32.lib
-
-  QMAKE_LFLAGS += /VERBOSE
 }

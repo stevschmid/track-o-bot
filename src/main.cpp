@@ -5,6 +5,8 @@
 #include <QIcon>
 #include <QPointer>
 
+#include <QSharedMemory>
+
 #include "window.h"
 
 #include "updater.h"
@@ -15,6 +17,12 @@
 
 int main(int argc, char **argv)
 {
+  // Enforce single instance
+  QSharedMemory memSingleInstance("TrackOBot");
+  if(!memSingleInstance.create(512, QSharedMemory::ReadWrite)) {
+    return 1;
+  }
+
   // Basic setup
   QApplication app(argc, argv);
   QIcon icon = QIcon(":/icons/tray_icon.png");
