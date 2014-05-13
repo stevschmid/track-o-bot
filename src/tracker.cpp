@@ -8,6 +8,8 @@
 
 #include "json.h"
 
+#define WEB_URL "http://trackobot.com.dev"
+
 Tracker::Tracker() {
   // delay this func so logging system gets ready
   QTimer::singleShot(0, this, SLOT(EnsureAccountIsSetUp()));
@@ -58,7 +60,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     return;
   }
 
-  QUrl url("http://webtracker.dev/results.json");
+  QUrl url(QString(WEB_URL) + "/profile/results.json");
   url.setUserName(Username());
   url.setPassword(Password());
 
@@ -91,7 +93,7 @@ void Tracker::AddResultHandleReply() {
 }
 
 void Tracker::CreateAndStoreAccount() {
-  QUrl url("http://webtracker.dev/users.json");
+  QUrl url(QString(WEB_URL) + "/users.json");
   QNetworkRequest request(url);
   QNetworkReply *reply = networkManager.post(request, "");
   connect(reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()));
@@ -123,7 +125,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
 }
 
 void Tracker::OpenProfile() {
-  QUrl url("http://webtracker.dev/one_time_auth.json");
+  QUrl url(QString(WEB_URL) + "/one_time_auth.json");
   url.setUserName(Username());
   url.setPassword(Password());
   QNetworkRequest request(url);
@@ -169,5 +171,6 @@ void Tracker::SetPassword(const QString& password) {
 }
 
 bool Tracker::IsAccountSetUp() {
-  return settings.contains("username") && settings.contains("password");
+  return settings.contains("username") && settings.contains("password") &&
+    !settings.value("username").toString().isEmpty() && !settings.value("password").toString().isEmpty();
 }
