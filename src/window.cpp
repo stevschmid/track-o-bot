@@ -13,41 +13,50 @@ SettingsTab::SettingsTab(QWidget *parent)
   password = new QLineEdit;
   passwordLabel->setBuddy(password);
 
+  QLabel *webserviceUrlLabel = new QLabel(tr("Webservice URL:"));
+  webserviceUrl = new QLineEdit;
+  webserviceUrlLabel->setBuddy(webserviceUrl);
+
   QGridLayout *layout = new QGridLayout;
   setLayout(layout);
   layout->setVerticalSpacing(15);
 
-  layout->addWidget(usernameLabel, 0, 0);
-  layout->addWidget(username, 0, 1);
+  layout->addWidget(webserviceUrlLabel, 0, 0);
+  layout->addWidget(webserviceUrl, 0, 1);
 
-  layout->addWidget(passwordLabel, 1, 0);
-  layout->addWidget(password, 1, 1);
+  layout->addWidget(usernameLabel, 1, 0);
+  layout->addWidget(username, 1, 1);
 
+  layout->addWidget(passwordLabel, 2, 0);
+
+  QHBoxLayout *row = new QHBoxLayout;
   QPushButton *revealButton = new QPushButton(tr("Reveal"));
   connect(revealButton, SIGNAL(clicked()), this, SLOT(reveal()));
-  layout->addWidget(revealButton, 1, 2);
+
+  row->addWidget(password);
+  row->addWidget(revealButton);
+  layout->addLayout(row, 2, 1);
 
   QFrame *line = new QFrame;
   line->setObjectName(QString::fromUtf8("line"));
-  line->setGeometry(QRect(320, 150, 118, 30));
   line->setFrameShape(QFrame::HLine);
   line->setFrameShadow(QFrame::Sunken);
-  layout->addWidget(line, 2, 0, 1, 3);
+  layout->addWidget(line, 3, 0, 1, 3);
 
 
   QLabel *systemLabel = new QLabel(tr("System:"));
-  layout->addWidget(systemLabel, 4, 0);
+  layout->addWidget(systemLabel, 5, 0);
 
   startAtLogin = new QCheckBox(tr("Start at Login"));
-  layout->addWidget(startAtLogin, 4, 1);
+  layout->addWidget(startAtLogin, 5, 1);
 
   QSpacerItem *spacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  layout->addItem(spacer, 5, 0);
+  layout->addItem(spacer, 6, 0);
 
   QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
-  layout->addWidget(buttonBox, 6, 0, 1, 3);
+  layout->addWidget(buttonBox, 7, 0, 1, 3);
 }
 
 void SettingsTab::reveal() {
@@ -60,20 +69,21 @@ void SettingsTab::conceal() {
 
 void SettingsTab::updateSettings() {
   Autostart autostart;
-  QSettings settings;
 
-  username->setText(settings.value("username").toString());
-  password->setText(settings.value("password").toString());
+  username->setText(Tracker::Instance()->Username());
+  password->setText(Tracker::Instance()->Password());
+  webserviceUrl->setText(Tracker::Instance()->WebserviceURL());
   conceal();
 
   startAtLogin->setChecked(autostart.IsActive());
 }
 
 void SettingsTab::applySettings() {
-  QSettings settings;
   Autostart autostart;
-  settings.setValue("username", username->text());
-  settings.setValue("password", password->text());
+
+  Tracker::Instance()->SetUsername(username->text());
+  Tracker::Instance()->SetPassword(password->text());
+  Tracker::Instance()->SetWebserviceURL(webserviceUrl->text());
   autostart.SetActive(startAtLogin->isChecked());
 }
 
@@ -162,7 +172,7 @@ Window::Window()
   mainLayout->addWidget(tabWidget);
 
   setLayout(mainLayout);
-  setFixedSize(400, 250);
+  setFixedSize(450, 280);
 }
 
 Window::~Window() {
@@ -231,5 +241,5 @@ void Window::riseAndShine() {
 }
 
 void Window::openProfile() {
-  core.OpenProfile();
+  Tracker::Instance()->OpenProfile();
 }

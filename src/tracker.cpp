@@ -8,11 +8,14 @@
 
 #include "json.h"
 
-#define WEB_URL "http://trackobot.com.dev"
+#define DEFAULT_WEBSERVICE_URL "https://staging.trackobot.com"
+
+DEFINE_SINGLETON_SCOPE(Tracker);
 
 Tracker::Tracker() {
-  // delay this func so logging system gets ready
-  QTimer::singleShot(0, this, SLOT(EnsureAccountIsSetUp()));
+}
+
+Tracker::~Tracker() {
 }
 
 void Tracker::EnsureAccountIsSetUp() {
@@ -60,7 +63,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     return;
   }
 
-  QUrl url(QString(WEB_URL) + "/profile/results.json");
+  QUrl url(WebserviceURL() + "/profile/results.json");
   url.setUserName(Username());
   url.setPassword(Password());
 
@@ -93,7 +96,7 @@ void Tracker::AddResultHandleReply() {
 }
 
 void Tracker::CreateAndStoreAccount() {
-  QUrl url(QString(WEB_URL) + "/users.json");
+  QUrl url(WebserviceURL() + "/users.json");
   QNetworkRequest request(url);
   QNetworkReply *reply = networkManager.post(request, "");
   connect(reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()));
@@ -125,7 +128,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
 }
 
 void Tracker::OpenProfile() {
-  QUrl url(QString(WEB_URL) + "/one_time_auth.json");
+  QUrl url(WebserviceURL() + "/one_time_auth.json");
   url.setUserName(Username());
   url.setPassword(Password());
   QNetworkRequest request(url);
@@ -162,12 +165,24 @@ QString Tracker::Password() {
   return settings.value("password").toString();
 }
 
+QString Tracker::WebserviceURL() {
+  if(!settings.contains("webserviceUrl") || settings.value("webserviceUrl").toString().isEmpty()) {
+    SetWebserviceURL(DEFAULT_WEBSERVICE_URL);
+  }
+
+  return settings.value("webserviceUrl").toString();
+}
+
 void Tracker::SetUsername(const QString& username) {
   settings.setValue("username", username);
 }
 
 void Tracker::SetPassword(const QString& password) {
   settings.setValue("password", password);
+}
+
+void Tracker::SetWebserviceURL(const QString& webserviceUrl) {
+  settings.setValue("webserviceUrl", webserviceUrl);
 }
 
 bool Tracker::IsAccountSetUp() {

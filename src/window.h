@@ -25,6 +25,7 @@ class SettingsTab : public QWidget
 private:
   QLineEdit *username;
   QLineEdit *password;
+  QLineEdit *webserviceUrl;
   QCheckBox *startAtLogin;
 
 private slots:

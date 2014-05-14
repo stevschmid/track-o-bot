@@ -41,7 +41,7 @@ void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
 
   if(oldScene && oldScene->GetName() == "Ingame") {
     IngameScene *ingame = (IngameScene*)oldScene;
-    tracker.AddResult(currentGameMode,
+    Tracker::Instance()->AddResult(currentGameMode,
         ingame->GetOutcome(),
         ingame->GetGoingOrder(),
         ingame->GetOwnClass(),

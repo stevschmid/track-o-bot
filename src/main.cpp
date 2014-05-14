@@ -8,6 +8,7 @@
 #include <QSharedMemory>
 
 #include "window.h"
+#include "tracker.h"
 
 #include "updater.h"
 #ifdef Q_WS_MAC
@@ -51,6 +52,9 @@ int main(int argc, char **argv)
 
   // Initalize Windows n stuff
   Window window;
+
+  // Make sure Account exists or create one
+  Tracker::Instance()->EnsureAccountIsSetUp();
 
   // Main Loop
   int exitCode = app.exec();
