@@ -30,7 +30,7 @@ void Tracker::EnsureAccountIsSetUp() {
 void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
 #ifndef _DEBUG
   if(mode == MODE_PRACTICE) {
-    Log("Ignore practice game."); // only in Non Debug Versions
+    LOG("Ignore practice game."); // only in Non Debug Versions
     return;
   }
 #endif

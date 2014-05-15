@@ -29,6 +29,11 @@ SettingsTab::SettingsTab(QWidget *parent)
 
   layout->addWidget(passwordLabel, 2, 0);
 
+#ifndef _DEBUG
+  webserviceUrlLabel->hide();
+  webserviceUrl->hide();
+#endif
+
   QHBoxLayout *row = new QHBoxLayout;
   QPushButton *revealButton = new QPushButton(tr("Reveal"));
   connect(revealButton, SIGNAL(clicked()), this, SLOT(reveal()));
@@ -172,7 +177,7 @@ Window::Window()
   mainLayout->addWidget(tabWidget);
 
   setLayout(mainLayout);
-  setFixedSize(450, 280);
+  setFixedSize(420, 250);
 }
 
 Window::~Window() {
