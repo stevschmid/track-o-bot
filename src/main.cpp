@@ -19,16 +19,18 @@
 
 int main(int argc, char **argv)
 {
+  const char serverName[] = "trackobot";
+
   // Enforce single instance
   QLocalSocket socket;
-  socket.connectToServer("trackobot");
+  socket.connectToServer(serverName);
   if(socket.waitForConnected(500)) {
     return 1; // already running
   }
 
-  QLocalServer::removeServer("trackobot");
+  QLocalServer::removeServer(serverName);
   QLocalServer server(NULL);
-  if(!server.listen("trackobot")) {
+  if(!server.listen(serverName)) {
     return 2;
   }
 
