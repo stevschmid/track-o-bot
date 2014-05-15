@@ -8,7 +8,7 @@
 
 #include "json.h"
 
-#define DEFAULT_WEBSERVICE_URL "https://staging.trackobot.com"
+#define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
 DEFINE_SINGLETON_SCOPE(Tracker);
 
