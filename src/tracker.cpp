@@ -63,13 +63,6 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     return;
   }
 
-  QUrl url(WebserviceURL() + "/profile/results.json");
-  url.setUserName(Username());
-  url.setPassword(Password());
-
-  QNetworkRequest request(url);
-  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
   QtJson::JsonObject result;
   result["coin"]     = (order == ORDER_FIRST);
   result["hero"]     = CLASS_NAMES[ownClass];
@@ -81,8 +74,21 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   params["result"] = result;
 
   QByteArray data = QtJson::serialize(params);
-  QNetworkReply *reply = networkManager.post(request, data);
+
+  QNetworkReply *reply = AuthPostJson("/profile/results.json", data);
   connect(reply, SIGNAL(finished()), this, SLOT(AddResultHandleReply()));
+}
+
+QNetworkReply* Tracker::AuthPostJson(const QString& path, const QByteArray& data) {
+  QString credentials = "Basic " + (Username() + ":" + Password()).toAscii().toBase64();
+
+  QUrl url(WebserviceURL() + path);
+  QNetworkRequest request(url);
+
+  request.setRawHeader(QByteArray("Authorization"), credentials.toAscii());
+  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+  return networkManager.post(request, data);
 }
 
 void Tracker::AddResultHandleReply() {
@@ -128,12 +134,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
 }
 
 void Tracker::OpenProfile() {
-  QUrl url(WebserviceURL() + "/one_time_auth.json");
-  url.setUserName(Username());
-  url.setPassword(Password());
-  QNetworkRequest request(url);
-  request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/x-www-form-urlencoded"));
-  QNetworkReply *reply = networkManager.post(request, "");
+  QNetworkReply *reply = AuthPostJson("/one_time_auth.json", "");
   connect(reply, SIGNAL(finished()), this, SLOT(OpenProfileHandleReply()));
 }
 

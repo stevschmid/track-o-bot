@@ -14,6 +14,7 @@ private:
   QSettings settings;
 
   bool IsAccountSetUp();
+  QNetworkReply* AuthPostJson(const QString& path, const QByteArray& data);
 
 private slots:
   void AddResultHandleReply();
