@@ -48,6 +48,7 @@ typedef enum {
   MODE_CASUAL,
   MODE_PRACTICE,
   MODE_ARENA,
+  MODE_FRIENDLY,
   MODE_UNKNOWN
 } GameMode;
 
@@ -56,6 +57,7 @@ const char MODE_NAMES[][128] = {
   "casual",
   "practice",
   "arena",
+  "friendly",
   "unknown"
 };
 
