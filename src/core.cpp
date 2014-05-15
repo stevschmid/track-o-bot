@@ -23,9 +23,7 @@ void Core::Tick() {
 }
 
 void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
-#ifdef _DEBUG
-  LOG("Detected Scene %s", newScene->GetName().c_str());
-#endif
+  LOG("Scene %s", newScene->GetName().c_str());
 
   if(newScene->GetName() ==  "Ingame") {
     if(oldScene) {

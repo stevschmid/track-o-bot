@@ -33,6 +33,7 @@ RESOURCES += app.qrc
 RESOURCES += markers.qrc
 
 mac {
+  HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp
 
   LIBS += -framework ApplicationServices -framework Sparkle -framework AppKit

@@ -6,47 +6,38 @@
 OSXWindowCapture::OSXWindowCapture(const string& windowName)
   :name(windowName), winId(0)
 {
-  Update(true);
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(Update()));
+  timer->start(OSX_UPDATE_WINDOW_DATA_INTERVAL);
+
+  Update();
 }
 
-void OSXWindowCapture::Update(bool forced) {
-  // Update WinId if forced or 0
-  if(forced || winId == 0) {
+void OSXWindowCapture::Update() {
+  if(winId == 0) {
     winId = FindWindow(name);
   }
 
-  // Update Rect
-  if(winId && (forced || updateTimer.hasExpired(OSX_UPDATE_WINDOW_DATA_INTERVAL))) {
-    if(!GetWindowRect(winId, &rect)) {
-      // Window became invalid
-      winId = 0;
-    }
-
-    updateTimer.restart();
+  if(winId && !GetWindowRect(winId, &rect)) {
+    // Window became invalid
+    winId = 0;
   }
 }
 
 bool OSXWindowCapture::WindowFound() {
-  Update();
   return winId != 0;
 }
 
 int OSXWindowCapture::GetWidth() {
-  Update();
-
   return CGRectGetWidth(rect);
 }
 
 int OSXWindowCapture::GetHeight() {
-  Update();
-
   int height = CGRectGetHeight(rect);
   return IsFullscreen() ? height : max<int>(height - OSX_WINDOW_TITLE_BAR_HEIGHT, 0);
 }
 
 QPixmap OSXWindowCapture::Capture(int x, int y, int w, int h) {
-  Update();
-
   CGRect captureRect = CGRectMake(x + CGRectGetMinX(rect),
       y + CGRectGetMinY(rect) + (IsFullscreen() ? 0 : OSX_WINDOW_TITLE_BAR_HEIGHT),
       w,
