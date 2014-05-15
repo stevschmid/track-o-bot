@@ -6,7 +6,7 @@ WinWindowCapture::WinWindowCapture(const string& windowName)
 }
 
 HWND WinWindowCapture::FindHWND() {
-  return FindWindowA(NULL, "Hearthstone");
+  return FindWindowA(NULL, name.c_str());
 }
 
 RECT WinWindowCapture::GetRect() {
