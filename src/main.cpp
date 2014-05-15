@@ -5,7 +5,8 @@
 #include <QIcon>
 #include <QPointer>
 
-#include <QSharedMemory>
+#include <QLocalServer>
+#include <QLocalSocket>
 
 #include "window.h"
 #include "tracker.h"
@@ -19,9 +20,16 @@
 int main(int argc, char **argv)
 {
   // Enforce single instance
-  QSharedMemory memSingleInstance("TrackOBot");
-  if(!memSingleInstance.create(512, QSharedMemory::ReadWrite)) {
-    return 1;
+  QLocalSocket socket;
+  socket.connectToServer("trackobot");
+  if(socket.waitForConnected(500)) {
+    return 1; // already running
+  }
+
+  QLocalServer::removeServer("trackobot");
+  QLocalServer server(NULL);
+  if(!server.listen("trackobot")) {
+    return 2;
   }
 
   // Basic setup
