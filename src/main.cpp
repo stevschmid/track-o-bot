@@ -45,9 +45,10 @@ int main(int argc, char **argv)
   LOG("--> Launched v%s On %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
   Updater *updater = NULL;
+
 #ifdef Q_WS_MAC
   CocoaInitializer cocoaInitiarizer;
-  updater = new SparkleUpdater("http://andymatuschak.org/files/sparkletestcast.xml");
+  updater = new SparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast.xml"));
 #endif
 
   // Initalize Windows n stuff

@@ -82,7 +82,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 QNetworkReply* Tracker::AuthPostJson(const QString& path, const QByteArray& data) {
   QString credentials = "Basic " + (Username() + ":" + Password()).toAscii().toBase64();
 
-  QUrl url(WebserviceURL() + path);
+  QUrl url(WebserviceURL(path));
   QNetworkRequest request(url);
 
   request.setRawHeader(QByteArray("Authorization"), credentials.toAscii());
@@ -102,7 +102,7 @@ void Tracker::AddResultHandleReply() {
 }
 
 void Tracker::CreateAndStoreAccount() {
-  QUrl url(WebserviceURL() + "/users.json");
+  QUrl url(WebserviceURL("/users.json"));
   QNetworkRequest request(url);
   QNetworkReply *reply = networkManager.post(request, "");
   connect(reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()));
@@ -164,6 +164,10 @@ QString Tracker::Username() {
 
 QString Tracker::Password() {
   return settings.value("password").toString();
+}
+
+QString Tracker::WebserviceURL(const QString& path) {
+  return WebserviceURL() + path;
 }
 
 QString Tracker::WebserviceURL() {

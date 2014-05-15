@@ -34,6 +34,7 @@ public:
   void SetPassword(const QString& password);
 
   QString WebserviceURL();
+  QString WebserviceURL(const QString& path);
   void SetWebserviceURL(const QString& webserviceUrl);
 
 };
