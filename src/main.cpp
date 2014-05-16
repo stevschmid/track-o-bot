@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   Logger::Instance()->SetLogPath(logFilePath);
 
   // Start
-  LOG("--> Launched v%s On %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
+  LOG("--> Launched v%s on %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
   Updater *updater = NULL;
 
