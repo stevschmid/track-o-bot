@@ -48,14 +48,13 @@ SettingsTab::SettingsTab(QWidget *parent)
   line->setFrameShadow(QFrame::Sunken);
   layout->addWidget(line, 3, 0, 1, 3);
 
-
   QLabel *systemLabel = new QLabel(tr("System:"));
   layout->addWidget(systemLabel, 5, 0);
 
   startAtLogin = new QCheckBox(tr("Start at Login"));
   layout->addWidget(startAtLogin, 5, 1);
 
-  QSpacerItem *spacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  QSpacerItem *spacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
   layout->addItem(spacer, 6, 0);
 
   QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -155,11 +154,6 @@ Window::Window()
 {
   setWindowTitle(qApp->applicationName());
 
-  Qt::WindowFlags flags = windowFlags();
-  flags |= Qt::CustomizeWindowHint;
-  flags &= ~Qt::WindowMaximizeButtonHint;
-  setWindowFlags(flags);
-
   createActions();
   createTrayIcon();
 
@@ -177,7 +171,9 @@ Window::Window()
   mainLayout->addWidget(tabWidget);
 
   setLayout(mainLayout);
-  setFixedSize(420, 250);
+
+  setMinimumSize(450, 250);
+  resize(minimumSize());
 }
 
 Window::~Window() {
