@@ -107,6 +107,9 @@ LogTab::LogTab(QWidget *parent)
   QVBoxLayout *layout = new QVBoxLayout;
 
   logText = new QTextEdit;
+  QFont font("Monospace");
+  font.setStyleHint(QFont::TypeWriter);
+  logText->setFont(font);
   logText->setReadOnly(true);
   layout->addWidget(logText);
 
