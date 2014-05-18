@@ -11,7 +11,7 @@ Install Qt:
 brew install qt
 ```
 
-Install [Sparkle](http://sparkle.andymatuschak.org/) by moving _Sparkle.framework_ to /Library/Frameworks
+Install [Sparkle](http://sparkle.andymatuschak.org/) by moving _Sparkle.framework_ to ``/Library/Frameworks``.
 
 # Build Instructions
 
