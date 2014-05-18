@@ -7,14 +7,18 @@
 
 Install Qt:
 
-  brew install qt
+```
+brew install qt
+```
 
 Install [Sparkle](http://sparkle.andymatuschak.org/) by moving _Sparkle.framework_ to /Library/Frameworks
 
 # Build Instructions
 
-  qmake
-  make
+```
+qmake
+make
+```
 
 The resulting binary can be found in the ``build`` subfolder.
 
