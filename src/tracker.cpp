@@ -35,7 +35,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   }
 #endif
 
-  LOG("Upload Result. Mode: %s. Outcome %s: Order: %s. Class: %s. Opponent %s",
+  LOG("Upload Result\n Mode: %s\n Outcome: %s\n Order: %s\n Class: %s\n Opponent: %s",
       MODE_NAMES[mode], OUTCOME_NAMES[outcome], ORDER_NAMES[order], CLASS_NAMES[ownClass], CLASS_NAMES[opponentClass]);
 
   if(mode == MODE_UNKNOWN) {
