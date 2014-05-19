@@ -15,6 +15,8 @@ private:
   SceneManager sceneManager;
   GameMode currentGameMode;
 
+  bool gameRunning;
+
 private slots:
   void Tick();
 

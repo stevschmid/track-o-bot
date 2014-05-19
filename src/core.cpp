@@ -3,7 +3,7 @@
 #include "tracker.h"
 
 Core::Core()
-  :currentGameMode(MODE_UNKNOWN)
+  :currentGameMode(MODE_UNKNOWN), gameRunning(false)
 {
   sceneManager.RegisterObserver(this);
 
@@ -17,7 +17,19 @@ Core::~Core() {
 }
 
 void Core::Tick() {
-  if(Hearthstone::Instance()->IsRunning()) {
+
+  bool wasGameRunning = gameRunning;
+  gameRunning = Hearthstone::Instance()->IsRunning();
+
+  if(wasGameRunning != gameRunning) {
+    if(gameRunning) {
+      LOG("Hearthstone is running");
+    } else {
+      LOG("Hearthstone was closed");
+    }
+  }
+
+  if(gameRunning) {
     sceneManager.Update();
   }
 }
