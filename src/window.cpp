@@ -136,6 +136,10 @@ AboutTab::AboutTab(QWidget *parent)
   name->setStyleSheet("QLabel { font-size: 20px; }");
   name->setAlignment(Qt::AlignHCenter);
 
+  QLabel *slogan = new QLabel("The friendly Hearthstone Tracker");
+  slogan->setStyleSheet("QLabel { font-style: italic; }");
+  slogan->setAlignment(Qt::AlignHCenter);
+
   QLabel *version = new QLabel(VERSION);
   version->setAlignment(Qt::AlignHCenter);
 
@@ -147,6 +151,7 @@ AboutTab::AboutTab(QWidget *parent)
   layout->addItem(topSpacer);
   layout->addWidget(logo);
   layout->addWidget(name);
+  layout->addWidget(slogan);
   layout->addWidget(version);
   layout->addItem(bottomSpacer);
 
