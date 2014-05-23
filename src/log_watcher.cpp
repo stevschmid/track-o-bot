@@ -2,6 +2,8 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QRegExp>
+#include <QStringList>
 
 LogWatcher::LogWatcher(const string& logPath)
   :path(logPath)
@@ -30,7 +32,15 @@ void LogWatcher::LogChanged(const QString& changedFilePath) {
     while(!stream.atEnd()) {
       QString line = stream.readLine();
       if(!line.trimmed().isEmpty()) {
-        LOG("Line %s", line.toStdString().c_str());
+
+        QRegExp regex("ProcessChanges.*cardId=(\\w+).*zone from (.*) -> (.*)");
+        if(regex.indexIn(line) != -1) {
+          QStringList list = regex.capturedTexts();
+          QString cardId = list[1];
+          QString from = list[2];
+          QString to = list[3];
+          LOG("Card %s %s %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
+        }
       }
     }
 

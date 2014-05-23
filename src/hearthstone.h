@@ -23,4 +23,11 @@ public:
 
   bool IsRunning();
   QPixmap Capture(int vx, int vy, int vw, int vh);
+
+  void EnableLogging();
+  void DisableLogging();
+
+  string LogConfigPath();
+  string LogPath();
+
 };

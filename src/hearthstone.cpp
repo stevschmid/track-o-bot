@@ -1,5 +1,8 @@
 #include "hearthstone.h"
 
+#include <QFile>
+#include <QDesktopServices>
+
 #ifdef Q_WS_MAC
 #include "osx_window_capture.h"
 #elif defined Q_WS_WIN
@@ -59,3 +62,62 @@ void Hearthstone::SetWindowCapture(WindowCapture *wc) {
 
   capture = wc;
 }
+
+void Hearthstone::EnableLogging() {
+  string path = LogConfigPath();
+  QFile file(path.c_str());
+  if(!file.exists()) {
+    LOG("Enable logging by creating file %s", path.c_str());
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      LOG("Couldn't create file");
+    } else {
+      QTextStream out(&file);
+      // ToDo: Check out which of those variables is truly necessary
+      out << "[Zone]\n";
+      out << "LogLevel=1\n";
+      out << "FilePrinting=false\n";
+      out << "ConsolePrinting=true\n";
+      out << "ScreenPrinting=false\n";
+      file.close();
+
+      LOG("Ingame Log activated.");
+      if(IsRunning()) {
+        LOG("Please restart Hearthstone for logging to take effect.");
+      }
+    }
+  }
+}
+
+void Hearthstone::DisableLogging() {
+  QFile file(LogConfigPath().c_str());
+  if(file.exists()) {
+    file.remove();
+    LOG("Ingame log deactivated.");
+  }
+}
+
+string Hearthstone::LogConfigPath() {
+#ifdef Q_WS_MAC
+  QString homeLocation = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+  QString configPath = homeLocation + "/Library/Preferences/BLizzard/Hearthstone/log.config";
+#elif defined Q_WS_WIN
+  QString localAppData(getenv("LOCALAPPDATA"));
+  QString configPath = localAppData + "\\Blizzard\\Hearthstone\\log.config";
+#endif
+  return configPath.toStdString();
+}
+
+string Hearthstone::LogPath() {
+#ifdef Q_WS_MAC
+  QString homeLocation = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+  QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
+#elif defined Q_WS_WIN
+  QString programFiles(getenv("PROGRAMFILES(X86)"));
+  if(programFiles.empty()) {
+    programFiles = getenv("PROGRAMFILES");
+  }
+  QString logPath = programFiles + "\\Hearthstone\\Hearthstone_Data\\output_log.txt";
+#endif
+  return logPath.toStdString();
+}
+
