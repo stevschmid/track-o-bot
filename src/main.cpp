@@ -17,6 +17,8 @@
 #include "sparkle_updater.h"
 #endif
 
+#include "log_watcher.h"
+
 int main(int argc, char **argv)
 {
   const char serverName[] = "trackobot";
@@ -70,6 +72,12 @@ int main(int argc, char **argv)
 
   // Make sure Account exists or create one
   Tracker::Instance()->EnsureAccountIsSetUp();
+
+#ifdef Q_WS_MAC
+  QString homeLocation = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+  QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
+  LogWatcher log(logPath.toStdString());
+#endif
 
   // Main Loop
   int exitCode = app.exec();
