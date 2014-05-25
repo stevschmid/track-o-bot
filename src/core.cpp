@@ -51,10 +51,12 @@ void Core::SceneChanged(Scene *oldScene, Scene *newScene) {
 
   if(oldScene && oldScene->GetName() == "Ingame") {
     IngameScene *ingame = (IngameScene*)oldScene;
+
     Tracker::Instance()->AddResult(currentGameMode,
         ingame->GetOutcome(),
         ingame->GetGoingOrder(),
         ingame->GetOwnClass(),
-        ingame->GetOpponentClass());
+        ingame->GetOpponentClass(),
+        ingame->GetCardHistoryList());
   }
 }

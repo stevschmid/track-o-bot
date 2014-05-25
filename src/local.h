@@ -1,7 +1,11 @@
 #include <string>
+using std::string;
+
+#include <vector>
+using std::vector;
+
 #include <map>
-#include <iostream>
-using namespace std;
+using std::map;
 
 #define DEFINE_SINGLETON(CLASSNAME) \
 public: \

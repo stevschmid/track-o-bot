@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 #include <QDebug>
 
@@ -14,7 +15,7 @@ class Logger : public QObject {
 DEFINE_SINGLETON(Logger)
 
 private:
-  ofstream of;
+  std::ofstream of;
 
 public:
   void SetLogPath(const string& path) {

@@ -15,7 +15,8 @@ HEADERS = src/local.h \
           src/core.h \
           src/logger.h \
           src/tracker.h \
-          src/log_watcher.h
+          src/log_watcher.h \
+          src/card_history.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
@@ -27,7 +28,8 @@ SOURCES = src/main.cpp \
           src/logger.cpp \
           src/json.cpp \
           src/autostart.cpp \
-          src/log_watcher.cpp
+          src/log_watcher.cpp \
+          src/card_history.cpp
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

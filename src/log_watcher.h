@@ -7,15 +7,17 @@ class LogWatcher : public QObject
   Q_OBJECT
 
 private:
-  string path;
+  QString path;
   QFileSystemWatcher watcher;
   qint64 lastSeekPos;
 
 public:
-  LogWatcher(const string& logPath);
+  LogWatcher(const QString& logPath);
 
 private slots:
   void LogChanged(const QString& changedFilePath);
 
-};
+signals:
+  void LineAdded(const QString& line);
 
+};

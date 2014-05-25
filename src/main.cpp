@@ -18,7 +18,6 @@
 #endif
 
 #include "hearthstone.h"
-#include "log_watcher.h"
 
 int main(int argc, char **argv)
 {
@@ -74,10 +73,8 @@ int main(int argc, char **argv)
   // Make sure Account exists or create one
   Tracker::Instance()->EnsureAccountIsSetUp();
 
-  // Enable HS Logging for now
+  // Enable HS Logging
   Hearthstone::Instance()->EnableLogging();
-  string logPath = Hearthstone::Instance()->LogPath();
-  LogWatcher log(logPath);
 
   // Main Loop
   int exitCode = app.exec();

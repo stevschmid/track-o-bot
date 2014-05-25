@@ -5,13 +5,13 @@
 #include <QRegExp>
 #include <QStringList>
 
-LogWatcher::LogWatcher(const string& logPath)
+LogWatcher::LogWatcher(const QString& logPath)
   :path(logPath)
 {
-  watcher.addPath(logPath.c_str());
+  watcher.addPath(logPath);
   connect(&watcher, SIGNAL(fileChanged(QString)), this, SLOT(LogChanged(QString)));
 
-  QFile file(logPath.c_str());
+  QFile file(logPath);
   lastSeekPos = file.size();
   LOG("File size %d", lastSeekPos);
 }
@@ -31,17 +31,7 @@ void LogWatcher::LogChanged(const QString& changedFilePath) {
 
     while(!stream.atEnd()) {
       QString line = stream.readLine();
-      if(!line.trimmed().isEmpty()) {
-
-        QRegExp regex("ProcessChanges.*cardId=(\\w+).*zone from (.*) -> (.*)");
-        if(regex.indexIn(line) != -1) {
-          QStringList list = regex.capturedTexts();
-          QString cardId = list[1];
-          QString from = list[2];
-          QString to = list[3];
-          LOG("Card %s %s %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
-        }
-      }
+      emit LineAdded(line);
     }
 
     lastSeekPos = stream.pos();

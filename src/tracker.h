@@ -3,6 +3,8 @@
 #include <QNetworkAccessManager>
 #include <QSettings>
 
+#include "card_history.h"
+
 class Tracker : public QObject
 {
   Q_OBJECT
@@ -22,7 +24,7 @@ private slots:
   void OpenProfileHandleReply();
 
 public:
-  void AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass);
+  void AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList);
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();

@@ -27,7 +27,7 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass) {
+void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList) {
 #ifndef _DEBUG
   if(mode == MODE_PRACTICE) {
     LOG("Ignore practice game."); // only in Non Debug Versions
@@ -37,6 +37,13 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 
   LOG("Upload Result\n Mode: %s\n Outcome: %s\n Order: %s\n Class: %s\n Opponent: %s",
       MODE_NAMES[mode], OUTCOME_NAMES[outcome], ORDER_NAMES[order], CLASS_NAMES[ownClass], CLASS_NAMES[opponentClass]);
+
+  string cardHistoryOutput;
+  for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
+    cardHistoryOutput += (*it).myPlay ? "SELF " : "OPPONENT ";
+    cardHistoryOutput += (*it).cardId + "\n";
+  }
+  LOG("Card History: %s", cardHistoryOutput.c_str());
 
   if(mode == MODE_UNKNOWN) {
     LOG("Mode unknown. Skip result");
@@ -69,6 +76,15 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   result["opponent"] = CLASS_NAMES[opponentClass];
   result["win"]      = (outcome == OUTCOME_VICTORY);
   result["mode"]     = MODE_NAMES[mode];
+
+  QtJson::JsonArray card_history;
+  for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
+    QtJson::JsonObject item;
+    item["player"] = (*it).myPlay ? "me" : "opponent";
+    item["card_id"] = (*it).cardId.c_str();
+    card_history.append(item);
+  }
+  result["card_history"] = card_history;
 
   QtJson::JsonObject params;
   params["result"] = result;

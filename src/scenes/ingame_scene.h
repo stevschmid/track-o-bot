@@ -1,3 +1,5 @@
+#include "../card_history.h"
+
 class IngameScene : public Scene
 {
 private:
@@ -5,6 +7,8 @@ private:
   GoingOrder order;
   Class ownClass;
   Class opponentClass;
+
+  CardHistory cardHistory;
 
 public:
   IngameScene()
@@ -49,6 +53,8 @@ public:
     order = ORDER_UNKNOWN;
     ownClass = CLASS_UNKNOWN;
     opponentClass = CLASS_UNKNOWN;
+
+    cardHistory.Clear();
   }
 
   void Update() {
@@ -100,4 +106,9 @@ public:
   GoingOrder GetGoingOrder() const {
     return order;
   }
+
+  const CardHistoryList& GetCardHistoryList() const {
+    return cardHistory.List();
+  }
+
 };
