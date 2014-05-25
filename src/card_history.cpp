@@ -20,10 +20,12 @@ void CardHistory::HandleLogLine(const QString& line) {
       QString from = captures[2];
       QString to = captures[3];
 
-      if(from.contains("FRIENDLY HAND")) {
-        list.push_back(CardHistoryItem(true, cardId.toStdString()));
-      } else if(from.contains("OPPOSING HAND")) {
-        list.push_back(CardHistoryItem(false, cardId.toStdString()));
+      if(!to.contains("DECK") && !from.contains("DECK")) { // ignore mulligan stuff
+        if(from.contains("FRIENDLY HAND")) {
+          list.push_back(CardHistoryItem(true, cardId.toStdString()));
+        } else if(from.contains("OPPOSING HAND")) {
+          list.push_back(CardHistoryItem(false, cardId.toStdString()));
+        }
       }
 
       LOG("Card %s %s %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
