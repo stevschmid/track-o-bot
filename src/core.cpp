@@ -23,7 +23,7 @@ void Core::Tick() {
 
   if(wasGameRunning != gameRunning) {
     if(gameRunning) {
-      LOG("Hearthstone is running");
+      LOG("Hearthstone started");
     } else {
       LOG("Hearthstone was closed");
     }
