@@ -67,12 +67,11 @@ void Hearthstone::EnableLogging() {
   string path = LogConfigPath();
   QFile file(path.c_str());
   if(!file.exists()) {
-    LOG("Enable logging by creating file %s", path.c_str());
+    LOG("Enable Hearthstone logging by creating file %s", path.c_str());
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
       LOG("Couldn't create file");
     } else {
       QTextStream out(&file);
-      // ToDo: Check out which of those variables is truly necessary
       out << "[Zone]\n";
       out << "LogLevel=1\n";
       out << "FilePrinting=false\n";
