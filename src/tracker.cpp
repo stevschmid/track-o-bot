@@ -35,9 +35,6 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   }
 #endif
 
-  LOG("Upload %s %s vs %s as %s. Went %s",
-      MODE_NAMES[mode], OUTCOME_NAMES[outcome], CLASS_NAMES[opponentClass], CLASS_NAMES[ownClass], ORDER_NAMES[order]);
-
 #ifdef _DEBUG
   string cardHistoryOutput;
   for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
@@ -71,6 +68,9 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     LOG("Class of Opponent unknown. Skip result");
     return;
   }
+
+  LOG("Upload %s %s vs %s as %s. Went %s",
+      MODE_NAMES[mode], OUTCOME_NAMES[outcome], CLASS_NAMES[opponentClass], CLASS_NAMES[ownClass], ORDER_NAMES[order]);
 
   QtJson::JsonObject result;
   result["coin"]     = (order == ORDER_FIRST);
