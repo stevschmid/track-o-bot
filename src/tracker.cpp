@@ -112,7 +112,7 @@ QNetworkReply* Tracker::AuthPostJson(const QString& path, const QByteArray& data
 void Tracker::AddResultHandleReply() {
   QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
   if(reply->error() == QNetworkReply::NoError) {
-    LOG("Result was uploaded succesfully!");
+    LOG("Result was uploaded successfully!");
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     LOG("There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode);
