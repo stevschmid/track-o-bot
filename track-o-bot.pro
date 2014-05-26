@@ -36,9 +36,7 @@ DEFINES += VERSION=\\\"$$VERSION\\\"
 RESOURCES += app.qrc
 RESOURCES += markers.qrc
 
-debug {
-  DEFINES += _DEBUG
-}
+CONFIG(debug, debug|release): DEFINES += _DEBUG
 
 mac {
   HEADERS += src/osx_window_capture.h
