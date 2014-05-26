@@ -74,9 +74,7 @@ void Hearthstone::EnableLogging() {
       QTextStream out(&file);
       out << "[Zone]\n";
       out << "LogLevel=1\n";
-      out << "FilePrinting=false\n";
       out << "ConsolePrinting=true\n";
-      out << "ScreenPrinting=false\n";
       file.close();
 
       LOG("Ingame Log activated.");
