@@ -28,7 +28,9 @@ void CardHistory::HandleLogLine(const QString& line) {
         }
       }
 
-      LOG("Card %s %s %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
+#ifdef _DEBUG
+      LOG("Card %s from %s -> %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
+#endif
     }
   }
 }

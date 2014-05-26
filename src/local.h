@@ -108,9 +108,3 @@ const char CLASS_NAMES[][128] = {
 #include "logger.h"
 #define LOG(str, ...) Logger::Instance()->Add(str, ##__VA_ARGS__)
 
-#ifndef _DEBUG
-  #ifdef QT_DEBUG
-    #define _DEBUG
-  #endif
-#endif
-

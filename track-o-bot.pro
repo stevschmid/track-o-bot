@@ -36,6 +36,10 @@ DEFINES += VERSION=\\\"$$VERSION\\\"
 RESOURCES += app.qrc
 RESOURCES += markers.qrc
 
+debug {
+  DEFINES += _DEBUG
+}
+
 mac {
   HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp

@@ -13,7 +13,6 @@ LogWatcher::LogWatcher(const QString& logPath)
 
   QFile file(logPath);
   lastSeekPos = file.size();
-  LOG("File size %d", lastSeekPos);
 }
 
 void LogWatcher::LogChanged(const QString& changedFilePath) {

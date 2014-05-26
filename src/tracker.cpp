@@ -35,15 +35,17 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   }
 #endif
 
-  LOG("Upload Result\n Mode: %s\n Outcome: %s\n Order: %s\n Class: %s\n Opponent: %s",
-      MODE_NAMES[mode], OUTCOME_NAMES[outcome], ORDER_NAMES[order], CLASS_NAMES[ownClass], CLASS_NAMES[opponentClass]);
+  LOG("Upload %s %s vs %s as %s. Went %s",
+      MODE_NAMES[mode], OUTCOME_NAMES[outcome], CLASS_NAMES[opponentClass], CLASS_NAMES[ownClass], ORDER_NAMES[order]);
 
+#ifdef _DEBUG
   string cardHistoryOutput;
   for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
     cardHistoryOutput += (*it).myPlay ? "SELF " : "OPPONENT ";
     cardHistoryOutput += (*it).cardId + "\n";
   }
   LOG("Card History: %s", cardHistoryOutput.c_str());
+#endif
 
   if(mode == MODE_UNKNOWN) {
     LOG("Mode unknown. Skip result");
