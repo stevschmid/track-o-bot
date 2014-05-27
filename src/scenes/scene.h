@@ -29,6 +29,9 @@ private:
   };
 
   map<string, Marker> markers;
+#ifdef _DEBUG
+  map<string, bool> debugMarkerFound;
+#endif
   string name;
 
 public:
@@ -48,6 +51,14 @@ public:
     const QPixmap& capture = Hearthstone::Instance()->Capture(marker.x, marker.y, marker.w, marker.h);
     dhash currentHash = dhash_for_pixmap(capture);
     bool similar = dhash_check_similarity(currentHash, marker.hash);
+#ifdef _DEBUG
+    if(debugMarkerFound[name] != similar) {
+      LOG("Marker %s in Scene %s %s", name.c_str(),
+          GetName().c_str(),
+          similar ? "found" : "disappeared");
+      debugMarkerFound[name] = similar;
+    }
+#endif
     return similar;
   }
 
