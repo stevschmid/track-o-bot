@@ -9,8 +9,6 @@
 
 #define ADD_GENERATED_MARKER(NAME, DEF) AddMarker(NAME, DEF##_PATH, DEF##_X, DEF##_Y, DEF##_WIDTH, DEF##_HEIGHT)
 
-#define DEFAULT_CONFIDENCE_LEVEL_IN_FRAMES 3
-
 class Scene
 {
 private:
