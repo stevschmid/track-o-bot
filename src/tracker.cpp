@@ -69,7 +69,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     return;
   }
 
-  LOG("Upload %s %s vs %s as %s. Went %s",
+  LOG("Upload %s %s vs. %s as %s. Went %s",
       MODE_NAMES[mode], OUTCOME_NAMES[outcome], CLASS_NAMES[opponentClass], CLASS_NAMES[ownClass], ORDER_NAMES[order]);
 
   QtJson::JsonObject result;
