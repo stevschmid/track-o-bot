@@ -72,11 +72,9 @@ public:
     }
     if(outcome == OUTCOME_UNKNOWN) {
       if(FindMarker("victory1") || FindMarker("victory2") || FindMarker("victory3")) {
-        LOG("Outcome Victory %i %i %i", FindMarker("victory1"), FindMarker("victory2"), FindMarker("victory3"));
         outcome = OUTCOME_VICTORY;
       }
       if(FindMarker("defeat1") || FindMarker("defeat2") || FindMarker("defeat3")) {
-        LOG("Outcome Defeat %i %i %i", FindMarker("defeat1"), FindMarker("defeat2"), FindMarker("defeat3"));
         outcome = OUTCOME_DEFEAT;
       }
     }
