@@ -96,7 +96,7 @@ void Hearthstone::DisableLogging() {
 string Hearthstone::LogConfigPath() {
 #ifdef Q_WS_MAC
   QString homeLocation = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-  QString configPath = homeLocation + "/Library/Preferences/BLizzard/Hearthstone/log.config";
+  QString configPath = homeLocation + "/Library/Preferences/Blizzard/Hearthstone/log.config";
 #elif defined Q_WS_WIN
   QString localAppData(getenv("LOCALAPPDATA"));
   QString configPath = localAppData + "\\Blizzard\\Hearthstone\\log.config";
