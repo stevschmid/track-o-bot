@@ -7,10 +7,12 @@ SettingsTab::SettingsTab(QWidget *parent)
 
   QLabel *usernameLabel = new QLabel(tr("Username:"));
   username = new QLineEdit;
+  username->setReadOnly(true);
   usernameLabel->setBuddy(username);
 
   QLabel *passwordLabel = new QLabel(tr("Password:"));
   password = new QLineEdit;
+  password->setReadOnly(true);
   passwordLabel->setBuddy(password);
 
   QLabel *webserviceUrlLabel = new QLabel(tr("Webservice URL:"));
