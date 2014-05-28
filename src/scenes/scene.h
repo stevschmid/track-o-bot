@@ -5,7 +5,6 @@
 #include "../generated_markers.h"
 
 #include <QPixmap>
-#include <QDateTime>
 
 #define ADD_GENERATED_MARKER(NAME, DEF) AddMarker(NAME, DEF##_PATH, DEF##_X, DEF##_Y, DEF##_WIDTH, DEF##_HEIGHT)
 
