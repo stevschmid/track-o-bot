@@ -7,4 +7,4 @@ build/
 Makefile
 Makefile.*
 *.swp
-dist/
+dist/*.dmg
