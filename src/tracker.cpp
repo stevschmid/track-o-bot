@@ -90,6 +90,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 
   QtJson::JsonObject params;
   params["result"] = result;
+  params["_version"] = VERSION;
 
   QByteArray data = QtJson::serialize(params);
 
