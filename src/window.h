@@ -14,6 +14,7 @@ class QTextEdit;
 class QTabWidget;
 class QLineEdit;
 class QCheckBox;
+class QLabel;
 QT_END_NAMESPACE
 
 #include "logger.h"
@@ -23,14 +24,12 @@ class SettingsTab : public QWidget
   Q_OBJECT
 
 private:
-  QLineEdit *username;
-  QLineEdit *password;
-  QLineEdit *webserviceUrl;
   QCheckBox *startAtLogin;
+  QLabel *account;
 
 private slots:
-  void reveal();
-  void conceal();
+  void exportAccount();
+  void importAccount();
 
   void ok();
   void cancel();

@@ -4,92 +4,117 @@
 SettingsTab::SettingsTab(QWidget *parent)
   : QWidget(parent)
 {
-
-  QLabel *usernameLabel = new QLabel(tr("Username:"));
-  username = new QLineEdit;
-  username->setReadOnly(true);
-  usernameLabel->setBuddy(username);
-
-  QLabel *passwordLabel = new QLabel(tr("Password:"));
-  password = new QLineEdit;
-  password->setReadOnly(true);
-  passwordLabel->setBuddy(password);
-
-  QLabel *webserviceUrlLabel = new QLabel(tr("Webservice URL:"));
-  webserviceUrl = new QLineEdit;
-  webserviceUrlLabel->setBuddy(webserviceUrl);
+  QLabel *accountLabel = new QLabel(tr("Account:"));
+  account = new QLabel;
 
   QGridLayout *layout = new QGridLayout;
   setLayout(layout);
-  layout->setVerticalSpacing(15);
 
-  layout->addWidget(webserviceUrlLabel, 0, 0);
-  layout->addWidget(webserviceUrl, 0, 1);
+  QPushButton *exportAccountButton = new QPushButton(tr("Export..."));
+  exportAccountButton->setFixedWidth(100);
+  connect(exportAccountButton, SIGNAL(clicked()), this, SLOT(exportAccount()));
 
-  layout->addWidget(usernameLabel, 1, 0);
-  layout->addWidget(username, 1, 1);
+  QPushButton *importAccountButton = new QPushButton(tr("Import..."));
+  importAccountButton->setFixedWidth(100);
+  connect(importAccountButton, SIGNAL(clicked()), this, SLOT(importAccount()));
 
-  layout->addWidget(passwordLabel, 2, 0);
-
-#ifndef _DEBUG
-  webserviceUrlLabel->hide();
-  webserviceUrl->hide();
-#endif
-
-  QHBoxLayout *row = new QHBoxLayout;
-  QPushButton *revealButton = new QPushButton(tr("Reveal"));
-  connect(revealButton, SIGNAL(clicked()), this, SLOT(reveal()));
-
-  row->addWidget(password);
-  row->addWidget(revealButton);
-  layout->addLayout(row, 2, 1);
+  QLabel *exportDescription = new QLabel(tr("Use export to back up your account or to import it on another device."));
+  exportDescription->setWordWrap(true);
+  exportDescription->setStyleSheet("QLabel { font-size: 11px; color: #898989 }");
 
   QFrame *line = new QFrame;
   line->setObjectName(QString::fromUtf8("line"));
   line->setFrameShape(QFrame::HLine);
   line->setFrameShadow(QFrame::Sunken);
-  layout->addWidget(line, 3, 0, 1, 3);
 
   QLabel *systemLabel = new QLabel(tr("System:"));
-  layout->addWidget(systemLabel, 5, 0);
-
   startAtLogin = new QCheckBox(tr("Start at Login"));
-  layout->addWidget(startAtLogin, 5, 1);
 
   QSpacerItem *spacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  layout->addItem(spacer, 6, 0);
 
   QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
-  layout->addWidget(buttonBox, 7, 0, 1, 3);
+
+  layout->addWidget(accountLabel, 0, 0);
+  layout->addWidget(account, 0, 1);
+
+  layout->addWidget(exportDescription, 1, 1, 1, 2);
+
+  layout->addWidget(exportAccountButton, 2, 1);
+  layout->addWidget(importAccountButton, 2, 2);
+
+  layout->addWidget(line, 3, 0, 1, 3);
+
+  layout->addWidget(systemLabel, 4, 0);
+  layout->addWidget(startAtLogin, 4, 1);
+
+  layout->addItem(spacer, 5, 0);
+
+  layout->addWidget(buttonBox, 6, 0, 1, 3);
 }
 
-void SettingsTab::reveal() {
-  password->setEchoMode(QLineEdit::Normal);
+void SettingsTab::exportAccount() {
+  QString fileName = QFileDialog::getSaveFileName(this,
+      tr("Export Track-o-Bot Account Data"), "",
+      tr("Account Data (*.track-o-bot);;"));
+
+  if(fileName.isEmpty()) {
+    return;
+  } else {
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+      QMessageBox::information(this, tr("Unable to open file"),
+          file.errorString());
+      return;
+    }
+
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+    out << Tracker::Instance()->Username();
+    out << Tracker::Instance()->Password();
+    out << Tracker::Instance()->WebserviceURL();
+  }
 }
 
-void SettingsTab::conceal() {
-  password->setEchoMode(QLineEdit::Password);
+void SettingsTab::importAccount() {
+  QString fileName = QFileDialog::getOpenFileName(this,
+      tr("Import Track-o-Bot Account Data"), "",
+      tr("Account Data (*.track-o-bot);;"));
+
+  if(fileName.isEmpty()) {
+    return;
+  } else {
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly)) {
+      QMessageBox::information(this, tr("Unable to open file"),
+          file.errorString());
+      return;
+    }
+
+    QDataStream in(&file);
+    QString username, password, webserviceUrl;
+    in.setVersion(QDataStream::Qt_4_8);
+    in >> username;
+    in >> password;
+    in >> webserviceUrl;
+
+    Tracker::Instance()->SetUsername(username);
+    Tracker::Instance()->SetPassword(password);
+    Tracker::Instance()->SetWebserviceURL(webserviceUrl);
+  }
 }
 
 void SettingsTab::updateSettings() {
   Autostart autostart;
 
-  username->setText(Tracker::Instance()->Username());
-  password->setText(Tracker::Instance()->Password());
-  webserviceUrl->setText(Tracker::Instance()->WebserviceURL());
-  conceal();
-
+  account->setText(Tracker::Instance()->Username());
   startAtLogin->setChecked(autostart.IsActive());
 }
 
 void SettingsTab::applySettings() {
   Autostart autostart;
 
-  Tracker::Instance()->SetUsername(username->text());
-  Tracker::Instance()->SetPassword(password->text());
-  Tracker::Instance()->SetWebserviceURL(webserviceUrl->text());
   autostart.SetActive(startAtLogin->isChecked());
 }
 
