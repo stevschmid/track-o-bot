@@ -2,7 +2,7 @@
 
 #include <QPixmap>
 
-// Implementation of Dhash as outlined here:
+// Implementation of Phash as outlined here:
 // http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 
 #define PHASH_HAMMING_DISTANCE_SIMILAR_THRESHOLD 10 // bits
