@@ -8,6 +8,7 @@ DESTDIR = build
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
 RCC_DIR = tmp
+UI_DIR = tmp
 
 PRECOMPILED_HEADER = src/local.h
 HEADERS = src/local.h \
@@ -30,6 +31,11 @@ SOURCES = src/main.cpp \
           src/autostart.cpp \
           src/log_watcher.cpp \
           src/card_history.cpp
+
+FORMS   = src/window.ui \
+          src/settings_widget.ui \
+          src/log_widget.ui \
+          src/about_widget.ui
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

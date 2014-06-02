@@ -8,3 +8,4 @@ Makefile
 Makefile.*
 *.swp
 dist/*.dmg
+*.autosave
