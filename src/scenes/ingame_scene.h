@@ -17,8 +17,12 @@ public:
     ADD_GENERATED_MARKER("ingame", INGAME_ID);
     ADD_GENERATED_MARKER("going_first", INGAME_MULLIGAN_1ST_ID);
     ADD_GENERATED_MARKER("going_second", INGAME_MULLIGAN_2ND_ID);
+
     ADD_GENERATED_MARKER("victory", INGAME_VICTORY_ID);
     ADD_GENERATED_MARKER("defeat", INGAME_DEFEAT_ID);
+
+    ADD_GENERATED_MARKER("victory_fallback", INGAME_VICTORY_FALLBACK_ID);
+    ADD_GENERATED_MARKER("defeat_fallback", INGAME_DEFEAT_FALLBACK_ID);
 
     ADD_GENERATED_MARKER("own_class_priest", INGAME_PRIEST_ME);
     ADD_GENERATED_MARKER("opponent_class_priest", INGAME_PRIEST_OPPONENT);
@@ -67,10 +71,10 @@ public:
       }
     }
     if(outcome == OUTCOME_UNKNOWN) {
-      if(FindMarker("victory")) {
+      if(FindMarker("victory") || FindMarker("victory_fallback")) {
         outcome = OUTCOME_VICTORY;
       }
-      if(FindMarker("defeat")) {
+      if(FindMarker("defeat") || FindMarker("defeat_fallback")) {
         outcome = OUTCOME_DEFEAT;
       }
     }
