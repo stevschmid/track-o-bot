@@ -45,7 +45,7 @@ QLabel#startDescription {
         </font>
        </property>
        <property name="text">
-        <string>Account</string>
+        <string>None</string>
        </property>
       </widget>
      </item>

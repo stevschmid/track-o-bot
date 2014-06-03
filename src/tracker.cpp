@@ -141,9 +141,10 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     } else {
       LOG("Welcome %s", user["username"].toString().toStdString().c_str());
 
-      QSettings settings;
-      settings.setValue("username", user["username"].toString());
-      settings.setValue("password", user["password"].toString());
+      SetUsername(user["username"].toString());
+      SetPassword(user["password"].toString());
+
+      emit AccountCreated();
     }
   } else {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

@@ -15,7 +15,6 @@ private:
   QNetworkAccessManager networkManager;
   QSettings settings;
 
-  bool IsAccountSetUp();
   QNetworkReply* AuthPostJson(const QString& path, const QByteArray& data);
 
 private slots:
@@ -23,7 +22,12 @@ private slots:
   void CreateAndStoreAccountHandleReply();
   void OpenProfileHandleReply();
 
+signals:
+  void AccountCreated();
+
 public:
+  bool IsAccountSetUp();
+
   void AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList);
   void CreateAndStoreAccount();
   void OpenProfile();

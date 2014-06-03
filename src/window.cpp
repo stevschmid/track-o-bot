@@ -13,6 +13,7 @@ SettingsTab::SettingsTab(QWidget *parent)
   connect(ui->exportAccountButton, SIGNAL(clicked()), this, SLOT(exportAccount()));
   connect(ui->importAccountButton, SIGNAL(clicked()), this, SLOT(importAccount()));
   connect(ui->startAtLogin, SIGNAL(stateChanged(int)), this, SLOT(applySettings()));
+  connect(Tracker::Instance(), SIGNAL(AccountCreated()), this, SLOT(loadSettings()));
   loadSettings();
 }
 
@@ -84,7 +85,13 @@ void SettingsTab::loadSettings() {
   Autostart autostart;
   ui->startAtLogin->setChecked(autostart.IsActive());
 
-  ui->account->setText(Tracker::Instance()->Username());
+  bool accountSetUp = Tracker::Instance()->IsAccountSetUp();
+  if(accountSetUp) {
+    ui->account->setText(Tracker::Instance()->Username());
+  }
+
+  ui->importAccountButton->setEnabled(accountSetUp);
+  ui->exportAccountButton->setEnabled(accountSetUp);
 }
 
 LogTab::LogTab(QWidget *parent)
