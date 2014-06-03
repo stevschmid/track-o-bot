@@ -1,11 +1,22 @@
 #include "phash.h"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <xmmintrin.h>
 
+#if defined(_MSC_VER)
+#define ALIGN(x,t) __declspec(align(x)) t
+#else
+#if defined(__GNUC__)
+#define ALIGN(x,t) t __attribute__ ((aligned(x)))
+#endif
+#endif
+
 phash phash_for_pixmap(const QPixmap& pixmap) {
-  static float cos_table[8][8][32][32];
   static bool cos_table_initialized = false;
+
+  ALIGN(16, static float cos_table[8][8][32][32]);
+  ALIGN(16, float intensity[32][32]);
 
   if(!cos_table_initialized) {
     cos_table_initialized = true;
@@ -28,7 +39,6 @@ phash phash_for_pixmap(const QPixmap& pixmap) {
 
   float dct[64];
   int counter = 0;
-  float intensity[32][32];
 
   // Convert to grayscale
   const __m128 luminance = _mm_set_ps(.0f, 0.2126f, 0.7152f, 0.0722f);

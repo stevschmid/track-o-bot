@@ -66,5 +66,8 @@ mac {
 win32 {
   SOURCES += src/win_window_capture.cpp
 
-  LIBS += user32.lib Gdi32.lib
+  DEFINES += _CRT_SECURE_NO_WARNINGS
+  INCLUDEPATH += .
+
+  LIBS += user32.lib Gdi32.lib shell32.lib
 }

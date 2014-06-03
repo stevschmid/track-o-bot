@@ -23,21 +23,6 @@ Updater *updater = NULL;
 
 int main(int argc, char **argv)
 {
-  const char serverName[] = "trackobot";
-
-  // Enforce single instance
-  QLocalSocket socket;
-  socket.connectToServer(serverName);
-  if(socket.waitForConnected(500)) {
-    return 1; // already running
-  }
-
-  QLocalServer::removeServer(serverName);
-  QLocalServer server(NULL);
-  if(!server.listen(serverName)) {
-    return 2;
-  }
-
   // Basic setup
   QApplication app(argc, argv);
 #ifdef Q_WS_MAC
@@ -50,6 +35,21 @@ int main(int argc, char **argv)
   app.setOrganizationDomain("spidy.ch");
   app.setWindowIcon(icon);
 
+  // Enforce single instance
+  const char serverName[] = "trackobot";
+
+  QLocalSocket socket;
+  socket.connectToServer(serverName);
+  if(socket.waitForConnected(500)) {
+    return 1; // already running
+  }
+
+  QLocalServer::removeServer(serverName);
+  QLocalServer server(NULL);
+  if(!server.listen(serverName)) {
+    return 2;
+  }
+
   // Logging
   QString dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
   if(!QFile::exists(dataLocation)) {
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   string logFilePath = (dataLocation + QDir::separator() + app.applicationName() + ".log").toStdString();
   Logger::Instance()->SetLogPath(logFilePath);
 
-  // Start
+  /* // Start */
   LOG("--> Launched v%s on %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
 #ifdef Q_WS_MAC
@@ -67,16 +67,16 @@ int main(int argc, char **argv)
   updater = new SparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast.xml"));
 #endif
 
-  // Initalize Windows n stuff
+  /* // Initalize Windows n stuff */
   Window window;
 
-  // Make sure Account exists or create one
+  /* // Make sure Account exists or create one */
   Tracker::Instance()->EnsureAccountIsSetUp();
 
-  // Enable HS Logging
+  /* // Enable HS Logging */
   Hearthstone::Instance()->EnableLogging();
 
-  // Main Loop
+  /* // Main Loop */
   int exitCode = app.exec();
 
   // Tear down
