@@ -20,7 +20,13 @@ void CardHistory::HandleLogLine(const QString& line) {
       QString from = captures[2];
       QString to = captures[3];
 
-      if(!to.contains("DECK") && !from.contains("DECK")) { // ignore mulligan stuff
+      bool draw = from.contains("DECK") && to.contains("HAND");
+      bool mulligan = from.contains("HAND") && to.contains("DECK");
+
+      // Discarded cards by playing Soulfire, Doomguard etc.
+      bool discard = from.contains("HAND") && to.contains("GRAVEYARD");
+
+      if(!draw && !mulligan && !discard) {
         if(from.contains("FRIENDLY HAND")) {
           list.push_back(CardHistoryItem(true, cardId.toStdString()));
         } else if(from.contains("OPPOSING HAND")) {
@@ -37,7 +43,7 @@ void CardHistory::HandleLogLine(const QString& line) {
       }
 
 #ifdef _DEBUG
-      LOG("Card %s from %s -> %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
+      LOG("Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d)", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard);
 #endif
     }
   }
