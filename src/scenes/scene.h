@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../dhash.h"
+#include "../phash.h"
 #include "../hearthstone.h"
 #include "../generated_markers.h"
 
@@ -14,7 +14,7 @@ private:
   class Marker {
   public:
     string name;
-    dhash hash;
+    phash hash;
     int x, y, w, h; // virtual canvas attributes!
 
     Marker():name(""), x(0), y(0), w(0), h(0) {
@@ -23,7 +23,7 @@ private:
     Marker(const string& name, const string& templateImagePath, int x, int y, int w, int h)
       :name(name), x(x), y(y), w(w), h(h)
     {
-      hash = dhash_for_pixmap(QPixmap(templateImagePath.c_str()));
+      hash = phash_for_pixmap(QPixmap(templateImagePath.c_str()));
     }
   };
 
@@ -48,8 +48,8 @@ public:
   bool FindMarker(const string& name) {
     const Marker& marker = markers[name];
     const QPixmap& capture = Hearthstone::Instance()->Capture(marker.x, marker.y, marker.w, marker.h);
-    dhash currentHash = dhash_for_pixmap(capture);
-    bool similar = dhash_check_similarity(currentHash, marker.hash);
+    phash currentHash = phash_for_pixmap(capture);
+    bool similar = phash_check_similarity(currentHash, marker.hash);
 #ifdef _DEBUG
     if(debugMarkerFound[name] != similar) {
       LOG("Marker %s in Scene %s %s", name.c_str(),

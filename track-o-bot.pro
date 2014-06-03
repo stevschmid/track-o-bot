@@ -22,6 +22,7 @@ HEADERS = src/local.h \
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
           src/dhash.cpp \
+          src/phash.cpp \
           src/scene_manager.cpp \
           src/tracker.cpp \
           src/window.cpp \
