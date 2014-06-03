@@ -1,197 +1,146 @@
 #include <QtGui>
 #include "window.h"
 
+#include "ui_window.h"
+#include "ui_settings_widget.h"
+#include "ui_log_widget.h"
+#include "ui_about_widget.h"
+
 SettingsTab::SettingsTab(QWidget *parent)
-  : QWidget(parent)
+  : QWidget(parent), ui(new Ui::SettingsWidget)
 {
-
-  QLabel *usernameLabel = new QLabel(tr("Username:"));
-  username = new QLineEdit;
-  username->setReadOnly(true);
-  usernameLabel->setBuddy(username);
-
-  QLabel *passwordLabel = new QLabel(tr("Password:"));
-  password = new QLineEdit;
-  password->setReadOnly(true);
-  passwordLabel->setBuddy(password);
-
-  QLabel *webserviceUrlLabel = new QLabel(tr("Webservice URL:"));
-  webserviceUrl = new QLineEdit;
-  webserviceUrlLabel->setBuddy(webserviceUrl);
-
-  QGridLayout *layout = new QGridLayout;
-  setLayout(layout);
-  layout->setVerticalSpacing(15);
-
-  layout->addWidget(webserviceUrlLabel, 0, 0);
-  layout->addWidget(webserviceUrl, 0, 1);
-
-  layout->addWidget(usernameLabel, 1, 0);
-  layout->addWidget(username, 1, 1);
-
-  layout->addWidget(passwordLabel, 2, 0);
-
-#ifndef _DEBUG
-  webserviceUrlLabel->hide();
-  webserviceUrl->hide();
-#endif
-
-  QHBoxLayout *row = new QHBoxLayout;
-  QPushButton *revealButton = new QPushButton(tr("Reveal"));
-  connect(revealButton, SIGNAL(clicked()), this, SLOT(reveal()));
-
-  row->addWidget(password);
-  row->addWidget(revealButton);
-  layout->addLayout(row, 2, 1);
-
-  QFrame *line = new QFrame;
-  line->setObjectName(QString::fromUtf8("line"));
-  line->setFrameShape(QFrame::HLine);
-  line->setFrameShadow(QFrame::Sunken);
-  layout->addWidget(line, 3, 0, 1, 3);
-
-  QLabel *systemLabel = new QLabel(tr("System:"));
-  layout->addWidget(systemLabel, 5, 0);
-
-  startAtLogin = new QCheckBox(tr("Start at Login"));
-  layout->addWidget(startAtLogin, 5, 1);
-
-  QSpacerItem *spacer = new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  layout->addItem(spacer, 6, 0);
-
-  QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-  connect(buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-  connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancel()));
-  layout->addWidget(buttonBox, 7, 0, 1, 3);
+  ui->setupUi(this);
+  connect(ui->exportAccountButton, SIGNAL(clicked()), this, SLOT(exportAccount()));
+  connect(ui->importAccountButton, SIGNAL(clicked()), this, SLOT(importAccount()));
+  connect(ui->startAtLogin, SIGNAL(stateChanged(int)), this, SLOT(applySettings()));
+  loadSettings();
 }
 
-void SettingsTab::reveal() {
-  password->setEchoMode(QLineEdit::Normal);
+SettingsTab::~SettingsTab() {
+  delete ui;
 }
 
-void SettingsTab::conceal() {
-  password->setEchoMode(QLineEdit::Password);
+void SettingsTab::exportAccount() {
+  QString fileName = QFileDialog::getSaveFileName(this,
+      tr("Export Track-o-Bot Account Data"), "",
+      tr("Account Data (*.track-o-bot);; All Files (*)"));
+
+  if(fileName.isEmpty()) {
+    return;
+  } else {
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+      QMessageBox::information(this, tr("Unable to open file"),
+          file.errorString());
+      return;
+    }
+
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+    out << Tracker::Instance()->Username();
+    out << Tracker::Instance()->Password();
+    out << Tracker::Instance()->WebserviceURL();
+
+    LOG("Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str());
+  }
 }
 
-void SettingsTab::updateSettings() {
-  Autostart autostart;
+void SettingsTab::importAccount() {
+  QString fileName = QFileDialog::getOpenFileName(this,
+      tr("Import Track-o-Bot Account Data"), "",
+      tr("Account Data (*.track-o-bot);; All Files (*)"));
 
-  username->setText(Tracker::Instance()->Username());
-  password->setText(Tracker::Instance()->Password());
-  webserviceUrl->setText(Tracker::Instance()->WebserviceURL());
-  conceal();
+  if(fileName.isEmpty()) {
+    return;
+  } else {
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly)) {
+      QMessageBox::information(this, tr("Unable to open file"),
+          file.errorString());
+      return;
+    }
 
-  startAtLogin->setChecked(autostart.IsActive());
+    QDataStream in(&file);
+    QString username, password, webserviceUrl;
+    in.setVersion(QDataStream::Qt_4_8);
+    in >> username;
+    in >> password;
+    in >> webserviceUrl;
+
+    Tracker::Instance()->SetUsername(username);
+    Tracker::Instance()->SetPassword(password);
+    Tracker::Instance()->SetWebserviceURL(webserviceUrl);
+
+    LOG("Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str());
+  }
 }
 
 void SettingsTab::applySettings() {
   Autostart autostart;
-
-  Tracker::Instance()->SetUsername(username->text());
-  Tracker::Instance()->SetPassword(password->text());
-  Tracker::Instance()->SetWebserviceURL(webserviceUrl->text());
-  autostart.SetActive(startAtLogin->isChecked());
+  autostart.SetActive(ui->startAtLogin->isChecked());
 }
 
-void SettingsTab::ok() {
-  applySettings();
-  window()->hide();
-}
+void SettingsTab::loadSettings() {
+  Autostart autostart;
+  ui->startAtLogin->setChecked(autostart.IsActive());
 
-void SettingsTab::cancel() {
-  window()->hide();
+  ui->account->setText(Tracker::Instance()->Username());
 }
-
 
 LogTab::LogTab(QWidget *parent)
-  : QWidget(parent)
+  : QWidget(parent), ui(new Ui::LogWidget)
 {
-  QVBoxLayout *layout = new QVBoxLayout;
+  ui->setupUi(this);
 
-  logText = new QTextEdit;
   QFont font("Monospace");
   font.setStyleHint(QFont::TypeWriter);
-  logText->setFont(font);
-  logText->setReadOnly(true);
-  layout->addWidget(logText);
-
-  setLayout(layout);
+  ui->logText->setFont(font);
 
   connect(Logger::Instance(), SIGNAL(NewMessage(const string&)), this, SLOT(addLogEntry(const string&)));
 }
 
+LogTab::~LogTab() {
+  delete ui;
+}
+
 void LogTab::addLogEntry(const string& msg) {
-  logText->moveCursor(QTextCursor::End);
-  logText->insertPlainText(msg.c_str());
-  logText->moveCursor(QTextCursor::End);
+  ui->logText->moveCursor(QTextCursor::End);
+  ui->logText->insertPlainText(msg.c_str());
+  ui->logText->moveCursor(QTextCursor::End);
 }
 
 AboutTab::AboutTab(QWidget *parent)
-  : QWidget(parent)
+  : QWidget(parent), ui(new Ui::AboutWidget)
 {
-  QVBoxLayout *layout = new QVBoxLayout;
-
-  QSpacerItem *topSpacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  QSpacerItem *bottomSpacer = new QSpacerItem(40, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-  QLabel *name = new QLabel(qApp->applicationName());
-  name->setStyleSheet("QLabel { font-size: 20px; }");
-  name->setAlignment(Qt::AlignHCenter);
-
-  QLabel *slogan = new QLabel("The friendly Hearthstone Tracker");
-  slogan->setStyleSheet("QLabel { font-style: italic; }");
-  slogan->setAlignment(Qt::AlignHCenter);
-
-  QLabel *version = new QLabel(VERSION);
-  version->setAlignment(Qt::AlignHCenter);
+  ui->setupUi(this);
 
   QPixmap logoImage(":/icons/logo.png");
-  QLabel *logo = new QLabel();
-  logo->setAlignment(Qt::AlignHCenter);
-  logo->setPixmap(logoImage.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  ui->logo->setPixmap(logoImage.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  ui->version->setText(VERSION);
+}
 
-  layout->addItem(topSpacer);
-  layout->addWidget(logo);
-  layout->addWidget(name);
-  layout->addWidget(slogan);
-  layout->addWidget(version);
-  layout->addItem(bottomSpacer);
-
-  setLayout(layout);
+AboutTab::~AboutTab() {
+  delete ui;
 }
 
 Window::Window()
+  :ui(new Ui::Window)
 {
+  ui->setupUi(this);
+
   setWindowTitle(qApp->applicationName());
 
   createActions();
   createTrayIcon();
-
-  tabWidget = new QTabWidget;
-  settingsTab = new SettingsTab;
-  logTab = new LogTab;
-  aboutTab = new AboutTab;
-
-  tabWidget->addTab(settingsTab, tr("Settings"));
-  tabWidget->addTab(logTab, tr("Log"));
-  tabWidget->addTab(aboutTab, tr("About"));
-
-  QVBoxLayout *mainLayout = new QVBoxLayout;
-  mainLayout->setSizeConstraint(QLayout::SetNoConstraint);
-  mainLayout->addWidget(tabWidget);
-
-  setLayout(mainLayout);
-
-  setMinimumSize(450, 250);
-  resize(minimumSize());
 }
 
 Window::~Window() {
+  delete ui;
 }
 
 void Window::showEvent(QShowEvent *event) {
   QDialog::showEvent(event);
-  settingsTab->updateSettings();
+  /* settingsTab->updateSettings(); */
 }
 
 void Window::closeEvent(QCloseEvent *event) {
