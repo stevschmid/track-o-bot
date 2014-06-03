@@ -1,7 +1,7 @@
 # Build Dependencies
 
 * Qt 4.8
-* (OSX) Sparkle
+* (OS X) Sparkle
 
 ## Mac OS X
 
