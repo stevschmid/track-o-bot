@@ -1,6 +1,6 @@
 #pragma once
 
-#include "log_watcher.h"
+#include "hearthstone_log_watcher.h"
 
 class CardHistoryItem {
 public:
@@ -19,7 +19,7 @@ class CardHistory : public QObject
   Q_OBJECT
 
 private:
-  LogWatcher ingameLogWatcher;
+  HearthstoneLogWatcher ingameLogWatcher;
 
   CardHistoryList list;
 

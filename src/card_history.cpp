@@ -1,9 +1,7 @@
 #include "card_history.h"
 #include "hearthstone.h"
 
-CardHistory::CardHistory()
-  :ingameLogWatcher(Hearthstone::Instance()->LogPath().c_str())
-{
+CardHistory::CardHistory() {
   connect(&ingameLogWatcher, SIGNAL(LineAdded(QString)), this, SLOT(HandleLogLine(QString)));
 }
 
