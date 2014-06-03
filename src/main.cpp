@@ -25,10 +25,10 @@ int main(int argc, char **argv)
 {
   // Basic setup
   QApplication app(argc, argv);
-#ifdef Q_WS_MAC
+#if defined Q_WS_MAC
   QIcon icon = QIcon(":/icons/tray_mac.png");
-#else
-  QIcon icon = QIcon(":/icons/tray_win.png");
+#elif defined Q_WS_WIN
+  QIcon icon = QIcon(":/icons/tray_win.ico");
 #endif
   app.setApplicationName("Track-o-Bot"); // for proper DataLocation handling
   app.setOrganizationName("spidy.ch");

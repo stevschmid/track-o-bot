@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>icons/tray_mac.png</file>
         <file>icons/tray_mac_selected.png</file>
-        <file>icons/tray_win.png</file>
+        <file>icons/tray_win.ico</file>
         <file>icons/logo.png</file>
     </qresource>
 </RCC>
