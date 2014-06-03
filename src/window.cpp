@@ -74,6 +74,8 @@ void SettingsTab::importAccount() {
       Tracker::Instance()->SetWebserviceURL(webserviceUrl);
 
       LOG("Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str());
+
+      loadSettings();
     } else {
       LOG("Import failed");
     }
