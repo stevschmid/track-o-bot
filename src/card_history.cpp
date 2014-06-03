@@ -28,6 +28,14 @@ void CardHistory::HandleLogLine(const QString& line) {
         }
       }
 
+      // Make sure we remove the "Choose One"-cards from the history
+      // if we decide to withdraw them after a second of thought
+      if(from.contains("FRIENDLY PLAY") && to.contains("FRIENDLY HAND")) {
+        if(!list.empty() && list.back().cardId == cardId.toStdString()) {
+          list.pop_back();
+        }
+      }
+
 #ifdef _DEBUG
       LOG("Card %s from %s -> %s", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str());
 #endif
