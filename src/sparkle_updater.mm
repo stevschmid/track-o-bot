@@ -27,8 +27,16 @@ SparkleUpdater::~SparkleUpdater()
   delete d;
 }
 
-void SparkleUpdater::checkForUpdates()
+void SparkleUpdater::setAutomaticallyChecksForUpdates(bool automaticallyChecks)
 {
-  [d->updater checkForUpdatesInBackground];
+  if(automaticallyChecks) {
+    [d->updater setAutomaticallyChecksForUpdates:YES];
+  } else {
+    [d->updater setAutomaticallyChecksForUpdates:NO];
+  }
 }
 
+bool SparkleUpdater::automaticallyChecksForUpdates()
+{
+  return [d->updater automaticallyChecksForUpdates] == YES;
+}

@@ -104,11 +104,6 @@ private:
   QSystemTrayIcon *trayIcon;
   QMenu *trayIconMenu;
 
-  QTabWidget *tabWidget;
-  SettingsTab *settingsTab;
-  LogTab *logTab;
-  AboutTab *aboutTab;
-
   Core core;
 };
 

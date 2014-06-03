@@ -19,6 +19,8 @@
 
 #include "hearthstone.h"
 
+Updater *updater = NULL;
+
 int main(int argc, char **argv)
 {
   const char serverName[] = "trackobot";
@@ -60,10 +62,8 @@ int main(int argc, char **argv)
   // Start
   LOG("--> Launched v%s on %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
-  Updater *updater = NULL;
-
 #ifdef Q_WS_MAC
-  CocoaInitializer cocoaInitiarizer;
+  CocoaInitializer cocoaInitializer;
   updater = new SparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast.xml"));
 #endif
 

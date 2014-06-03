@@ -6,13 +6,17 @@
 #include "ui_log_widget.h"
 #include "ui_about_widget.h"
 
+#include "updater.h"
+extern Updater *updater;
+
 SettingsTab::SettingsTab(QWidget *parent)
   : QWidget(parent), ui(new Ui::SettingsWidget)
 {
   ui->setupUi(this);
   connect(ui->exportAccountButton, SIGNAL(clicked()), this, SLOT(exportAccount()));
   connect(ui->importAccountButton, SIGNAL(clicked()), this, SLOT(importAccount()));
-  connect(ui->startAtLogin, SIGNAL(stateChanged(int)), this, SLOT(applySettings()));
+  connect(ui->startAtLogin, SIGNAL(clicked(bool)), this, SLOT(applySettings()));
+  connect(ui->checkForUpdates, SIGNAL(clicked(bool)), this, SLOT(applySettings()));
   connect(Tracker::Instance(), SIGNAL(AccountCreated()), this, SLOT(loadSettings()));
   loadSettings();
 }
@@ -85,11 +89,19 @@ void SettingsTab::importAccount() {
 void SettingsTab::applySettings() {
   Autostart autostart;
   autostart.SetActive(ui->startAtLogin->isChecked());
+
+  if(updater) {
+    updater->setAutomaticallyChecksForUpdates(ui->checkForUpdates->isChecked());
+  }
 }
 
 void SettingsTab::loadSettings() {
   Autostart autostart;
   ui->startAtLogin->setChecked(autostart.IsActive());
+
+  if(updater) {
+    ui->checkForUpdates->setChecked(updater->automaticallyChecksForUpdates());
+  }
 
   bool accountSetUp = Tracker::Instance()->IsAccountSetUp();
   if(accountSetUp) {
@@ -153,7 +165,7 @@ Window::~Window() {
 
 void Window::showEvent(QShowEvent *event) {
   QDialog::showEvent(event);
-  /* settingsTab->updateSettings(); */
+  ui->settingsTab->loadSettings();
 }
 
 void Window::closeEvent(QCloseEvent *event) {

@@ -15,7 +15,8 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QLabel#importExportDescription,
-QLabel#startDescription {
+QLabel#startDescription,
+QLabel#updateDescription {
 	font-size: 11px;
 	color: #898989;
 }</string>
@@ -27,7 +28,7 @@ QLabel#startDescription {
       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
      </property>
      <property name="verticalSpacing">
-      <number>4</number>
+      <number>0</number>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -49,7 +50,7 @@ QLabel#startDescription {
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="exportAccountButton">
@@ -73,17 +74,7 @@ QLabel#startDescription {
        </item>
       </layout>
      </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="importExportDescription">
-       <property name="text">
-        <string>Use export to back up your account or to import it on another device.</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -96,24 +87,61 @@ QLabel#startDescription {
        </property>
       </spacer>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>System</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QCheckBox" name="startAtLogin">
        <property name="text">
         <string>Start at login </string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLabel" name="startDescription">
        <property name="text">
         <string>Open Track-o-Bot when you log in.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QCheckBox" name="checkForUpdates">
+       <property name="text">
+        <string>Check for updates</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLabel" name="updateDescription">
+       <property name="text">
+        <string>Check for updates automatically.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="importExportDescription">
+       <property name="text">
+        <string>Use export to back up your account or to import it on another device.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
