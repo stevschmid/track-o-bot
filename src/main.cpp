@@ -12,9 +12,12 @@
 #include "tracker.h"
 
 #include "updater.h"
-#ifdef Q_WS_MAC
+
+#if defined Q_WS_MAC
 #include "cocoa_initializer.h"
 #include "sparkle_updater.h"
+#elif defined Q_WS_WIN
+#include "win_sparkle_updater.h"
 #endif
 
 #include "hearthstone.h"
@@ -62,9 +65,11 @@ int main(int argc, char **argv)
   /* // Start */
   LOG("--> Launched v%s on %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
 
-#ifdef Q_WS_MAC
+#if defined Q_WS_MAC
   CocoaInitializer cocoaInitializer;
   updater = new SparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast.xml"));
+#elif defined Q_WS_WIN
+  updater = new WinSparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast_win.xml"));
 #endif
 
   /* // Initalize Windows n stuff */

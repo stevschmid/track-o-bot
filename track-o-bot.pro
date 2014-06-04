@@ -64,10 +64,16 @@ mac {
 }
 
 win32 {
-  SOURCES += src/win_window_capture.cpp
+  INCLUDEPATH += . \
+                 ../WinSparkle/include
+
+  SOURCES += src/win_window_capture.cpp \
+             src/win_sparkle_updater.cpp
 
   DEFINES += _CRT_SECURE_NO_WARNINGS
-  INCLUDEPATH += .
 
   LIBS += user32.lib Gdi32.lib shell32.lib
+  LIBS += -L../WinSparkle/Release
+
+  RC_FILE = win.rc
 }
