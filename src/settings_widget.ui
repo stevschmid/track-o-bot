@@ -28,7 +28,7 @@ QLabel#updateDescription {
       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
      </property>
      <property name="verticalSpacing">
-      <number>0</number>
+      <number>4</number>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -82,7 +82,7 @@ QLabel#updateDescription {
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>20</height>
+         <height>15</height>
         </size>
        </property>
       </spacer>
@@ -130,7 +130,7 @@ QLabel#updateDescription {
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>20</height>
+         <height>15</height>
         </size>
        </property>
       </spacer>
