@@ -46,6 +46,8 @@ RESOURCES += markers.qrc
 CONFIG(debug, debug|release): DEFINES += _DEBUG
 
 mac {
+  DEFINES += PLATFORM=\\\"mac\\\"
+
   HEADERS += src/osx_window_capture.h
   SOURCES += src/osx_window_capture.cpp
 
@@ -64,6 +66,8 @@ mac {
 }
 
 win32 {
+  DEFINES += PLATFORM=\\\"win32\\\"
+
   INCLUDEPATH += . \
                  ../WinSparkle/include
 

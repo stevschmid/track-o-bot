@@ -88,9 +88,13 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   }
   result["card_history"] = card_history;
 
+  QtJson::JsonObject meta;
+  meta["version"] = VERSION;
+  meta["platform"] = PLATFORM;
+
   QtJson::JsonObject params;
   params["result"] = result;
-  params["_version"] = VERSION;
+  params["_meta"] = meta; // for debugging purposes
 
   QByteArray data = QtJson::serialize(params);
 
