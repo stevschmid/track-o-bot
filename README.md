@@ -2,16 +2,24 @@
 
 * Qt 4.8
 * (OS X) Sparkle
+* (Windows) WinSparkle
 
 ## Mac OS X
 
-Install Qt:
+* Install Qt
+  ```
+  brew install qt
+  ```
 
-```
-brew install qt
-```
+* Install [Sparkle](http://sparkle.andymatuschak.org/) 
+ * Move _Sparkle.framework_ to ``/Library/Frameworks``.
 
-Install [Sparkle](http://sparkle.andymatuschak.org/) by moving _Sparkle.framework_ to ``/Library/Frameworks``.
+## Windows
+
+* Install [Qt](http://qt-project.org/downloads) 
+ * I use the Qt libraries 4.8.6 for Windows VS 2010.
+* Install [WinSparkle](https://github.com/vslavik/winsparkle) 
+ * Clone the repository and build the library, for example with VS 2010. The precompiled releases are ancient.
 
 # Build Instructions
 
