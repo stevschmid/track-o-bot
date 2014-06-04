@@ -1,11 +1,20 @@
+#define MainApp '../../build/Track-o-Bot.exe'
+#define Major
+#define Minor
+#define Rev
+#define Build
+#expr ParseVersion(MainApp, Major, Minor, Rev, Build)
+#define Version Str(Major)+"."+Str(Minor)+"."+Str(Rev)
+
 [Setup]
 AppName=Track-o-Bot
-AppVersion=0.2.0
+AppVersion={#Version}
 AppPublisher=spidy.ch
 AppPublisherURL=http://spidy.ch
 DefaultDirName={pf}\Track-o-Bot
 DefaultGroupName=Track-o-Bot
 UninstallDisplayIcon={app}\Track-o-Bot.exe
+OutputBaseFilename=Track-o-Bot_{#Version}
 
 [Files]
 Source: "../../build/Track-o-Bot.exe"; DestDir: "{app}"
@@ -20,4 +29,3 @@ Filename: "{app}\Track-o-Bot.exe"; Description: "Launch Track-o-Bot"; Flags: pos
 
 [Icons]
 Name: "{group}\Track-o-Bot"; Filename: "{app}\Track-o-Bot.exe"
-
