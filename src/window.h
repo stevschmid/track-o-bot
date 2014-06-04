@@ -34,7 +34,8 @@ private slots:
   void importAccount();
 
 public slots:
-  void applySettings();
+  void updateAutostart();
+  void updateUpdateCheck();
   void loadSettings();
 
 public:

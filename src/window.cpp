@@ -15,8 +15,8 @@ SettingsTab::SettingsTab(QWidget *parent)
   ui->setupUi(this);
   connect(ui->exportAccountButton, SIGNAL(clicked()), this, SLOT(exportAccount()));
   connect(ui->importAccountButton, SIGNAL(clicked()), this, SLOT(importAccount()));
-  connect(ui->startAtLogin, SIGNAL(clicked(bool)), this, SLOT(applySettings()));
-  connect(ui->checkForUpdates, SIGNAL(clicked(bool)), this, SLOT(applySettings()));
+  connect(ui->startAtLogin, SIGNAL(clicked(bool)), this, SLOT(updateAutostart()));
+  connect(ui->checkForUpdates, SIGNAL(clicked(bool)), this, SLOT(updateUpdateCheck()));
   connect(Tracker::Instance(), SIGNAL(AccountCreated()), this, SLOT(loadSettings()));
   loadSettings();
 }
@@ -86,10 +86,12 @@ void SettingsTab::importAccount() {
   }
 }
 
-void SettingsTab::applySettings() {
+void SettingsTab::updateAutostart() {
   Autostart autostart;
   autostart.SetActive(ui->startAtLogin->isChecked());
+}
 
+void SettingsTab::updateUpdateCheck() {
   if(updater) {
     updater->setAutomaticallyChecksForUpdates(ui->checkForUpdates->isChecked());
   }
