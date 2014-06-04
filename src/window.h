@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QSystemTrayIcon>
 
 #include "core.h"
 #include "autostart.h"
@@ -86,6 +87,7 @@ public:
 private slots:
   void riseAndShine();
   void openProfile();
+  void trayIconActivated(QSystemTrayIcon::ActivationReason);
 
 private:
   void closeEvent(QCloseEvent *event);
