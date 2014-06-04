@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/tray_mac.png</file>
-        <file>icons/tray_mac_selected.png</file>
-        <file>icons/tray_win.ico</file>
+        <file>icons/mac.png</file>
+        <file>icons/mac_selected.png</file>
+        <file>icons/win.ico</file>
         <file>icons/logo.png</file>
     </qresource>
 </RCC>

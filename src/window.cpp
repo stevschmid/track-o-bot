@@ -210,10 +210,10 @@ void Window::createTrayIcon()
   trayIcon->setContextMenu(trayIconMenu);
 
 #if defined Q_WS_MAC
-  QIcon icon = QIcon(":/icons/tray_mac.png");
-  icon.addFile(":/icons/tray_mac_selected.png", QSize(), QIcon::Selected);
+  QIcon icon = QIcon(":/icons/mac.png");
+  icon.addFile(":/icons/mac_selected.png", QSize(), QIcon::Selected);
 #elif defined Q_WS_WIN
-  QIcon icon = QIcon(":/icons/tray_win.ico");
+  QIcon icon = QIcon(":/icons/win.ico");
 #endif
 
   trayIcon->setIcon(icon);
