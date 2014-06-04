@@ -157,6 +157,15 @@ Window::Window()
 
   createActions();
   createTrayIcon();
+
+#ifdef Q_WS_WIN
+  // Notify user the first time that the app runs in the taskbar
+  QSettings settings;
+  if(!settings.contains("taskbarHint")) {
+    settings.setValue("taskbarHint", true);
+    trayIcon->showMessage(tr("Hey there..."), "Track-o-Bot runs in your taskbar! Right click the icon for more options.");
+  }
+#endif
 }
 
 Window::~Window() {
