@@ -7,5 +7,6 @@ build/
 Makefile
 Makefile.*
 *.swp
-dist/*.dmg
+*.dmg
+*.exe
 *.autosave

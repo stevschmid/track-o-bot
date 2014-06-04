@@ -6,7 +6,7 @@ APP_DIR = 'build/Track-o-Bot.app'
 QT_LIB_DIR = `qmake -query QT_INSTALL_LIBS`.strip
 SIGNATURE = "Developer ID Application: Steven Schmid"
 
-Dir.chdir File.expand_path('..', File.dirname(__FILE__))
+Dir.chdir File.expand_path('../../', File.dirname(__FILE__))
 
 # Purge build
 `rm -rf build/*.app`
@@ -46,22 +46,6 @@ end
 `spctl --verbose=4 --assess --type execute #{APP_DIR}`
 
 puts "Creating DMG"
-`rm dist/Track-o-Bot_#{version}.dmg`
-`appdmg dist/track-o-bot.json dist/Track-o-Bot_#{version}.dmg`
-
-filesize = File.size("dist/Track-o-Bot_#{version}.dmg")
-
-puts "Appcast entry"
-
-pubdate = Time.now.strftime('%a, %d %b %Y %H:%M:%S %z')
-
-puts %Q[
-  <item>
-    <title>Version #{version}</title>
-    <description><![CDATA[
-      ]]></description>
-    <pubDate>#{pubdate}</pubDate>
-    <enclosure url="https://github.com/stevschmid/track-o-bot/releases/download/#{version}/Track-o-Bot_#{version}.dmg" sparkle:version="#{version}" length="#{filesize}" type="application/octet-stream"/>
-  </item>
-]
+`rm dist/mac/Track-o-Bot_#{version}.dmg`
+`appdmg dist/mac/track-o-bot.json dist/mac/Track-o-Bot_#{version}.dmg`
 

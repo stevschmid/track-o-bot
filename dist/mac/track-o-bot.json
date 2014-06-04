@@ -1,8 +1,8 @@
 {
   "title": "Track-o-Bot",
-  "app": "../build/Track-o-Bot.app",
+  "app": "../../build/Track-o-Bot.app",
   "background": "background.png",
-  "icon": "../icons/logo.icns",
+  "icon": "../../icons/logo.icns",
   "icons": {
     "size": 80,
     "app": [80, 90],
