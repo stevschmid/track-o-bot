@@ -24,6 +24,11 @@ Source: "../../../WinSparkle/Release/WinSparkle.dll"; DestDir: "{app}"
 Source: "../../../OpenSSL-Win32/bin/libeay32.dll"; DestDir: "{app}"
 Source: "../../../OpenSSL-Win32/bin/ssleay32.dll"; DestDir: "{app}"
 
+; Qt
+Source: "../../../../Qt/4.8.6/bin/QtCore4.dll"; DestDir: "{app}"   
+Source: "../../../../Qt/4.8.6/bin/QtGui4.dll"; DestDir: "{app}"    
+Source: "../../../../Qt/4.8.6/bin/QtNetwork4.dll"; DestDir: "{app}" 
+
 [Run]
 Filename: "{app}\Track-o-Bot.exe"; Description: "Launch Track-o-Bot"; Flags: postinstall nowait
 

@@ -66,7 +66,7 @@ mac {
 }
 
 win32 {
-  CONFIG += static embed_manifest_exe
+  CONFIG += embed_manifest_exe
 
   DEFINES += PLATFORM=\\\"win32\\\"
 
