@@ -88,13 +88,8 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   }
   result["card_history"] = card_history;
 
-  QtJson::JsonObject meta;
-  meta["version"] = VERSION;
-  meta["platform"] = PLATFORM;
-
   QtJson::JsonObject params;
   params["result"] = result;
-  params["_meta"] = meta; // for debugging purposes
 
   QByteArray data = QtJson::serialize(params);
 
@@ -105,13 +100,17 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 QNetworkReply* Tracker::AuthPostJson(const QString& path, const QByteArray& data) {
   QString credentials = "Basic " + (Username() + ":" + Password()).toAscii().toBase64();
 
+  QNetworkRequest request = CreateTrackerRequest(path);
+  request.setRawHeader("Authorization", credentials.toAscii());
+  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+  return networkManager.post(request, data);
+}
+
+QNetworkRequest Tracker::CreateTrackerRequest(const QString& path) {
   QUrl url(WebserviceURL(path));
   QNetworkRequest request(url);
-
-  request.setRawHeader(QByteArray("Authorization"), credentials.toAscii());
-  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-  return networkManager.post(request, data);
+  request.setRawHeader("User-Agent", "Track-o-Bot/" VERSION PLATFORM);
+  return request;
 }
 
 void Tracker::AddResultHandleReply() {
@@ -125,8 +124,7 @@ void Tracker::AddResultHandleReply() {
 }
 
 void Tracker::CreateAndStoreAccount() {
-  QUrl url(WebserviceURL("/users.json"));
-  QNetworkRequest request(url);
+  QNetworkRequest request = CreateTrackerRequest("/users.json");
   QNetworkReply *reply = networkManager.post(request, "");
   connect(reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()));
 }
