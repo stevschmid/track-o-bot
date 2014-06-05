@@ -8,9 +8,6 @@ SIGNATURE = "Developer ID Application: Steven Schmid"
 
 Dir.chdir File.expand_path('../../', File.dirname(__FILE__))
 
-# Purge build
-`rm -rf build/*.app`
-
 # Create .app
 version = File.read('track-o-bot.pro').match(/VERSION = (\d+\.\d+\.\d+)/)[1]
 
