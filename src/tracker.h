@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
 #include <QSettings>
 
 #include "card_history.h"
@@ -21,6 +22,8 @@ private slots:
   void AddResultHandleReply();
   void CreateAndStoreAccountHandleReply();
   void OpenProfileHandleReply();
+
+  QNetworkRequest CreateTrackerRequest(const QString& path);
 
 signals:
   void AccountCreated();
