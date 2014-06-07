@@ -41,11 +41,17 @@
 #define INGAME_ID_X 972
 #define INGAME_ID_Y 523
 
-#define INGAME_DEFEAT_ID_PATH ":/markers/ingame_defeat_id.png"
-#define INGAME_DEFEAT_ID_WIDTH 33
-#define INGAME_DEFEAT_ID_HEIGHT 33
-#define INGAME_DEFEAT_ID_X 553
-#define INGAME_DEFEAT_ID_Y 610
+#define INGAME_DEFEAT_ID2_PATH ":/markers/ingame_defeat_id2.png"
+#define INGAME_DEFEAT_ID2_WIDTH 36
+#define INGAME_DEFEAT_ID2_HEIGHT 37
+#define INGAME_DEFEAT_ID2_X 583
+#define INGAME_DEFEAT_ID2_Y 586
+
+#define INGAME_DEFEAT_ID1_PATH ":/markers/ingame_defeat_id1.png"
+#define INGAME_DEFEAT_ID1_WIDTH 29
+#define INGAME_DEFEAT_ID1_HEIGHT 29
+#define INGAME_DEFEAT_ID1_X 644
+#define INGAME_DEFEAT_ID1_Y 518
 
 #define INGAME_DEFEAT_FALLBACK_ID_PATH ":/markers/ingame_defeat_fallback_id.png"
 #define INGAME_DEFEAT_FALLBACK_ID_WIDTH 51
@@ -149,11 +155,17 @@
 #define INGAME_SHAMAN_ME_X 487
 #define INGAME_SHAMAN_ME_Y 551
 
-#define INGAME_VICTORY_ID_PATH ":/markers/ingame_victory_id.png"
-#define INGAME_VICTORY_ID_WIDTH 36
-#define INGAME_VICTORY_ID_HEIGHT 36
-#define INGAME_VICTORY_ID_X 528
-#define INGAME_VICTORY_ID_Y 138
+#define INGAME_VICTORY_ID2_PATH ":/markers/ingame_victory_id2.png"
+#define INGAME_VICTORY_ID2_WIDTH 34
+#define INGAME_VICTORY_ID2_HEIGHT 33
+#define INGAME_VICTORY_ID2_X 567
+#define INGAME_VICTORY_ID2_Y 94
+
+#define INGAME_VICTORY_ID1_PATH ":/markers/ingame_victory_id1.png"
+#define INGAME_VICTORY_ID1_WIDTH 29
+#define INGAME_VICTORY_ID1_HEIGHT 29
+#define INGAME_VICTORY_ID1_X 326
+#define INGAME_VICTORY_ID1_Y 193
 
 #define INGAME_VICTORY_FALLBACK_ID_PATH ":/markers/ingame_victory_fallback_id.png"
 #define INGAME_VICTORY_FALLBACK_ID_WIDTH 49
