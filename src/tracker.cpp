@@ -13,6 +13,12 @@
 DEFINE_SINGLETON_SCOPE(Tracker);
 
 Tracker::Tracker() {
+  successfulResultCount = 0;
+  unknownOutcomeCount = 0;
+  unknownModeCount = 0;
+  unknownOrderCount = 0;
+  unknownClassCount = 0;
+  unknownOpponentCount = 0;
 }
 
 Tracker::~Tracker() {
@@ -44,30 +50,37 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   LOG("Card History: %s", cardHistoryOutput.c_str());
 #endif
 
-  if(mode == MODE_UNKNOWN) {
-    LOG("Mode unknown. Skip result");
-    return;
-  }
-
   if(outcome == OUTCOME_UNKNOWN) {
+    unknownOutcomeCount++;
     LOG("Outcome unknown. Skip result");
     return;
   }
 
+  if(mode == MODE_UNKNOWN) {
+    unknownModeCount++;
+    LOG("Mode unknown. Skip result");
+    return;
+  }
+
   if(order == ORDER_UNKNOWN) {
+    unknownOrderCount++;
     LOG("Order unknown. Skip result");
     return;
   }
 
   if(ownClass == CLASS_UNKNOWN) {
+    unknownClassCount++;
     LOG("Own Class unknown. Skip result");
     return;
   }
 
   if(opponentClass == CLASS_UNKNOWN) {
+    unknownOpponentCount++;
     LOG("Class of Opponent unknown. Skip result");
     return;
   }
+
+  successfulResultCount++;
 
   LOG("Upload %s %s vs. %s as %s. Went %s",
       MODE_NAMES[mode], OUTCOME_NAMES[outcome], CLASS_NAMES[opponentClass], CLASS_NAMES[ownClass], ORDER_NAMES[order]);
@@ -90,6 +103,18 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 
   QtJson::JsonObject params;
   params["result"] = result;
+
+  // Some metadata to find out room for improvement
+  QtJson::JsonArray meta;
+
+  meta.append(successfulResultCount);
+  meta.append(unknownOutcomeCount);
+  meta.append(unknownModeCount);
+  meta.append(unknownOrderCount);
+  meta.append(unknownClassCount);
+  meta.append(unknownOpponentCount);
+
+  params["_meta"] = meta;
 
   QByteArray data = QtJson::serialize(params);
 

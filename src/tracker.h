@@ -18,6 +18,13 @@ private:
 
   QNetworkReply* AuthPostJson(const QString& path, const QByteArray& data);
 
+  int successfulResultCount;
+  int unknownOutcomeCount;
+  int unknownModeCount;
+  int unknownOrderCount;
+  int unknownClassCount;
+  int unknownOpponentCount;
+
 private slots:
   void AddResultHandleReply();
   void CreateAndStoreAccountHandleReply();
