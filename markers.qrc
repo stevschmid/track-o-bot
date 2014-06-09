@@ -7,7 +7,6 @@
 <file>markers/ingame_id.png</file>
 <file>markers/ingame_defeat_id2.png</file>
 <file>markers/ingame_defeat_id1.png</file>
-<file>markers/ingame_defeat_fallback_id.png</file>
 <file>markers/ingame_druid_opponent.png</file>
 <file>markers/ingame_druid_me.png</file>
 <file>markers/ingame_hunter_opponent.png</file>
@@ -26,7 +25,6 @@
 <file>markers/ingame_shaman_me.png</file>
 <file>markers/ingame_victory_id2.png</file>
 <file>markers/ingame_victory_id1.png</file>
-<file>markers/ingame_victory_fallback_id.png</file>
 <file>markers/ingame_warlock_opponent.png</file>
 <file>markers/ingame_warlock_me.png</file>
 <file>markers/ingame_warrior_opponent.png</file>
