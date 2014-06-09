@@ -17,8 +17,8 @@ for path in glob.glob('scenes/*.psd'):
     print path
     psd = PSDImage.load(path)
 
-    background = [layer for layer in psd.layers if layer.name.startswith('Background')][0]
-    markers = [layer for layer in psd.layers if layer != background]
+    background = [layer for layer in psd.layers if layer.name.startswith('Background') and layer.visible][0]
+    markers = [layer for layer in psd.layers if layer != background and layer.visible]
 
     background_image = background.as_PIL()
 
