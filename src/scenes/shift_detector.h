@@ -64,7 +64,6 @@ public:
         timer.start();
       } else {
         if(timer.hasExpired(gracePeriod)) {
-          LOG("Check For Shift");
           CheckForSceneShift();
         }
       }
