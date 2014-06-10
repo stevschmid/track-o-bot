@@ -15,9 +15,13 @@ public:
     ADD_GENERATED_MARKER("constructed_ranked_selected", CONSTRUCTED_RANKED_ID);
     ADD_GENERATED_MARKER("constructed_friendly", CONSTRUCTED_FRIENDLY_ID);
     ADD_GENERATED_MARKER("constructed_practice_selection", CONSTRUCTED_PRACTICE_SELECTION_ID);
+
+    Reset();
   }
 
-  void Init() {
+  void Reset() {
+    Scene::Reset();
+
     mode = MODE_UNKNOWN;
   }
 

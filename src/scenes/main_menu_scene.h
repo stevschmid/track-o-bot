@@ -12,7 +12,4 @@ public:
   bool Active() {
     return FindMarker("main_menu");
   }
-
-  void Init() { }
-  void Update() { }
 };

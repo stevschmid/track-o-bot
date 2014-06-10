@@ -33,9 +33,11 @@ private:
 #endif
   string name;
 
+  int originX, originY;
+
 public:
-  Scene(const string& name):name(name) {
-    Init();
+  Scene(const string& name):name(name), originX(0), originY(0) {
+    Reset();
   }
 
   virtual ~Scene() {
@@ -45,9 +47,13 @@ public:
     markers[name] = Marker(name, templateImagePath, x, y, w, h);
   }
 
-  bool FindMarker(const string& name) {
+  bool FindMarker(const string& name, int dx = 0, int dy = 0) {
     const Marker& marker = markers[name];
-    const QPixmap& capture = Hearthstone::Instance()->Capture(marker.x, marker.y, marker.w, marker.h);
+    const QPixmap& capture = Hearthstone::Instance()->Capture(
+        originX + marker.x + dx,
+        originY + marker.y + dy,
+        marker.w,
+        marker.h);
     phash currentHash = phash_for_pixmap(capture);
     bool similar = phash_check_similarity(currentHash, marker.hash);
 #ifdef _DEBUG
@@ -63,10 +69,24 @@ public:
 
   virtual bool Active() = 0;
 
-  virtual void Init() {
+  virtual void Reset() {
+    SetOrigin(0, 0);
   }
 
   virtual void Update() {
+  }
+
+  void SetOrigin(int x, int y) {
+    originX = x;
+    originY = y;
+  }
+
+  int GetOriginX() {
+    return originX;
+  }
+
+  int GetOriginY() {
+    return originY;
   }
 
   const string& GetName() const {

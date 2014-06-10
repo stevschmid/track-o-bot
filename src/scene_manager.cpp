@@ -45,8 +45,15 @@ void SceneManager::Update() {
   if(findNewScene) {
     Scene *newScene = FindActiveScene();
     if(newScene && newScene != currentScene) {
-      newScene->Init();
+      // Notify our dear observers
       Notify(currentScene, newScene);
+
+      // Make sure we reset the previous' scene state (e.g. origin)
+      if(currentScene) {
+        currentScene->Reset();
+      }
+
+      // Switch to the new scene
       currentScene = newScene;
     }
   }

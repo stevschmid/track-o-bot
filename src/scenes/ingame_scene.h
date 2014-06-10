@@ -1,8 +1,16 @@
 #include "../card_history.h"
 
+#include "shift_detector.h"
+
+// if after X ms the ingame marker is still absent, look for a shift in
+// the scene (e.g. caused by a heavy minion or a spell)
+#define INGAME_SHIFT_DETECTION_GRACE_PERIOD 3000
+
 class IngameScene : public Scene
 {
+
 private:
+
   Outcome outcome;
   GoingOrder order;
   Class ownClass;
@@ -10,9 +18,11 @@ private:
 
   CardHistory cardHistory;
 
+  ShiftDetector shiftDetector;
+
 public:
   IngameScene()
-    :Scene("Ingame")
+    :Scene("Ingame"), shiftDetector(this, "ingame", INGAME_SHIFT_DETECTION_GRACE_PERIOD)
   {
     ADD_GENERATED_MARKER("ingame", INGAME_ID);
     ADD_GENERATED_MARKER("going_first", INGAME_MULLIGAN_1ST_ID);
@@ -50,18 +60,25 @@ public:
 
     ADD_GENERATED_MARKER("own_class_hunter", INGAME_HUNTER_ME);
     ADD_GENERATED_MARKER("opponent_class_hunter", INGAME_HUNTER_OPPONENT);
+
+    Reset();
   }
 
-  void Init() {
+  void Reset() {
+    Scene::Reset();
+
     outcome = OUTCOME_UNKNOWN;
     order = ORDER_UNKNOWN;
     ownClass = CLASS_UNKNOWN;
     opponentClass = CLASS_UNKNOWN;
 
     cardHistory.Clear();
+    shiftDetector.Reset();
   }
 
   void Update() {
+    shiftDetector.Update();
+
     if(order == ORDER_UNKNOWN) {
       if(FindMarker("going_first")) {
         order = ORDER_FIRST;
