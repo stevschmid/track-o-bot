@@ -27,8 +27,19 @@ Source: "../../../OpenSSL-Win32/bin/ssleay32.dll"; DestDir: "{app}"
 ; Qt
 Source: "../../../../Qt/4.8.6/bin/QtCore4.dll"; DestDir: "{app}"   
 Source: "../../../../Qt/4.8.6/bin/QtGui4.dll"; DestDir: "{app}"    
-Source: "../../../../Qt/4.8.6/bin/QtNetwork4.dll"; DestDir: "{app}" 
+Source: "../../../../Qt/4.8.6/bin/QtNetwork4.dll"; DestDir: "{app}"   
+Source: "../../../../Qt/4.8.6/bin/QtSvg4.dll"; DestDir: "{app}"                      
+Source: "../../../../Qt/4.8.6/plugins/imageformats/qgif4.dll"; DestDir: "{app}/imageformats" 
 Source: "../../../../Qt/4.8.6/plugins/imageformats/qico4.dll"; DestDir: "{app}/imageformats" 
+Source: "../../../../Qt/4.8.6/plugins/imageformats/qjpeg4.dll"; DestDir: "{app}/imageformats" 
+Source: "../../../../Qt/4.8.6/plugins/imageformats/qmng4.dll"; DestDir: "{app}/imageformats"  
+Source: "../../../../Qt/4.8.6/plugins/imageformats/qsvg4.dll"; DestDir: "{app}/imageformats"   
+Source: "../../../../Qt/4.8.6/plugins/imageformats/qtga4.dll"; DestDir: "{app}/imageformats"    
+Source: "../../../../Qt/4.8.6/plugins/imageformats/qtiff4.dll"; DestDir: "{app}/imageformats"
+
+; C/C++ Runtime
+Source: "../../../../Program Files (x86)/Microsoft Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/msvcp100.dll"; DestDir: "{app}"    
+Source: "../../../../Program Files (x86)/Microsoft Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/msvcr100.dll"; DestDir: "{app}" 
 
 [Run]
 Filename: "{app}\Track-o-Bot.exe"; Description: "Launch Track-o-Bot"; Flags: postinstall nowait
