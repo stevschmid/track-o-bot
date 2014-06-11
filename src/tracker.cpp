@@ -7,6 +7,7 @@
 #include <QDesktopServices>
 
 #include "json.h"
+#include "hearthstone.h"
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
@@ -113,6 +114,8 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   meta.append(unknownOrderCount);
   meta.append(unknownClassCount);
   meta.append(unknownOpponentCount);
+  meta.append(Hearthstone::Instance()->GetWidth());
+  meta.append(Hearthstone::Instance()->GetHeight());
 
   params["_meta"] = meta;
 

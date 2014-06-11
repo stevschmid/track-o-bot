@@ -30,4 +30,7 @@ public:
   string LogConfigPath();
   string LogPath();
 
+  int GetWidth();
+  int GetHeight();
+
 };

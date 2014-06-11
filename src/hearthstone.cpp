@@ -121,3 +121,10 @@ string Hearthstone::LogPath() {
   return logPath.toStdString();
 }
 
+int Hearthstone::GetWidth() {
+  return capture->GetWidth();
+}
+
+int Hearthstone::GetHeight() {
+  return capture->GetHeight();
+}
