@@ -11,6 +11,7 @@ Dir.chdir File.expand_path('../../', File.dirname(__FILE__))
 # Create .app
 version = File.read('track-o-bot.pro').match(/VERSION = (\d+\.\d+\.\d+)/)[1]
 
+`rm -rf build/Track-o-Bot.app`
 `qmake track-o-bot.pro && make clean && make release`
 
 # Copy frameworks into .app
