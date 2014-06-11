@@ -6,6 +6,7 @@
 #include "ui_log_widget.h"
 #include "ui_about_widget.h"
 
+#include "tracker.h"
 #include "updater.h"
 extern Updater *updater;
 
@@ -179,7 +180,7 @@ Window::~Window() {
 void Window::trayIconActivated(QSystemTrayIcon::ActivationReason reason) {
 #ifdef Q_WS_WIN
   if(reason == QSystemTrayIcon::ActivationReason::DoubleClick) {
-    riseAndShine();
+    Tracker::Instance()->OpenProfile();
   }
 #endif
 }
