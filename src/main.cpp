@@ -24,8 +24,27 @@
 
 Updater *updater = NULL;
 
+void redirectQtMessagesToLog(QtMsgType type, const char *msg) {
+  switch (type) {
+    case QtDebugMsg:
+      LOG("QT Debug: %s", msg);
+      break;
+    case QtWarningMsg:
+      LOG("QT Warning: %s", msg);
+      break;
+    case QtCriticalMsg:
+      LOG("QT Critical: %s", msg);
+      break;
+    case QtFatalMsg:
+      LOG("QT Fatal: %s", msg);
+      abort();
+  }
+}
+
 int main(int argc, char **argv)
 {
+  qInstallMsgHandler(redirectQtMessagesToLog);
+
   // Basic setup
   QApplication app(argc, argv);
 #if defined Q_WS_MAC
