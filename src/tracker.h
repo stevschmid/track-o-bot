@@ -3,6 +3,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QSettings>
+#include <QSslError>
 
 #include "card_history.h"
 
@@ -29,6 +30,8 @@ private slots:
   void AddResultHandleReply();
   void CreateAndStoreAccountHandleReply();
   void OpenProfileHandleReply();
+
+  void SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors);
 
   QNetworkRequest CreateTrackerRequest(const QString& path);
 

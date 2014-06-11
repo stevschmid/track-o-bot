@@ -20,6 +20,9 @@ Tracker::Tracker() {
   unknownOrderCount = 0;
   unknownClassCount = 0;
   unknownOpponentCount = 0;
+
+  connect(&networkManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)),
+      this, SLOT(SSLErrors(QNetworkReply*, const QList<QSslError>&)));
 }
 
 Tracker::~Tracker() {
@@ -244,3 +247,24 @@ bool Tracker::IsAccountSetUp() {
   return settings.contains("username") && settings.contains("password") &&
     !settings.value("username").toString().isEmpty() && !settings.value("password").toString().isEmpty();
 }
+
+// Allow self-signed certificates because Qt might report
+// "There root certificate of the certificate chain is self-signed, and untrusted"
+// The root cert might not be trusted yet (only after we browse to the website)
+// So allow allow self-signed certificates, just in case
+void Tracker::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
+  QList<QSslError> errorsToIgnore;
+
+  QList<QSslError>::const_iterator cit;
+  for(cit = errors.begin(); cit != errors.end(); ++cit) {
+    const QSslError& err = *cit;
+    if(err.error() == QSslError::SelfSignedCertificate ||
+       err.error() == QSslError::SelfSignedCertificateInChain)
+    {
+      errorsToIgnore << err;
+    }
+  }
+
+  reply->ignoreSslErrors(errorsToIgnore);
+}
+
