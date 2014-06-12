@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QDesktopServices>
+#include <QSettings>
 
 #ifdef Q_WS_MAC
 #include "osx_window_capture.h"
@@ -112,11 +113,17 @@ string Hearthstone::LogPath() {
   QString homeLocation = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
   QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
 #elif defined Q_WS_WIN
-  QString programFiles(getenv("PROGRAMFILES(X86)"));
-  if(programFiles.isEmpty()) {
-    programFiles = getenv("PROGRAMFILES");
+  QSettings hsKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat);
+  QString hsPath = hsKey.value("InstallLocation").toString();
+  if(hsPath.isEmpty()) {
+    LOG("LogPath Fallback");
+    QString programFiles(getenv("PROGRAMFILES(X86)"));
+    if(programFiles.isEmpty()) {
+      programFiles = getenv("PROGRAMFILES");
+    }
+    hsPath = programFiles + "\\Hearthstone";
   }
-  QString logPath = programFiles + "\\Hearthstone\\Hearthstone_Data\\output_log.txt";
+  QString logPath = hsPath + "\\Hearthstone_Data\\output_log.txt";
 #endif
   return logPath.toStdString();
 }
