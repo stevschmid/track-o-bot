@@ -25,9 +25,10 @@
 
 ```
 qmake
-make # osx
-nmake # win vs2010
+make
 ```
+
+(Use ``nmake`` instead of ``make`` on Windows)
 
 The resulting binary can be found in the ``build`` subfolder.
 
