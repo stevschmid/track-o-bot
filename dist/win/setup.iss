@@ -17,8 +17,8 @@ UninstallDisplayIcon={app}\Track-o-Bot.exe
 OutputBaseFilename=Track-o-Bot_{#Version}
 
 [Files]
-Source: "../../build/Track-o-Bot.exe"; DestDir: "{app}"
-Source: "../../../WinSparkle/Release/WinSparkle.dll"; DestDir: "{app}"  
+Source: "../../build/Track-o-Bot.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../WinSparkle/Release/WinSparkle.dll"; DestDir: "{app}"; Flags: ignoreversion  
 
 ; Required for QtNetworkManager to work with HTTPS
 Source: "../../../OpenSSL-Win32/bin/libeay32.dll"; DestDir: "{app}"
