@@ -30,10 +30,10 @@
 #define CONSTRUCTED_RANKED_ID_Y 24
 
 #define INGAME_ID_PATH ":/markers/ingame_id.png"
-#define INGAME_ID_WIDTH 31
-#define INGAME_ID_HEIGHT 29
-#define INGAME_ID_X 972
-#define INGAME_ID_Y 523
+#define INGAME_ID_WIDTH 38
+#define INGAME_ID_HEIGHT 31
+#define INGAME_ID_X 966
+#define INGAME_ID_Y 513
 
 #define INGAME_DEFEAT_ID2_PATH ":/markers/ingame_defeat_id2.png"
 #define INGAME_DEFEAT_ID2_WIDTH 92
