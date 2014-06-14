@@ -90,7 +90,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
       MODE_NAMES[mode], OUTCOME_NAMES[outcome], CLASS_NAMES[opponentClass], CLASS_NAMES[ownClass], ORDER_NAMES[order]);
 
   QtJson::JsonObject result;
-  result["coin"]     = (order == ORDER_FIRST);
+  result["coin"]     = (order == ORDER_SECOND);
   result["hero"]     = CLASS_NAMES[ownClass];
   result["opponent"] = CLASS_NAMES[opponentClass];
   result["win"]      = (outcome == OUTCOME_VICTORY);
