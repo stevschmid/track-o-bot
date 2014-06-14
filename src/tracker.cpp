@@ -134,6 +134,8 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   meta.append(unknownOpponentCount);
   meta.append(Hearthstone::Instance()->GetWidth());
   meta.append(Hearthstone::Instance()->GetHeight());
+  meta.append(VERSION);
+  meta.append(PLATFORM);
 
   params["_meta"] = meta;
 
