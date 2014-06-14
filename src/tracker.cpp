@@ -65,6 +65,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
           LOG("Order fallback. Went first"); // Nope, so the opponent went second and I went first
           order = ORDER_FIRST;
         }
+        break;
       }
     }
   }
