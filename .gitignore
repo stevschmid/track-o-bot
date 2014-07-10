@@ -10,3 +10,4 @@ Makefile.*
 *.dmg
 *.exe
 *.autosave
+scenes/*
