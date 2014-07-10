@@ -26,9 +26,9 @@ void CardHistory::HandleLogLine(const QString& line) {
 
       if(!draw && !mulligan && !discard) {
         if(from.contains("FRIENDLY HAND")) {
-          list.push_back(CardHistoryItem(true, cardId.toStdString()));
+          list.push_back(CardHistoryItem(PLAYER_SELF, cardId.toStdString()));
         } else if(from.contains("OPPOSING HAND")) {
-          list.push_back(CardHistoryItem(false, cardId.toStdString()));
+          list.push_back(CardHistoryItem(PLAYER_OPPONENT, cardId.toStdString()));
         }
       }
 

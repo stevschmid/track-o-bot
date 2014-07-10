@@ -4,11 +4,11 @@
 
 class CardHistoryItem {
 public:
-  bool myPlay;
+  Player player;
   string cardId;
 
-  CardHistoryItem(bool myPlay, const string& cardId)
-    :myPlay(myPlay), cardId(cardId)
+  CardHistoryItem(Player player, const string& cardId)
+    :player(player), cardId(cardId)
   {
   }
 };
@@ -33,6 +33,4 @@ private slots:
   void HandleLogLine(const QString& line);
 
 };
-
-
 

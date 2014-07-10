@@ -36,6 +36,12 @@ private: \
   CLASSNAME* CLASSNAME::_singletonptr = NULL;
 
 typedef enum {
+  PLAYER_SELF = 0,
+  PLAYER_OPPONENT,
+  PLAYER_UNKNOWN
+} Player;
+
+typedef enum {
   ORDER_FIRST = 0,
   ORDER_SECOND,
   ORDER_UNKNOWN

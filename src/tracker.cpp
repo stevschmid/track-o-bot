@@ -48,7 +48,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
 #ifdef _DEBUG
   string cardHistoryOutput;
   for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
-    cardHistoryOutput += (*it).myPlay ? "SELF " : "OPPONENT ";
+    cardHistoryOutput += (*it).player == PLAYER_SELF ? "SELF " : "OPPONENT ";
     cardHistoryOutput += (*it).cardId + "\n";
   }
   LOG("Card History: %s", cardHistoryOutput.c_str());
@@ -58,7 +58,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
     // Order marker wasn't found, so try to look up the order in the card history
     for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
       if((*it).cardId == "GAME_005") { // The Coin was played...
-        if((*it).myPlay) { // ...by me?
+        if((*it).player == PLAYER_SELF) { // ...by me?
           LOG("Order fallback. Went second"); // Yes, so I went second
           order = ORDER_SECOND;
         } else {
@@ -115,7 +115,7 @@ void Tracker::AddResult(GameMode mode, Outcome outcome, GoingOrder order, Class 
   QtJson::JsonArray card_history;
   for(CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it) {
     QtJson::JsonObject item;
-    item["player"] = (*it).myPlay ? "me" : "opponent";
+    item["player"] = (*it).player == PLAYER_SELF ? "me" : "opponent";
     item["card_id"] = (*it).cardId.c_str();
     card_history.append(item);
   }
