@@ -11,6 +11,7 @@ public:
 
   virtual void setAutomaticallyChecksForUpdates(bool automaticallyChecks);
   virtual bool automaticallyChecksForUpdates();
+  virtual void checkForUpdatesNow();
 
 private:
   class Private;

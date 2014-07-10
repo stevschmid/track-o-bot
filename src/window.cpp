@@ -16,6 +16,7 @@ SettingsTab::SettingsTab(QWidget *parent)
   ui->setupUi(this);
   connect(ui->exportAccountButton, SIGNAL(clicked()), this, SLOT(exportAccount()));
   connect(ui->importAccountButton, SIGNAL(clicked()), this, SLOT(importAccount()));
+  connect(ui->checkForUpdatesNowButton, SIGNAL(clicked()), this, SLOT(checkForUpdatesNow()));
   connect(ui->startAtLogin, SIGNAL(clicked(bool)), this, SLOT(updateAutostart()));
   connect(ui->checkForUpdates, SIGNAL(clicked(bool)), this, SLOT(updateUpdateCheck()));
   connect(Tracker::Instance(), SIGNAL(AccountCreated()), this, SLOT(loadSettings()));
@@ -48,6 +49,12 @@ void SettingsTab::exportAccount() {
     out << Tracker::Instance()->WebserviceURL();
 
     LOG("Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str());
+  }
+}
+
+void SettingsTab::checkForUpdatesNow() {
+  if(updater) {
+    updater->checkForUpdatesNow();
   }
 }
 

@@ -32,3 +32,8 @@ bool WinSparkleUpdater::automaticallyChecksForUpdates()
 {
   return win_sparkle_get_automatic_check_for_updates();
 }
+
+void WinSparkleUpdater::checkForUpdatesNow()
+{
+  win_sparkle_check_update_with_ui();
+}

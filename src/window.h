@@ -32,6 +32,7 @@ private:
 private slots:
   void exportAccount();
   void importAccount();
+  void checkForUpdatesNow();
 
 public slots:
   void updateAutostart();

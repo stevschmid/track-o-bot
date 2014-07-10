@@ -50,8 +50,30 @@ QLabel#updateDescription {
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="importExportDescription">
+       <property name="text">
+        <string>Use export to back up your account or to import it on another device.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>-1</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QPushButton" name="exportAccountButton">
          <property name="text">
@@ -82,7 +104,7 @@ QLabel#updateDescription {
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>15</height>
+         <height>10</height>
         </size>
        </property>
       </spacer>
@@ -108,6 +130,19 @@ QLabel#updateDescription {
        </property>
       </widget>
      </item>
+     <item row="8" column="1">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item row="9" column="1">
       <widget class="QCheckBox" name="checkForUpdates">
        <property name="text">
@@ -122,26 +157,16 @@ QLabel#updateDescription {
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>15</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="importExportDescription">
-       <property name="text">
-        <string>Use export to back up your account or to import it on another device.</string>
-       </property>
-       <property name="wordWrap">
+     <item row="11" column="1">
+      <widget class="QPushButton" name="checkForUpdatesNowButton">
+       <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Check for updates now</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

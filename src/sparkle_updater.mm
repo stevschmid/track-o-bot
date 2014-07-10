@@ -40,3 +40,8 @@ bool SparkleUpdater::automaticallyChecksForUpdates()
 {
   return [d->updater automaticallyChecksForUpdates] == YES;
 }
+
+void SparkleUpdater::checkForUpdatesNow() 
+{
+  return [d->updater checkForUpdates:nil];
+}
