@@ -5,8 +5,6 @@
 #include <QSettings>
 #include <QSslError>
 
-#include "card_history.h"
-
 class Tracker : public QObject
 {
   Q_OBJECT

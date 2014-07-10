@@ -1,4 +1,4 @@
-#include "../card_history.h"
+#include "../hearthstone_log_analyzer.h"
 
 #include "shift_detector.h"
 
@@ -6,8 +6,9 @@
 // the scene (e.g. caused by a heavy minion or a spell)
 #define INGAME_SHIFT_DETECTION_GRACE_PERIOD 3000
 
-class IngameScene : public Scene
+class IngameScene : public QObject, public Scene
 {
+  Q_OBJECT
 
 private:
 
@@ -16,7 +17,9 @@ private:
   Class ownClass;
   Class opponentClass;
 
-  CardHistory cardHistory;
+  CardHistoryList cardHistoryList;
+
+  HearthstoneLogAnalyzer logAnalyzer;
 
   ShiftDetector shiftDetector;
 
@@ -61,6 +64,11 @@ public:
     ADD_GENERATED_MARKER("own_class_hunter", INGAME_HUNTER_ME);
     ADD_GENERATED_MARKER("opponent_class_hunter", INGAME_HUNTER_OPPONENT);
 
+    connect(&logAnalyzer, SIGNAL(PlayerDied(Player)), this, SLOT(FromLogPlayerDied(Player)));
+    connect(&logAnalyzer, SIGNAL(CardPlayed(Player,const string&)), this, SLOT(FromLogCardPlayed(Player, const string&)));
+    connect(&logAnalyzer, SIGNAL(CardReturned(Player,const string&)), this, SLOT(FromLogCardReturned(Player,const string&)));
+    connect(&logAnalyzer, SIGNAL(CoinReceived(Player)), this, SLOT(FromLogCoinReceived(Player)));
+
     Reset();
   }
 
@@ -72,7 +80,7 @@ public:
     ownClass = CLASS_UNKNOWN;
     opponentClass = CLASS_UNKNOWN;
 
-    cardHistory.Clear();
+    cardHistoryList.clear();
     shiftDetector.Reset();
   }
 
@@ -129,7 +137,41 @@ public:
   }
 
   const CardHistoryList& GetCardHistoryList() const {
-    return cardHistory.List();
+    return cardHistoryList;
+  }
+
+private slots:
+  void FromLogPlayerDied(Player player) { // Not triggered when conceding
+    if(player == PLAYER_SELF) {
+      outcome = OUTCOME_DEFEAT;
+    } else if(player == PLAYER_OPPONENT) {
+      outcome = OUTCOME_VICTORY;
+    }
+  }
+
+  void FromLogCardPlayed(Player player, const string& cardId) {
+    cardHistoryList.push_back(CardHistoryItem(player, cardId));
+  }
+
+  void FromLogCardReturned(Player player, const string& cardId) {
+    // Make sure we remove the "Choose One"-cards from the history
+    // if we decide to withdraw them after a second of thought
+    if(!cardHistoryList.empty() &&
+        cardHistoryList.back().player == player &&
+        cardHistoryList.back().cardId == cardId)
+    {
+      cardHistoryList.pop_back();
+    }
+  }
+
+  void FromLogCoinReceived(Player player) {
+    if(player == PLAYER_SELF) {
+      // I go second because I get the coin
+      order = ORDER_SECOND;
+    } else if(player == PLAYER_OPPONENT) {
+      // Opponent got coin, so I go first
+      order = ORDER_FIRST;
+    }
   }
 
 };

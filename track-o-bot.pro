@@ -17,7 +17,8 @@ HEADERS = src/local.h \
           src/logger.h \
           src/tracker.h \
           src/hearthstone_log_watcher.h \
-          src/card_history.h
+          src/hearthstone_log_analyzer.h \
+          src/scenes/ingame_scene.h
 
 SOURCES = src/main.cpp \
           src/hearthstone.cpp \
@@ -31,7 +32,7 @@ SOURCES = src/main.cpp \
           src/json.cpp \
           src/autostart.cpp \
           src/hearthstone_log_watcher.cpp \
-          src/card_history.cpp
+          src/hearthstone_log_analyzer.cpp
 
 FORMS   = src/window.ui \
           src/settings_widget.ui \

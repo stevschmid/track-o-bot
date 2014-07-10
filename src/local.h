@@ -41,13 +41,19 @@ typedef enum {
   PLAYER_UNKNOWN
 } Player;
 
+const char PLAYER_NAMES[][128] = {
+  "self",
+  "opponent",
+  "unknown"
+};
+
 typedef enum {
   ORDER_FIRST = 0,
   ORDER_SECOND,
   ORDER_UNKNOWN
 } GoingOrder;
 
-const char ORDER_NAMES[][128] ={
+const char ORDER_NAMES[][128] = {
   "first",
   "second",
   "unknown"
@@ -110,6 +116,19 @@ const char CLASS_NAMES[][128] = {
 };
 
 #define NUM_CLASSES 9
+
+class CardHistoryItem {
+public:
+  Player player;
+  string cardId;
+
+  CardHistoryItem(Player player, const string& cardId)
+    :player(player), cardId(cardId)
+  {
+  }
+};
+typedef vector<CardHistoryItem> CardHistoryList;
+
 
 #include "logger.h"
 #define LOG(str, ...) Logger::Instance()->Add(str, ##__VA_ARGS__)
