@@ -5,6 +5,7 @@
 #include "Scenes/ConstructedScene.h"
 #include "Scenes/ArenaScene.h"
 #include "Scenes/IngameScene.h"
+#include "Scenes/SoloAdventuresScene.h"
 
 class SceneManagerObserver {
 public:

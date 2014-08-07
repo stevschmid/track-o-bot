@@ -39,12 +39,10 @@ void Tracker::EnsureAccountIsSetUp() {
 
 void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList )
 {
-#ifndef _DEBUG
-  if( mode == MODE_PRACTICE ) {
-    LOG( "Ignore practice game." ); // only in Non Debug Versions
+  if( mode == MODE_SOLO_ADVENTURES ) {
+    LOG( "Ignore solo adventure." );
     return;
   }
-#endif
 
 #ifdef _DEBUG
   string cardHistoryOutput;
