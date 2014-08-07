@@ -8,27 +8,27 @@
 
 class SceneManagerObserver {
 public:
-  virtual void SceneChanged(Scene *oldScene, Scene *newScene) = 0;
+  virtual void SceneChanged( Scene *oldScene, Scene *newScene ) = 0;
 };
 
 class SceneManager
 {
 private:
-  vector<SceneManagerObserver*> observers;
+  vector< SceneManagerObserver* > observers;
 
   Scene *currentScene;
-  vector<Scene*> scenes;
+  vector< Scene* > scenes;
 
-  void RegisterScene(Scene *scene);
+  void RegisterScene( Scene *scene );
   Scene *FindActiveScene();
-  void Notify(Scene *oldScene, Scene *newScene);
+  void Notify( Scene *oldScene, Scene *newScene );
 
 public:
   SceneManager();
   ~SceneManager();
 
-  void RegisterObserver(SceneManagerObserver *observer);
-  void UnregisterObserver(SceneManagerObserver *observer);
+  void RegisterObserver( SceneManagerObserver *observer );
+  void UnregisterObserver( SceneManagerObserver *observer );
 
   void Update();
 

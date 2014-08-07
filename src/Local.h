@@ -122,12 +122,12 @@ public:
   Player player;
   string cardId;
 
-  CardHistoryItem(Player player, const string& cardId)
-    :player(player), cardId(cardId)
+  CardHistoryItem( Player player, const string& cardId )
+    : player( player ), cardId( cardId )
   {
   }
 };
-typedef vector<CardHistoryItem> CardHistoryList;
+typedef vector< CardHistoryItem > CardHistoryList;
 
 
 #include "Logger.h"

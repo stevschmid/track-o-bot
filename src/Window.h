@@ -40,7 +40,7 @@ public slots:
   void loadSettings();
 
 public:
-  explicit SettingsTab(QWidget *parent = 0);
+  explicit SettingsTab( QWidget *parent = 0 );
   ~SettingsTab();
 };
 
@@ -54,11 +54,11 @@ private:
   Ui::LogWidget *ui;
 
 public:
-  explicit LogTab(QWidget *parent = 0);
+  explicit LogTab( QWidget *parent = 0 );
   ~LogTab();
 
 private slots:
-  void addLogEntry(const string& message);
+  void addLogEntry( const string& message );
 };
 
 namespace Ui { class AboutWidget; }
@@ -71,7 +71,7 @@ private:
   Ui::AboutWidget *ui;
 
 public:
-  explicit AboutTab(QWidget *parent = 0);
+  explicit AboutTab( QWidget *parent = 0 );
   ~AboutTab();
 
 };
@@ -89,11 +89,11 @@ public:
 private slots:
   void riseAndShine();
   void openProfile();
-  void trayIconActivated(QSystemTrayIcon::ActivationReason);
+  void trayIconActivated( QSystemTrayIcon::ActivationReason );
 
 private:
-  void closeEvent(QCloseEvent *event);
-  void showEvent(QShowEvent *event);
+  void closeEvent( QCloseEvent *event );
+  void showEvent( QShowEvent *event );
   void reject();
 
   void createActions();

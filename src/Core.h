@@ -24,5 +24,5 @@ public:
   Core();
   ~Core();
 
-  void SceneChanged(Scene *oldScene, Scene *newScene);
+  void SceneChanged( Scene *oldScene, Scene *newScene );
 };

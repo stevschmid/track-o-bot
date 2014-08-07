@@ -32,15 +32,14 @@ private:
     const int min = -DETECT_SHIFT_PIXEL_RADIUS;
     const int max = DETECT_SHIFT_PIXEL_RADIUS;
 
-    int dx = min + (rand() % (max - min + 1));
-    int dy = min + (rand() % (max - min + 1));
+    int dx = min + ( rand() % ( max - min + 1 ) );
+    int dy = min + ( rand() % ( max - min + 1 ) );
 
-    if(scene->FindMarker(markerName, dx, dy)) {
+    if( scene->FindMarker( markerName, dx, dy ) ) {
       shiftFound = true;
 
-      LOG("Detected Scene Shift in x:%d y:%d", dx, dy);
-      scene->SetOrigin(scene->GetOriginX() + dx,
-                       scene->GetOriginY() + dy);
+      LOG( "Detected Scene Shift in x:%d y:%d", dx, dy );
+      scene->SetOrigin( scene->GetOriginX() + dx, scene->GetOriginY() + dy );
     }
 
     return shiftFound;
@@ -48,8 +47,8 @@ private:
 
 public:
 
-  ShiftDetector(Scene *scene, const string& markerName, unsigned int gracePeriod)
-    :scene(scene), markerName(markerName), gracePeriod(gracePeriod)
+  ShiftDetector( Scene *scene, const string& markerName, unsigned int gracePeriod )
+    : scene( scene ), markerName( markerName ), gracePeriod( gracePeriod )
   {
     Reset();
   }
@@ -59,16 +58,16 @@ public:
   }
 
   void Update() {
-    if(!scene->FindMarker(markerName)) {
-      if(!timer.isValid()) {
+    if( !scene->FindMarker( markerName ) ) {
+      if( !timer.isValid() ) {
         timer.start();
       } else {
-        if(timer.hasExpired(gracePeriod)) {
+        if( timer.hasExpired( gracePeriod ) ) {
           CheckForSceneShift();
         }
       }
     } else {
-      if(timer.isValid()) {
+      if( timer.isValid() ) {
         timer.invalidate();
       }
     }

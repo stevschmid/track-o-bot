@@ -24,68 +24,68 @@
 
 Updater *updater = NULL;
 
-int main(int argc, char **argv)
+int main( int argc, char **argv )
 {
   // Basic setup
-  QApplication app(argc, argv);
+  QApplication app( argc, argv );
 #if defined Q_WS_MAC
-  QIcon icon = QIcon(":/icons/mac.png");
+  QIcon icon = QIcon( ":/icons/mac.png" );
 #elif defined Q_WS_WIN
-  QIcon icon = QIcon(":/icons/win.ico");
+  QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
-  app.setApplicationName("Track-o-Bot"); // for proper DataLocation handling
-  app.setOrganizationName("spidy.ch");
-  app.setOrganizationDomain("spidy.ch");
-  app.setWindowIcon(icon);
+  app.setApplicationName( "Track-o-Bot" ); // for proper DataLocation handling
+  app.setOrganizationName( "spidy.ch" );
+  app.setOrganizationDomain( "spidy.ch" );
+  app.setWindowIcon( icon );
 
   // Enforce single instance
   const char serverName[] = "trackobot";
 
   QLocalSocket socket;
-  socket.connectToServer(serverName);
-  if(socket.waitForConnected(500)) {
+  socket.connectToServer( serverName );
+  if( socket.waitForConnected(500) ) {
     return 1; // already running
   }
 
-  QLocalServer::removeServer(serverName);
-  QLocalServer server(NULL);
-  if(!server.listen(serverName)) {
+  QLocalServer::removeServer( serverName );
+  QLocalServer server( NULL );
+  if( !server.listen(serverName) ) {
     return 2;
   }
 
   // Logging
-  QString dataLocation = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-  if(!QFile::exists(dataLocation)) {
+  QString dataLocation = QDesktopServices::storageLocation( QDesktopServices::DataLocation );
+  if( !QFile::exists(dataLocation) ) {
     QDir dir;
-    dir.mkpath(dataLocation);
+    dir.mkpath( dataLocation );
   }
-  string logFilePath = (dataLocation + QDir::separator() + app.applicationName() + ".log").toStdString();
-  Logger::Instance()->SetLogPath(logFilePath);
+  string logFilePath = ( dataLocation + QDir::separator() + app.applicationName() + ".log" ).toStdString();
+  Logger::Instance()->SetLogPath( logFilePath );
 
-  /* // Start */
-  LOG("--> Launched v%s on %s", VERSION, QDate::currentDate().toString(Qt::ISODate).toStdString().c_str());
+  // Start
+  LOG( "--> Launched v%s on %s", VERSION, QDate::currentDate().toString( Qt::ISODate ).toStdString().c_str() );
 
 #if defined Q_WS_MAC
   CocoaInitializer cocoaInitializer;
-  updater = new SparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast.xml"));
+  updater = new SparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast.xml" ) );
 #elif defined Q_WS_WIN
-  updater = new WinSparkleUpdater(Tracker::Instance()->WebserviceURL("/appcast_win.xml"));
+  updater = new WinSparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast_win.xml" ) );
 #endif
 
-  /* // Initalize Windows n stuff */
+  // Initalize Windows n stuff
   Window window;
 
-  /* // Make sure Account exists or create one */
+  // Make sure Account exists or create one
   Tracker::Instance()->EnsureAccountIsSetUp();
 
-  /* // Enable HS Logging */
+  // Enable HS Logging
   Hearthstone::Instance()->EnableLogging();
 
-  /* // Main Loop */
+  // Main Loop
   int exitCode = app.exec();
 
   // Tear down
-  LOG("<-- Shutdown");
+  LOG( "<-- Shutdown" );
 
   return exitCode;
 }

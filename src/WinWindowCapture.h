@@ -14,13 +14,13 @@ private:
   HWND FindHWND();
 
 public:
-  WinWindowCapture(const string& windowName);
+  WinWindowCapture( const string& windowName );
 
   bool WindowFound();
 
   int GetWidth();
   int GetHeight();
 
-  QPixmap Capture(int x, int y, int w, int h);
+  QPixmap Capture( int x, int y, int w, int h );
 };
 

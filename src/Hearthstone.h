@@ -12,17 +12,17 @@
 
 class Hearthstone
 {
-  DEFINE_SINGLETON(Hearthstone)
+  DEFINE_SINGLETON( Hearthstone )
 
 private:
   WindowCapture *capture;
 
 public:
   // Allow to override window capture for test environment
-  void SetWindowCapture(WindowCapture *wc);
+  void SetWindowCapture( WindowCapture *wc );
 
   bool IsRunning();
-  QPixmap Capture(int vx, int vy, int vw, int vh);
+  QPixmap Capture( int vx, int vy, int vw, int vh );
 
   void EnableLogging();
   void DisableLogging();

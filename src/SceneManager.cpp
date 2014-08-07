@@ -2,30 +2,30 @@
 #include "Tracker.h"
 
 SceneManager::SceneManager()
-  :currentScene(NULL)
+  : currentScene( NULL )
 {
-  RegisterScene(new MainMenuScene);
-  RegisterScene(new ConstructedScene);
-  RegisterScene(new IngameScene);
-  RegisterScene(new ArenaScene);
+  RegisterScene( new MainMenuScene );
+  RegisterScene( new ConstructedScene );
+  RegisterScene( new IngameScene );
+  RegisterScene( new ArenaScene );
 }
 
 SceneManager::~SceneManager() {
-  vector<Scene*>::iterator it;
-  for(it = scenes.begin(); it != scenes.end(); ++it) {
+  vector< Scene* >::iterator it;
+  for( it = scenes.begin(); it != scenes.end(); ++it ) {
     delete *it;
   }
 }
 
-void SceneManager::RegisterScene(Scene *scene) {
-  scenes.push_back(scene);
+void SceneManager::RegisterScene( Scene *scene ) {
+  scenes.push_back( scene );
 }
 
 Scene* SceneManager::FindActiveScene() {
   vector<Scene*>::iterator it;
-  for(it = scenes.begin(); it != scenes.end(); it++) {
+  for( it = scenes.begin(); it != scenes.end(); it++ ) {
     Scene *scene = *it;
-    if(scene->Active()) {
+    if( scene->Active() ) {
       return scene;
     }
   }
@@ -33,23 +33,23 @@ Scene* SceneManager::FindActiveScene() {
 }
 
 void SceneManager::Update() {
-  bool findNewScene = (currentScene == NULL);
+  bool findNewScene = ( currentScene == NULL );
 
-  if(currentScene) {
+  if( currentScene ) {
     currentScene->Update();
     findNewScene |= !currentScene->Active();
   }
 
   // Keep the current scene if no other scene is detected yet.
   // Scene should never be NULL except at the beginning.
-  if(findNewScene) {
+  if( findNewScene ) {
     Scene *newScene = FindActiveScene();
-    if(newScene && newScene != currentScene) {
+    if( newScene && newScene != currentScene ) {
       // Notify our dear observers
-      Notify(currentScene, newScene);
+      Notify( currentScene, newScene );
 
       // Make sure we reset the previous' scene state (e.g. origin)
-      if(currentScene) {
+      if( currentScene ) {
         currentScene->Reset();
       }
 
@@ -63,17 +63,17 @@ const Scene* SceneManager::GetActiveScene() {
   return currentScene;
 }
 
-void SceneManager::RegisterObserver(SceneManagerObserver *observer) {
-  observers.push_back(observer);
+void SceneManager::RegisterObserver( SceneManagerObserver *observer) {
+  observers.push_back( observer );
 }
 
-void SceneManager::UnregisterObserver(SceneManagerObserver *observer) {
-  observers.erase(remove(observers.begin(), observers.end(), observer), observers.end());
+void SceneManager::UnregisterObserver( SceneManagerObserver *observer ) {
+  observers.erase( remove( observers.begin(), observers.end(), observer ), observers.end() );
 }
 
-void SceneManager::Notify(Scene *oldScene, Scene *newScene) {
-  vector<SceneManagerObserver*>::iterator it;
-  for(it = observers.begin(); it != observers.end(); ++it) {
-    (*it)->SceneChanged(oldScene, newScene);
+void SceneManager::Notify( Scene *oldScene, Scene *newScene ) {
+  vector< SceneManagerObserver* >::iterator it;
+  for( it = observers.begin(); it != observers.end(); ++it ) {
+    (*it)->SceneChanged( oldScene, newScene );
   }
 }

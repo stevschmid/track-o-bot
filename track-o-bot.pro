@@ -22,7 +22,6 @@ HEADERS = src/Local.h \
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
-          src/Dhash.cpp \
           src/Phash.cpp \
           src/SceneManager.cpp \
           src/Tracker.cpp \

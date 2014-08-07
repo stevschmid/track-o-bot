@@ -17,6 +17,6 @@ private slots:
   void CheckForLogChanges();
 
 signals:
-  void LineAdded(const QString& line);
+  void LineAdded( const QString& line );
 
 };

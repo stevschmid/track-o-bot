@@ -9,7 +9,7 @@
 
 typedef quint64 phash;
 
-phash         phash_for_pixmap(const QPixmap& pixmap);
-unsigned int  phash_calculate_hamming_distance(phash v1, phash v2);
-bool          phash_check_similarity(phash v1, phash v2);
+phash         phash_for_pixmap( const QPixmap& pixmap );
+unsigned int  phash_calculate_hamming_distance( phash v1, phash v2 );
+bool          phash_check_similarity( phash v1, phash v2 );
 

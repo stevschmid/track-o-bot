@@ -1,7 +1,7 @@
 #include "Logger.h"
 #include <ctime>
 
-DEFINE_SINGLETON_SCOPE(Logger);
+DEFINE_SINGLETON_SCOPE( Logger );
 
 Logger::Logger() {
 }

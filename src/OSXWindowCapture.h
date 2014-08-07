@@ -13,15 +13,14 @@ class OSXWindowCapture : public QObject, public WindowCapture
 Q_OBJECT
 
 private:
-
   QTimer *timer;
 
   string name;
   int winId;
   CGRect rect;
 
-  static int FindWindow(const string& name);
-  static bool GetWindowRect(int windowId, CGRect *rect);
+  static int FindWindow( const string& name );
+  static bool GetWindowRect( int windowId, CGRect *rect );
 
   bool IsFullscreen();
 
@@ -29,11 +28,11 @@ private slots:
   void Update();
 
 public:
-  OSXWindowCapture(const string& windowName);
+  OSXWindowCapture( const string& windowName );
 
   bool WindowFound();
   int GetWidth();
   int GetHeight();
 
-  QPixmap Capture(int x, int y, int w, int h);
+  QPixmap Capture( int x, int y, int w, int h );
 };

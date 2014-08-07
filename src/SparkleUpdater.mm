@@ -5,11 +5,11 @@
 
 class SparkleUpdater::Private
 {
-  public:
-    SUUpdater* updater;
+public:
+  SUUpdater* updater;
 };
 
-SparkleUpdater::SparkleUpdater(const QString& aUrl)
+SparkleUpdater::SparkleUpdater( const QString& aUrl )
 {
   d = new Private;
 
@@ -27,9 +27,9 @@ SparkleUpdater::~SparkleUpdater()
   delete d;
 }
 
-void SparkleUpdater::setAutomaticallyChecksForUpdates(bool automaticallyChecks)
+void SparkleUpdater::setAutomaticallyChecksForUpdates( bool automaticallyChecks )
 {
-  if(automaticallyChecks) {
+  if( automaticallyChecks ) {
     [d->updater setAutomaticallyChecksForUpdates:YES];
   } else {
     [d->updater setAutomaticallyChecksForUpdates:NO];

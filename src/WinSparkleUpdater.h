@@ -6,10 +6,10 @@
 
 class WinSparkleUpdater : public Updater {
 public:
-  WinSparkleUpdater(const QString& url);
+  WinSparkleUpdater( const QString& url );
   ~WinSparkleUpdater();
 
-  virtual void setAutomaticallyChecksForUpdates(bool automaticallyChecks);
+  virtual void setAutomaticallyChecksForUpdates( bool automaticallyChecks );
   virtual bool automaticallyChecksForUpdates();
   virtual void checkForUpdatesNow();
 };
