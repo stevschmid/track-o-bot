@@ -128,7 +128,7 @@ LogTab::LogTab( QWidget *parent )
   font.setStyleHint( QFont::TypeWriter );
   mUI->logText->setFont( font );
 
-  connect( Logger::Instance(), SIGNAL( NewMessage(const string&) ), this, SLOT( addLogEntry(const string&) ) );
+  connect( Logger::Instance(), SIGNAL( NewMessage(const string&) ), this, SLOT( AddLogEntry(const string&) ) );
 }
 
 LogTab::~LogTab() {
@@ -165,7 +165,7 @@ Window::Window()
   CreateActions();
   CreateTrayIcon();
 
-  connect(mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( mTrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
+  connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
 
 #ifdef Q_WS_WIN
   // Notify user the first time that the app runs in the taskbar
