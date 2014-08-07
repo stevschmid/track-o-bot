@@ -55,22 +55,6 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   LOG( "Card History: %s", cardHistoryOutput.c_str() );
 #endif
 
-  if( order == ORDER_UNKNOWN ) {
-    // Order marker wasn't found, so try to look up the order in the card history
-    for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
-      if( (*it).cardId == "GAME_005" ) { // The Coin was played...
-        if( (*it).player == PLAYER_SELF ) { // ...by me?
-          LOG( "Order fallback. Went second" ); // Yes, so I went second
-          order = ORDER_SECOND;
-        } else {
-          LOG( "Order fallback. Went first" ); // Nope, so the opponent went second and I went first
-          order = ORDER_FIRST;
-        }
-        break;
-      }
-    }
-  }
-
   if( outcome == OUTCOME_UNKNOWN ) {
     mUnknownOutcomeCount++;
     LOG( "Outcome unknown. Skip result" );
