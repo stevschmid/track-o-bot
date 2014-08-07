@@ -23,17 +23,17 @@ WinSparkleUpdater::~WinSparkleUpdater()
   win_sparkle_cleanup();
 }
 
-void WinSparkleUpdater::setAutomaticallyChecksForUpdates( bool automaticallyChecks )
+void WinSparkleUpdater::CheckForUpdatesNow()
+{
+  win_sparkle_check_update_with_ui();
+}
+
+void WinSparkleUpdater::SetAutomaticallyChecksForUpdates( bool automaticallyChecks )
 {
   win_sparkle_set_automatic_check_for_updates(automaticallyChecks);
 }
 
-bool WinSparkleUpdater::automaticallyChecksForUpdates()
+bool WinSparkleUpdater::AutomaticallyChecksForUpdates()
 {
   return win_sparkle_get_automatic_check_for_updates();
-}
-
-void WinSparkleUpdater::checkForUpdatesNow()
-{
-  win_sparkle_check_update_with_ui();
 }

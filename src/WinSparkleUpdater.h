@@ -9,7 +9,8 @@ public:
   WinSparkleUpdater( const QString& url );
   ~WinSparkleUpdater();
 
-  virtual void setAutomaticallyChecksForUpdates( bool automaticallyChecks );
-  virtual bool automaticallyChecksForUpdates();
-  virtual void checkForUpdatesNow();
+  virtual void CheckForUpdatesNow();
+
+  virtual void SetAutomaticallyChecksForUpdates( bool automaticallyChecks );
+  virtual bool AutomaticallyChecksForUpdates();
 };

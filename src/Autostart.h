@@ -3,6 +3,6 @@
 class Autostart
 {
 public:
-  bool IsActive();
+  bool Active();
   void SetActive( bool active );
 };

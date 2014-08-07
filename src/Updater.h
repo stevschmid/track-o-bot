@@ -6,8 +6,8 @@ class Updater {
 public:
   virtual ~Updater() {}
 
-  virtual void setAutomaticallyChecksForUpdates( bool automaticallyChecks ) = 0;
-  virtual bool automaticallyChecksForUpdates() = 0;
+  virtual void CheckForUpdatesNow() = 0;
 
-  virtual void checkForUpdatesNow() = 0;
+  virtual void SetAutomaticallyChecksForUpdates( bool automaticallyChecks ) = 0;
+  virtual bool AutomaticallyChecksForUpdates() = 0;
 };

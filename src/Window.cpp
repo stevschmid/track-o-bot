@@ -8,26 +8,26 @@
 
 #include "Tracker.h"
 #include "Updater.h"
-extern Updater *updater;
+extern Updater *gUpdater;
 
 SettingsTab::SettingsTab( QWidget *parent )
-  : QWidget( parent ), ui( new Ui::SettingsWidget )
+  : QWidget( parent ), mUI( new Ui::SettingsWidget )
 {
-  ui->setupUi( this );
-  connect( ui->exportAccountButton, SIGNAL( clicked() ), this, SLOT( exportAccount() ) );
-  connect( ui->importAccountButton, SIGNAL( clicked() ), this, SLOT( importAccount() ) );
-  connect( ui->checkForUpdatesNowButton, SIGNAL( clicked()), this, SLOT( checkForUpdatesNow() ) );
-  connect( ui->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( updateAutostart() ) );
-  connect( ui->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( updateUpdateCheck() ) );
-  connect( Tracker::Instance(), SIGNAL( AccountCreated() ), this, SLOT( loadSettings() ) );
-  loadSettings();
+  mUI->setupUi( this );
+  connect( mUI->exportAccountButton, SIGNAL( clicked() ), this, SLOT( ExportAccount() ) );
+  connect( mUI->importAccountButton, SIGNAL( clicked() ), this, SLOT( ImportAccount() ) );
+  connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked()), this, SLOT( CheckForUpdatesNow() ) );
+  connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
+  connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
+  connect( Tracker::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
+  LoadSettings();
 }
 
 SettingsTab::~SettingsTab() {
-  delete ui;
+  delete mUI;
 }
 
-void SettingsTab::exportAccount() {
+void SettingsTab::ExportAccount() {
   QString fileName = QFileDialog::getSaveFileName( this,
       tr( "Export Track-o-Bot Account Data" ), "",
       tr( "Account Data (*.track-o-bot);; All Files (*)" ) );
@@ -51,13 +51,13 @@ void SettingsTab::exportAccount() {
   }
 }
 
-void SettingsTab::checkForUpdatesNow() {
-  if( updater ) {
-    updater->checkForUpdatesNow();
+void SettingsTab::CheckForUpdatesNow() {
+  if( gUpdater ) {
+    gUpdater->CheckForUpdatesNow();
   }
 }
 
-void SettingsTab::importAccount() {
+void SettingsTab::ImportAccount() {
   QString fileName = QFileDialog::getOpenFileName( this,
       tr( "Import Track-o-Bot Account Data" ), "",
       tr( "Account Data (*.track-o-bot);; All Files (*)" ) );
@@ -84,104 +84,104 @@ void SettingsTab::importAccount() {
       Tracker::Instance()->SetWebserviceURL( webserviceUrl );
 
       LOG( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
-      loadSettings();
+      LoadSettings();
     } else {
       LOG( "Import failed" );
     }
   }
 }
 
-void SettingsTab::updateAutostart() {
+void SettingsTab::UpdateAutostart() {
   Autostart autostart;
-  autostart.SetActive( ui->startAtLogin->isChecked() );
+  autostart.SetActive( mUI->startAtLogin->isChecked() );
 }
 
-void SettingsTab::updateUpdateCheck() {
-  if( updater ) {
-    updater->setAutomaticallyChecksForUpdates( ui->checkForUpdates->isChecked() );
+void SettingsTab::UpdateUpdateCheck() {
+  if( gUpdater ) {
+    gUpdater->SetAutomaticallyChecksForUpdates( mUI->checkForUpdates->isChecked() );
   }
 }
 
-void SettingsTab::loadSettings() {
+void SettingsTab::LoadSettings() {
   Autostart autostart;
-  ui->startAtLogin->setChecked( autostart.IsActive() );
+  mUI->startAtLogin->setChecked( autostart.Active() );
 
-  if( updater ) {
-    ui->checkForUpdates->setChecked(updater->automaticallyChecksForUpdates());
+  if( gUpdater ) {
+    mUI->checkForUpdates->setChecked( gUpdater->AutomaticallyChecksForUpdates() );
   }
 
   bool accountSetUp = Tracker::Instance()->IsAccountSetUp();
   if( accountSetUp ) {
-    ui->account->setText( Tracker::Instance()->Username() );
+    mUI->account->setText( Tracker::Instance()->Username() );
   }
 
-  ui->importAccountButton->setEnabled( accountSetUp );
-  ui->exportAccountButton->setEnabled( accountSetUp );
+  mUI->importAccountButton->setEnabled( accountSetUp );
+  mUI->exportAccountButton->setEnabled( accountSetUp );
 }
 
 LogTab::LogTab( QWidget *parent )
-  : QWidget( parent ), ui( new Ui::LogWidget )
+  : QWidget( parent ), mUI( new Ui::LogWidget )
 {
-  ui->setupUi( this );
+  mUI->setupUi( this );
 
   QFont font( "Monospace" );
   font.setStyleHint( QFont::TypeWriter );
-  ui->logText->setFont( font );
+  mUI->logText->setFont( font );
 
   connect( Logger::Instance(), SIGNAL( NewMessage(const string&) ), this, SLOT( addLogEntry(const string&) ) );
 }
 
 LogTab::~LogTab() {
-  delete ui;
+  delete mUI;
 }
 
-void LogTab::addLogEntry( const string& msg ) {
-  ui->logText->moveCursor( QTextCursor::End );
-  ui->logText->insertPlainText( msg.c_str() );
-  ui->logText->moveCursor( QTextCursor::End );
+void LogTab::AddLogEntry( const string& msg ) {
+  mUI->logText->moveCursor( QTextCursor::End );
+  mUI->logText->insertPlainText( msg.c_str() );
+  mUI->logText->moveCursor( QTextCursor::End );
 }
 
 AboutTab::AboutTab( QWidget *parent )
-  : QWidget( parent ), ui( new Ui::AboutWidget )
+  : QWidget( parent ), mUI( new Ui::AboutWidget )
 {
-  ui->setupUi( this );
+  mUI->setupUi( this );
 
   QPixmap logoImage( ":/icons/logo.png" );
-  ui->logo->setPixmap( logoImage.scaled( 64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
-  ui->version->setText( VERSION );
+  mUI->logo->setPixmap( logoImage.scaled( 64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
+  mUI->version->setText( VERSION );
 }
 
 AboutTab::~AboutTab() {
-  delete ui;
+  delete mUI;
 }
 
 Window::Window()
-  : ui( new Ui::Window )
+  : mUI( new Ui::Window )
 {
-  ui->setupUi( this );
+  mUI->setupUi( this );
 
   setWindowTitle( qApp->applicationName() );
 
-  createActions();
-  createTrayIcon();
+  CreateActions();
+  CreateTrayIcon();
 
-  connect(trayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( trayIconActivated(QSystemTrayIcon::ActivationReason) ) );
+  connect(mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( mTrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
 
 #ifdef Q_WS_WIN
   // Notify user the first time that the app runs in the taskbar
   QSettings settings;
   if( !settings.contains("taskbarHint") ) {
     settings.setValue( "taskbarHint", true );
-    trayIcon->showMessage( tr( "Heads up!" ), "Track-o-Bot runs in your taskbar! Right click the icon for more options." );
+    mTrayIcon->showMessage( tr( "Heads up!" ), "Track-o-Bot runs in your taskbar! Right click the icon for more options." );
   }
 #endif
 }
 
 Window::~Window() {
-  delete ui;
+  delete mUI;
 }
 
-void Window::trayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
+void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #ifdef Q_WS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
     Tracker::Instance()->OpenProfile();
@@ -189,49 +189,48 @@ void Window::trayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #endif
 }
 
-void Window::showEvent( QShowEvent *event ) {
+void Window::ShowEvent( QShowEvent *event ) {
   QDialog::showEvent( event );
-  ui->settingsTab->loadSettings();
+  mUI->settingsTab->LoadSettings();
 }
 
-void Window::closeEvent( QCloseEvent *event ) {
-  if( trayIcon->isVisible() ) {
+void Window::CloseEvent( QCloseEvent *event ) {
+  if( mTrayIcon->isVisible() ) {
     hide();
     event->ignore();
   }
 }
 
 // prevent esc from closing the app
-void Window::reject() {
-  if( trayIcon->isVisible() ) {
+void Window::Reject() {
+  if( mTrayIcon->isVisible() ) {
     hide();
   } else {
     QDialog::reject();
   }
 }
 
-void Window::createActions() {
-  openProfileAction = new QAction( tr( "Open Profile..." ), this );
-  connect( openProfileAction, SIGNAL( triggered() ), this, SLOT( openProfile() ) );
+void Window::CreateActions() {
+  mOpenProfileAction = new QAction( tr( "Open Profile..." ), this );
+  connect( mOpenProfileAction, SIGNAL( triggered() ), this, SLOT( OpenProfile() ) );
 
-  showAction = new QAction( tr( "Settings..." ), this );
-  connect( showAction, SIGNAL( triggered() ), this, SLOT( riseAndShine() ) );
+  mShowAction = new QAction( tr( "Settings..." ), this );
+  connect( mShowAction, SIGNAL( triggered() ), this, SLOT( RiseAndShine() ) );
 
-  quitAction = new QAction( tr("Quit"), this );
-  connect( quitAction, SIGNAL( triggered() ), qApp, SLOT( quit() ) );
+  mQuitAction = new QAction( tr("Quit"), this );
+  connect( mQuitAction, SIGNAL( triggered() ), qApp, SLOT( quit() ) );
 }
 
-void Window::createTrayIcon()
-{
-  trayIconMenu = new QMenu( this);
-  trayIconMenu->addAction( openProfileAction );
-  trayIconMenu->addSeparator();
-  trayIconMenu->addAction( showAction );
-  trayIconMenu->addSeparator();
-  trayIconMenu->addAction( quitAction );
+void Window::CreateTrayIcon() {
+  mTrayIconMenu = new QMenu( this);
+  mTrayIconMenu->addAction( mOpenProfileAction );
+  mTrayIconMenu->addSeparator();
+  mTrayIconMenu->addAction( mShowAction );
+  mTrayIconMenu->addSeparator();
+  mTrayIconMenu->addAction( mQuitAction );
 
-  trayIcon = new QSystemTrayIcon( this );
-  trayIcon->setContextMenu (trayIconMenu );
+  mTrayIcon = new QSystemTrayIcon( this );
+  mTrayIcon->setContextMenu (mTrayIconMenu );
 
 #if defined Q_WS_MAC
   QIcon icon = QIcon( ":/icons/mac.png" );
@@ -240,15 +239,15 @@ void Window::createTrayIcon()
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
 
-  trayIcon->setIcon( icon );
-  trayIcon->show();
+  mTrayIcon->setIcon( icon );
+  mTrayIcon->show();
 }
 
-void Window::riseAndShine() {
+void Window::RiseAndShine() {
   show();
   raise();
 }
 
-void Window::openProfile() {
+void Window::OpenProfile() {
   Tracker::Instance()->OpenProfile();
 }

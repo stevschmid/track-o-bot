@@ -11,33 +11,31 @@
 class Scene
 {
 private:
-  class Marker {
-  public:
+  struct Marker {
     string name;
-    phash hash;
     int x, y, w, h; // virtual canvas attributes!
+    Phash hash;
 
     Marker() : name( "" ), x( 0 ), y( 0 ), w( 0 ), h( 0 ) {
     }
 
     Marker( const string& name, const string& templateImagePath, int x, int y, int w, int h )
-      : name( name ), x( x ), y( y ), w( w ), h( h )
+      : name( name ), x( x ), y( y ), w( w ), h( h ), hash( QPixmap( templateImagePath.c_str() ) )
     {
-      hash = phash_for_pixmap( QPixmap( templateImagePath.c_str() ) );
     }
   };
 
-  map< string, Marker > markers;
+  map< string, Marker > mMarkers;
 #ifdef _DEBUG
-  map< string, bool > debugMarkerFound;
+  map< string, bool > mDebugMarkerFound;
 #endif
-  string name;
 
-  int originX, originY;
+  string mName;
+  int mOriginX, mOriginY;
 
 public:
   Scene( const string& name )
-    : name( name ), originX( 0 ), originY( 0 )
+    : mName( name ), mOriginX( 0 ), mOriginY( 0 )
   {
     Reset();
   }
@@ -46,27 +44,25 @@ public:
   }
 
   void AddMarker( const string& name, const string& templateImagePath, int x, int y, int w, int h ) {
-    markers[name] = Marker( name, templateImagePath, x, y, w, h );
+    mMarkers[ name ] = Marker( name, templateImagePath, x, y, w, h );
   }
 
   bool FindMarker( const string& name, int dx = 0, int dy = 0 ) {
-    const Marker& marker = markers[ name ];
+    const Marker& marker = mMarkers[ name ];
     const QPixmap& capture = Hearthstone::Instance()->Capture(
-        originX + marker.x + dx,
-        originY + marker.y + dy,
+        mOriginX + marker.x + dx,
+        mOriginY + marker.y + dy,
         marker.w,
         marker.h );
-    phash currentHash = phash_for_pixmap( capture );
-    bool similar = phash_check_similarity( currentHash, marker.hash );
+    Phash currentHash( capture );
+    bool found = currentHash == marker.hash;
 #ifdef _DEBUG
-    if( debugMarkerFound[ name ] != similar ) {
-      LOG( "Marker %s in Scene %s %s", name.c_str(),
-          GetName().c_str(),
-          similar ? "found" : "disappeared" );
-      debugMarkerFound[ name ] = similar;
+    if( mDebugMarkerFound[ name ] != found ) {
+      LOG( "Marker %s in Scene %s %s", name.c_str(), mName.c_str(), found ? "found" : "disappeared" );
+      mDebugMarkerFound[ name ] = found;
     }
 #endif
-    return similar;
+    return found;
   }
 
   virtual bool Active() = 0;
@@ -79,19 +75,19 @@ public:
   }
 
   void SetOrigin( int x, int y ) {
-    originX = x;
-    originY = y;
+    mOriginX = x;
+    mOriginY = y;
   }
 
-  int GetOriginX() {
-    return originX;
+  int OriginX() {
+    return mOriginX;
   }
 
-  int GetOriginY() {
-    return originY;
+  int OriginY() {
+    return mOriginY;
   }
 
-  const string& GetName() const {
-    return name;
+  const string& Name() const {
+    return mName;
   }
 };

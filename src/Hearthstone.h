@@ -15,13 +15,13 @@ class Hearthstone
   DEFINE_SINGLETON( Hearthstone )
 
 private:
-  WindowCapture *capture;
+  WindowCapture *mCapture;
 
 public:
   // Allow to override window capture for test environment
-  void SetWindowCapture( WindowCapture *wc );
+  void SetWindowCapture( WindowCapture *windowCapture );
 
-  bool IsRunning();
+  bool Running();
   QPixmap Capture( int vx, int vy, int vw, int vh );
 
   void EnableLogging();
@@ -30,7 +30,7 @@ public:
   string LogConfigPath();
   string LogPath();
 
-  int GetWidth();
-  int GetHeight();
+  int Width();
+  int Height();
 
 };

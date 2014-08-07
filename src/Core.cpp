@@ -2,60 +2,60 @@
 #include "Tracker.h"
 
 Core::Core()
-  : currentGameMode( MODE_UNKNOWN ), gameRunning( false )
+  : mCurrentGameMode( MODE_UNKNOWN ), mGameRunning( false )
 {
-  sceneManager.RegisterObserver( this );
+  mSceneManager.RegisterObserver( this );
 
-  timer = new QTimer( this );
-  connect( timer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
-  timer->start( 100 );
+  mTimer = new QTimer( this );
+  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
+  mTimer->start( 100 );
 }
 
 Core::~Core() {
-  delete timer;
+  delete mTimer;
 }
 
 void Core::Tick() {
-  bool wasGameRunning = gameRunning;
-  gameRunning = Hearthstone::Instance()->IsRunning();
+  bool wasGameRunning = mGameRunning;
+  mGameRunning = Hearthstone::Instance()->Running();
 
-  if( wasGameRunning != gameRunning ) {
-    if( gameRunning ) {
+  if( wasGameRunning != mGameRunning ) {
+    if( mGameRunning ) {
       LOG("Hearthstone found");
     } else {
       LOG("Hearthstone was closed");
     }
   }
 
-  if( gameRunning ) {
-    sceneManager.Update();
+  if( mGameRunning ) {
+    mSceneManager.Update();
   }
 }
 
 void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
-  LOG( "Scene %s", newScene->GetName().c_str() );
+  LOG( "Scene %s", newScene->Name().c_str() );
 
-  if( newScene->GetName() ==  "Ingame" ) {
+  if( newScene->Name() ==  "Ingame" ) {
     if( oldScene ) {
-      if( oldScene->GetName() == "Constructed" ) {
+      if( oldScene->Name() == "Constructed" ) {
         ConstructedScene *constructed = ( ConstructedScene* )oldScene;
-        currentGameMode = constructed->GetGameMode();
+        mCurrentGameMode = constructed->GameMode();
       }
-      if( oldScene->GetName() == "Arena" ) {
-        currentGameMode = MODE_ARENA;
+      if( oldScene->Name() == "Arena" ) {
+        mCurrentGameMode = MODE_ARENA;
       }
     }
   }
 
-  if( oldScene && oldScene->GetName() == "Ingame" ) {
+  if( oldScene && oldScene->Name() == "Ingame" ) {
     IngameScene *ingame = ( IngameScene* )oldScene;
 
     Tracker::Instance()->AddResult(
-        currentGameMode,
-        ingame->GetOutcome(),
-        ingame->GetGoingOrder(),
-        ingame->GetOwnClass(),
-        ingame->GetOpponentClass(),
-        ingame->GetCardHistoryList() );
+        mCurrentGameMode,
+        ingame->Outcome(),
+        ingame->GoingOrder(),
+        ingame->OwnClass(),
+        ingame->OpponentClass(),
+        ingame->CardHistoryList() );
   }
 }

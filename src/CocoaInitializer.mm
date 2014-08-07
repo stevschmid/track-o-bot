@@ -5,8 +5,8 @@
 
 class CocoaInitializer::Private 
 {
-  public:
-    NSAutoreleasePool* autoReleasePool_;
+public:
+  NSAutoreleasePool* autoReleasePool_;
 };
 
 CocoaInitializer::CocoaInitializer()

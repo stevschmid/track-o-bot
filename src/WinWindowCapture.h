@@ -8,9 +8,9 @@
 class WinWindowCapture : public WindowCapture
 {
 private:
-  string name;
+  string mWindowName;
 
-  RECT GetRect();
+  RECT Rect();
   HWND FindHWND();
 
 public:
@@ -18,8 +18,8 @@ public:
 
   bool WindowFound();
 
-  int GetWidth();
-  int GetHeight();
+  int Width();
+  int Height();
 
   QPixmap Capture( int x, int y, int w, int h );
 };

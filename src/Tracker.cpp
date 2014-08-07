@@ -14,17 +14,15 @@
 DEFINE_SINGLETON_SCOPE( Tracker );
 
 Tracker::Tracker() {
-  successfulResultCount = 0;
-  unknownOutcomeCount = 0;
-  unknownModeCount = 0;
-  unknownOrderCount = 0;
-  unknownClassCount = 0;
-  unknownOpponentCount = 0;
+  mSuccessfulResultCount = 0;
+  mUnknownOutcomeCount = 0;
+  mUnknownModeCount = 0;
+  mUnknownOrderCount = 0;
+  mUnknownClassCount = 0;
+  mUnknownOpponentCount = 0;
 
-  connect( &networkManager,
-      SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
-      this,
-      SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
+  connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
+      this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
 }
 
 Tracker::~Tracker() {
@@ -74,36 +72,36 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   }
 
   if( outcome == OUTCOME_UNKNOWN ) {
-    unknownOutcomeCount++;
+    mUnknownOutcomeCount++;
     LOG( "Outcome unknown. Skip result" );
     return;
   }
 
   if( mode == MODE_UNKNOWN ) {
-    unknownModeCount++;
+    mUnknownModeCount++;
     LOG( "Mode unknown. Skip result" );
     return;
   }
 
   if( order == ORDER_UNKNOWN ) {
-    unknownOrderCount++;
+    mUnknownOrderCount++;
     LOG( "Order unknown. Skip result" );
     return;
   }
 
   if( ownClass == CLASS_UNKNOWN ) {
-    unknownClassCount++;
+    mUnknownClassCount++;
     LOG( "Own Class unknown. Skip result" );
     return;
   }
 
   if( opponentClass == CLASS_UNKNOWN ) {
-    unknownOpponentCount++;
+    mUnknownOpponentCount++;
     LOG( "Class of Opponent unknown. Skip result" );
     return;
   }
 
-  successfulResultCount++;
+  mSuccessfulResultCount++;
 
   LOG( "Upload %s %s vs. %s as %s. Went %s",
       MODE_NAMES[ mode ],
@@ -134,14 +132,14 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   // Some metadata to find out room for improvement
   QtJson::JsonArray meta;
 
-  meta.append( successfulResultCount );
-  meta.append( unknownOutcomeCount );
-  meta.append( unknownModeCount );
-  meta.append( unknownOrderCount );
-  meta.append( unknownClassCount );
-  meta.append( unknownOpponentCount );
-  meta.append( Hearthstone::Instance()->GetWidth() );
-  meta.append( Hearthstone::Instance()->GetHeight() );
+  meta.append( mSuccessfulResultCount );
+  meta.append( mUnknownOutcomeCount );
+  meta.append( mUnknownModeCount );
+  meta.append( mUnknownOrderCount );
+  meta.append( mUnknownClassCount );
+  meta.append( mUnknownOpponentCount );
+  meta.append( Hearthstone::Instance()->Width() );
+  meta.append( Hearthstone::Instance()->Height() );
   meta.append( VERSION );
   meta.append( PLATFORM );
 
@@ -159,7 +157,7 @@ QNetworkReply* Tracker::AuthPostJson( const QString& path, const QByteArray& dat
   QNetworkRequest request = CreateTrackerRequest( path );
   request.setRawHeader( "Authorization", credentials.toAscii() );
   request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
-  return networkManager.post( request, data );
+  return mNetworkManager.post( request, data );
 }
 
 QNetworkRequest Tracker::CreateTrackerRequest( const QString& path ) {
@@ -181,7 +179,7 @@ void Tracker::AddResultHandleReply() {
 
 void Tracker::CreateAndStoreAccount() {
   QNetworkRequest request = CreateTrackerRequest( "/users.json" );
-  QNetworkReply *reply = networkManager.post( request, "" );
+  QNetworkReply *reply = mNetworkManager.post( request, "" );
   connect( reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()) );
 }
 
@@ -236,41 +234,41 @@ void Tracker::OpenProfileHandleReply() {
   }
 }
 
-QString Tracker::Username() {
-  return settings.value( "username" ).toString();
+QString Tracker::Username() const {
+  return mSettings.value( "username" ).toString();
 }
 
-QString Tracker::Password() {
-  return settings.value( "password" ).toString();
+QString Tracker::Password() const {
+  return mSettings.value( "password" ).toString();
 }
 
-QString Tracker::WebserviceURL(const QString& path) {
+QString Tracker::WebserviceURL( const QString& path ) {
   return WebserviceURL() + path;
 }
 
 QString Tracker::WebserviceURL() {
-  if(!settings.contains("webserviceUrl") || settings.value("webserviceUrl").toString().isEmpty()) {
-    SetWebserviceURL(DEFAULT_WEBSERVICE_URL);
+  if( !mSettings.contains( "webserviceUrl" ) || mSettings.value( "webserviceUrl" ).toString().isEmpty() ) {
+    SetWebserviceURL( DEFAULT_WEBSERVICE_URL );
   }
 
-  return settings.value("webserviceUrl").toString();
+  return mSettings.value( "webserviceUrl" ).toString();
 }
 
-void Tracker::SetUsername(const QString& username) {
-  settings.setValue("username", username);
+void Tracker::SetUsername( const QString& username ) {
+  mSettings.setValue( "username", username );
 }
 
-void Tracker::SetPassword(const QString& password) {
-  settings.setValue("password", password);
+void Tracker::SetPassword( const QString& password ) {
+  mSettings.setValue( "password", password );
 }
 
-void Tracker::SetWebserviceURL(const QString& webserviceUrl) {
-  settings.setValue("webserviceUrl", webserviceUrl);
+void Tracker::SetWebserviceURL( const QString& webserviceUrl ) {
+  mSettings.setValue( "webserviceUrl", webserviceUrl );
 }
 
-bool Tracker::IsAccountSetUp() {
-  return settings.contains("username") && settings.contains("password") &&
-    !settings.value("username").toString().isEmpty() && !settings.value("password").toString().isEmpty();
+bool Tracker::IsAccountSetUp() const {
+  return mSettings.contains( "username" ) && mSettings.contains( "password" ) &&
+    !mSettings.value( "username" ).toString().isEmpty() && !mSettings.value( "password" ).toString().isEmpty();
 }
 
 // Allow self-signed certificates because Qt might report
@@ -281,15 +279,15 @@ void Tracker::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
   QList<QSslError> errorsToIgnore;
 
   QList<QSslError>::const_iterator cit;
-  for(cit = errors.begin(); cit != errors.end(); ++cit) {
+  for( cit = errors.begin(); cit != errors.end(); ++cit ) {
     const QSslError& err = *cit;
-    if(err.error() == QSslError::SelfSignedCertificate ||
-       err.error() == QSslError::SelfSignedCertificateInChain)
+    if( err.error() == QSslError::SelfSignedCertificate ||
+        err.error() == QSslError::SelfSignedCertificateInChain )
     {
       errorsToIgnore << err;
     }
   }
 
-  reply->ignoreSslErrors(errorsToIgnore);
+  reply->ignoreSslErrors( errorsToIgnore );
 }
 

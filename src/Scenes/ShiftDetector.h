@@ -20,11 +20,10 @@
 class ShiftDetector
 {
 private:
-
-  QElapsedTimer timer;
-  Scene *scene;
-  string markerName;
-  unsigned int gracePeriod;
+  QElapsedTimer mTimer;
+  Scene*        mScene;
+  string        mMarkerName;
+  unsigned int  mGracePeriod;
 
   bool CheckForSceneShift() {
     bool shiftFound = false;
@@ -35,11 +34,11 @@ private:
     int dx = min + ( rand() % ( max - min + 1 ) );
     int dy = min + ( rand() % ( max - min + 1 ) );
 
-    if( scene->FindMarker( markerName, dx, dy ) ) {
+    if( mScene->FindMarker( mMarkerName, dx, dy ) ) {
       shiftFound = true;
 
       LOG( "Detected Scene Shift in x:%d y:%d", dx, dy );
-      scene->SetOrigin( scene->GetOriginX() + dx, scene->GetOriginY() + dy );
+      mScene->SetOrigin( mScene->OriginX() + dx, mScene->OriginY() + dy );
     }
 
     return shiftFound;
@@ -48,27 +47,27 @@ private:
 public:
 
   ShiftDetector( Scene *scene, const string& markerName, unsigned int gracePeriod )
-    : scene( scene ), markerName( markerName ), gracePeriod( gracePeriod )
+    : mScene( scene ), mMarkerName( markerName ), mGracePeriod( gracePeriod )
   {
     Reset();
   }
 
   void Reset() {
-    timer.invalidate();
+    mTimer.invalidate();
   }
 
   void Update() {
-    if( !scene->FindMarker( markerName ) ) {
-      if( !timer.isValid() ) {
-        timer.start();
+    if( !mScene->FindMarker( mMarkerName ) ) {
+      if( !mTimer.isValid() ) {
+        mTimer.start();
       } else {
-        if( timer.hasExpired( gracePeriod ) ) {
+        if( mTimer.hasExpired( mGracePeriod ) ) {
           CheckForSceneShift();
         }
       }
     } else {
-      if( timer.isValid() ) {
-        timer.invalidate();
+      if( mTimer.isValid() ) {
+        mTimer.invalidate();
       }
     }
   }

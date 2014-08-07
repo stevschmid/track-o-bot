@@ -10,12 +10,10 @@ class Core : public QObject, public SceneManagerObserver
   Q_OBJECT
 
 private:
-  QTimer *timer;
-
-  SceneManager sceneManager;
-  GameMode currentGameMode;
-
-  bool gameRunning;
+  QTimer*       mTimer;
+  SceneManager  mSceneManager;
+  GameMode      mCurrentGameMode;
+  bool          mGameRunning;
 
 private slots:
   void Tick();

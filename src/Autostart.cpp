@@ -38,7 +38,7 @@ LSSharedFileListItemRef FindLoginItemForCurrentBundle(CFArrayRef currentLoginIte
 
 #endif // Q_OS_MAC
 
-bool Autostart::IsActive()
+bool Autostart::Active()
 {
 #ifdef Q_WS_WIN
   const QString& applicationName = qApp->applicationName();

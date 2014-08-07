@@ -2,7 +2,7 @@
 #include "Tracker.h"
 
 SceneManager::SceneManager()
-  : currentScene( NULL )
+  : mCurrentScene( NULL )
 {
   RegisterScene( new MainMenuScene );
   RegisterScene( new ConstructedScene );
@@ -12,18 +12,18 @@ SceneManager::SceneManager()
 
 SceneManager::~SceneManager() {
   vector< Scene* >::iterator it;
-  for( it = scenes.begin(); it != scenes.end(); ++it ) {
+  for( it = mScenes.begin(); it != mScenes.end(); ++it ) {
     delete *it;
   }
 }
 
 void SceneManager::RegisterScene( Scene *scene ) {
-  scenes.push_back( scene );
+  mScenes.push_back( scene );
 }
 
 Scene* SceneManager::FindActiveScene() {
   vector<Scene*>::iterator it;
-  for( it = scenes.begin(); it != scenes.end(); it++ ) {
+  for( it = mScenes.begin(); it != mScenes.end(); it++ ) {
     Scene *scene = *it;
     if( scene->Active() ) {
       return scene;
@@ -33,47 +33,47 @@ Scene* SceneManager::FindActiveScene() {
 }
 
 void SceneManager::Update() {
-  bool findNewScene = ( currentScene == NULL );
+  bool findNewScene = ( mCurrentScene == NULL );
 
-  if( currentScene ) {
-    currentScene->Update();
-    findNewScene |= !currentScene->Active();
+  if( mCurrentScene ) {
+    mCurrentScene->Update();
+    findNewScene |= !mCurrentScene->Active();
   }
 
   // Keep the current scene if no other scene is detected yet.
   // Scene should never be NULL except at the beginning.
   if( findNewScene ) {
     Scene *newScene = FindActiveScene();
-    if( newScene && newScene != currentScene ) {
+    if( newScene && newScene != mCurrentScene ) {
       // Notify our dear observers
-      Notify( currentScene, newScene );
+      Notify( mCurrentScene, newScene );
 
       // Make sure we reset the previous' scene state (e.g. origin)
-      if( currentScene ) {
-        currentScene->Reset();
+      if( mCurrentScene ) {
+        mCurrentScene->Reset();
       }
 
       // Switch to the new scene
-      currentScene = newScene;
+      mCurrentScene = newScene;
     }
   }
 }
 
-const Scene* SceneManager::GetActiveScene() {
-  return currentScene;
+const Scene* SceneManager::ActiveScene() const {
+  return mCurrentScene;
 }
 
-void SceneManager::RegisterObserver( SceneManagerObserver *observer) {
-  observers.push_back( observer );
+void SceneManager::RegisterObserver( SceneManagerObserver *observer ) {
+  mObservers.push_back( observer );
 }
 
 void SceneManager::UnregisterObserver( SceneManagerObserver *observer ) {
-  observers.erase( remove( observers.begin(), observers.end(), observer ), observers.end() );
+  mObservers.erase( remove( mObservers.begin(), mObservers.end(), observer ), mObservers.end() );
 }
 
 void SceneManager::Notify( Scene *oldScene, Scene *newScene ) {
   vector< SceneManagerObserver* >::iterator it;
-  for( it = observers.begin(); it != observers.end(); ++it ) {
+  for( it = mObservers.begin(); it != mObservers.end(); ++it ) {
     (*it)->SceneChanged( oldScene, newScene );
   }
 }

@@ -5,7 +5,7 @@
 class ConstructedScene : public Scene
 {
 private:
-  GameMode mode;
+  GameMode mMode;
 
 public:
   ConstructedScene()
@@ -22,25 +22,25 @@ public:
   void Reset() {
     Scene::Reset();
 
-    mode = MODE_UNKNOWN;
+    mMode = MODE_UNKNOWN;
   }
 
   void Update() {
     if( FindMarker( "constructed_casual_selected") ) {
-      mode = MODE_CASUAL;
+      mMode = MODE_CASUAL;
     }
     if( FindMarker( "constructed_ranked_selected") ) {
-      mode = MODE_RANKED;
+      mMode = MODE_RANKED;
     }
     if( FindMarker( "constructed_friendly") ) {
-      mode = MODE_FRIENDLY;
+      mMode = MODE_FRIENDLY;
     }
 
     // practice and friendly have the same layout,
     // except for the opponent selection
     // (which is shown after we press "Play")
     if( FindMarker( "constructed_practice_selection" ) ) {
-      mode = MODE_PRACTICE;
+      mMode = MODE_PRACTICE;
     }
   }
 
@@ -51,8 +51,8 @@ public:
            FindMarker( "constructed_practice_selection" );
   }
 
-  GameMode GetGameMode() const {
-    return mode;
+  GameMode GameMode() const {
+    return mMode;
   }
 };
 

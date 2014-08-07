@@ -9,16 +9,16 @@ public:
   SUUpdater* updater;
 };
 
-SparkleUpdater::SparkleUpdater( const QString& aUrl )
+SparkleUpdater::SparkleUpdater( const QString& url )
 {
   d = new Private;
 
   d->updater = [SUUpdater sharedUpdater];
   [d->updater retain];
 
-  NSURL* url = [NSURL URLWithString:
-      [NSString stringWithUTF8String: aUrl.toUtf8().data()]];
-  [d->updater setFeedURL: url];
+  NSURL* nsUrl = [NSURL URLWithString:
+      [NSString stringWithUTF8String: url.toUtf8().data()]];
+  [d->updater setFeedURL: nsUrl];
 }
 
 SparkleUpdater::~SparkleUpdater()
@@ -27,7 +27,12 @@ SparkleUpdater::~SparkleUpdater()
   delete d;
 }
 
-void SparkleUpdater::setAutomaticallyChecksForUpdates( bool automaticallyChecks )
+void SparkleUpdater::CheckForUpdatesNow() 
+{
+  return [d->updater checkForUpdates:nil];
+}
+
+void SparkleUpdater::SetAutomaticallyChecksForUpdates( bool automaticallyChecks )
 {
   if( automaticallyChecks ) {
     [d->updater setAutomaticallyChecksForUpdates:YES];
@@ -36,12 +41,7 @@ void SparkleUpdater::setAutomaticallyChecksForUpdates( bool automaticallyChecks 
   }
 }
 
-bool SparkleUpdater::automaticallyChecksForUpdates()
+bool SparkleUpdater::AutomaticallyChecksForUpdates()
 {
   return [d->updater automaticallyChecksForUpdates] == YES;
-}
-
-void SparkleUpdater::checkForUpdatesNow() 
-{
-  return [d->updater checkForUpdates:nil];
 }

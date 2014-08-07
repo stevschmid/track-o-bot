@@ -5,15 +5,16 @@
 #include <QString>
 
 class SparkleUpdater : public Updater {
+private:
+  class Private;
+  Private* d;
+
 public:
   SparkleUpdater( const QString& url );
   ~SparkleUpdater();
 
-  virtual void setAutomaticallyChecksForUpdates( bool automaticallyChecks );
-  virtual bool automaticallyChecksForUpdates();
-  virtual void checkForUpdatesNow();
+  virtual void CheckForUpdatesNow();
 
-private:
-  class Private;
-  Private* d;
+  virtual void SetAutomaticallyChecksForUpdates( bool automaticallyChecks );
+  virtual bool AutomaticallyChecksForUpdates();
 };

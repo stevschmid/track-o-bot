@@ -4,7 +4,7 @@
 #include <QStringList>
 
 HearthstoneLogAnalyzer::HearthstoneLogAnalyzer() {
-  connect( &logWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+  connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
 }
 
 void HearthstoneLogAnalyzer::HandleLogLine( const QString& line ) {

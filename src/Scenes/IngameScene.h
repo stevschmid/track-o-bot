@@ -9,23 +9,55 @@
 class IngameScene : public QObject, public Scene
 {
   Q_OBJECT
-
 private:
+  Outcome      mOutcome;
+  GoingOrder   mOrder;
+  Class        mOwnClass;
+  Class        mOpponentClass;
 
-  Outcome outcome;
-  GoingOrder order;
-  Class ownClass;
-  Class opponentClass;
+  CardHistoryList mCardHistoryList;
 
-  CardHistoryList cardHistoryList;
+  HearthstoneLogAnalyzer mLogAnalyzer;
 
-  HearthstoneLogAnalyzer logAnalyzer;
+  ShiftDetector mShiftDetector;
 
-  ShiftDetector shiftDetector;
+private slots:
+  void FromLogPlayerDied( Player player ) { // Not triggered when conceding
+    if( player == PLAYER_SELF ) {
+      mOutcome = OUTCOME_DEFEAT;
+    } else if( player == PLAYER_OPPONENT ) {
+      mOutcome = OUTCOME_VICTORY;
+    }
+  }
+
+  void FromLogCardPlayed( Player player, const string& cardId ) {
+    mCardHistoryList.push_back( CardHistoryItem( player, cardId ) );
+  }
+
+  void FromLogCardReturned( Player player, const string& cardId ) {
+    // Make sure we remove the "Choose One"-cards from the history
+    // if we decide to withdraw them after a second of thought
+    if( !mCardHistoryList.empty() &&
+         mCardHistoryList.back().player == player &&
+         mCardHistoryList.back().cardId == cardId )
+    {
+      mCardHistoryList.pop_back();
+    }
+  }
+
+  void FromLogCoinReceived( Player player ) {
+    if( player == PLAYER_SELF ) {
+      // I go second because I get the coin
+      mOrder = ORDER_SECOND;
+    } else if( player == PLAYER_OPPONENT ) {
+      // Opponent got coin, so I go first
+      mOrder = ORDER_FIRST;
+    }
+  }
 
 public:
   IngameScene()
-    : Scene( "Ingame" ), shiftDetector( this, "ingame", INGAME_SHIFT_DETECTION_GRACE_PERIOD )
+    : Scene( "Ingame" ), mShiftDetector( this, "ingame", INGAME_SHIFT_DETECTION_GRACE_PERIOD )
   {
     ADD_GENERATED_MARKER( "ingame", INGAME_ID );
     ADD_GENERATED_MARKER( "going_first", INGAME_MULLIGAN_1ST_ID );
@@ -64,10 +96,10 @@ public:
     ADD_GENERATED_MARKER( "own_class_hunter", INGAME_HUNTER_ME );
     ADD_GENERATED_MARKER( "opponent_class_hunter", INGAME_HUNTER_OPPONENT );
 
-    connect( &logAnalyzer, SIGNAL( PlayerDied(Player) ), this, SLOT( FromLogPlayerDied(Player) ) );
-    connect( &logAnalyzer, SIGNAL( CardPlayed(Player,const string&) ), this, SLOT( FromLogCardPlayed(Player, const string&) ) );
-    connect( &logAnalyzer, SIGNAL( CardReturned(Player,const string&) ), this, SLOT( FromLogCardReturned(Player,const string&) ) );
-    connect( &logAnalyzer, SIGNAL( CoinReceived(Player) ), this, SLOT( FromLogCoinReceived(Player) ) );
+    connect( &mLogAnalyzer, SIGNAL( PlayerDied(Player) ), this, SLOT( FromLogPlayerDied(Player) ) );
+    connect( &mLogAnalyzer, SIGNAL( CardPlayed(Player,const string&) ), this, SLOT( FromLogCardPlayed(Player, const string&) ) );
+    connect( &mLogAnalyzer, SIGNAL( CardReturned(Player,const string&) ), this, SLOT( FromLogCardReturned(Player,const string&) ) );
+    connect( &mLogAnalyzer, SIGNAL( CoinReceived(Player) ), this, SLOT( FromLogCoinReceived(Player) ) );
 
     Reset();
   }
@@ -75,42 +107,42 @@ public:
   void Reset() {
     Scene::Reset();
 
-    outcome       = OUTCOME_UNKNOWN;
-    order         = ORDER_UNKNOWN;
-    ownClass      = CLASS_UNKNOWN;
-    opponentClass = CLASS_UNKNOWN;
+    mOutcome       = OUTCOME_UNKNOWN;
+    mOrder         = ORDER_UNKNOWN;
+    mOwnClass      = CLASS_UNKNOWN;
+    mOpponentClass = CLASS_UNKNOWN;
 
-    cardHistoryList.clear();
-    shiftDetector.Reset();
+    mCardHistoryList.clear();
+    mShiftDetector.Reset();
   }
 
   void Update() {
-    shiftDetector.Update();
+    mShiftDetector.Update();
 
-    if( order == ORDER_UNKNOWN ) {
+    if( mOrder == ORDER_UNKNOWN ) {
       if( FindMarker("going_first") ) {
-        order = ORDER_FIRST;
+        mOrder = ORDER_FIRST;
       }
       if( FindMarker("going_second") ) {
-        order = ORDER_SECOND;
+        mOrder = ORDER_SECOND;
       }
     }
-    if( outcome == OUTCOME_UNKNOWN ) {
+    if( mOutcome == OUTCOME_UNKNOWN ) {
       if( FindMarker("victory1") || FindMarker("victory2") ) {
-        outcome = OUTCOME_VICTORY;
+        mOutcome = OUTCOME_VICTORY;
       }
       if( FindMarker("defeat1") || FindMarker("defeat2") ) {
-        outcome = OUTCOME_DEFEAT;
+        mOutcome = OUTCOME_DEFEAT;
       }
     }
-    if( ownClass == CLASS_UNKNOWN || opponentClass == CLASS_UNKNOWN ) {
+    if( mOwnClass == CLASS_UNKNOWN || mOpponentClass == CLASS_UNKNOWN ) {
       for( int i = 0; i < NUM_CLASSES; i++ ) {
         string className = CLASS_NAMES[ i ];
         if( FindMarker( string( "own_class_" ) + className ) ) {
-          ownClass = ( Class )i;
+          mOwnClass = ( Class )i;
         }
         if( FindMarker( string( "opponent_class_" ) + className ) ) {
-          opponentClass = ( Class )i;
+          mOpponentClass = ( Class )i;
         }
       }
     }
@@ -120,58 +152,24 @@ public:
     return FindMarker( "ingame" );
   }
 
-  Outcome GetOutcome() const {
-    return outcome;
+  Outcome Outcome() const {
+    return mOutcome;
   }
 
-  Class GetOwnClass() const {
-    return ownClass;
+  Class OwnClass() const {
+    return mOwnClass;
   }
 
-  Class GetOpponentClass() const {
-    return opponentClass;
+  Class OpponentClass() const {
+    return mOpponentClass;
   }
 
-  GoingOrder GetGoingOrder() const {
-    return order;
+  GoingOrder GoingOrder() const {
+    return mOrder;
   }
 
-  const CardHistoryList& GetCardHistoryList() const {
-    return cardHistoryList;
-  }
-
-private slots:
-  void FromLogPlayerDied( Player player ) { // Not triggered when conceding
-    if( player == PLAYER_SELF ) {
-      outcome = OUTCOME_DEFEAT;
-    } else if( player == PLAYER_OPPONENT ) {
-      outcome = OUTCOME_VICTORY;
-    }
-  }
-
-  void FromLogCardPlayed( Player player, const string& cardId ) {
-    cardHistoryList.push_back( CardHistoryItem(player, cardId) );
-  }
-
-  void FromLogCardReturned( Player player, const string& cardId ) {
-    // Make sure we remove the "Choose One"-cards from the history
-    // if we decide to withdraw them after a second of thought
-    if( !cardHistoryList.empty() &&
-         cardHistoryList.back().player == player &&
-         cardHistoryList.back().cardId == cardId )
-    {
-      cardHistoryList.pop_back();
-    }
-  }
-
-  void FromLogCoinReceived( Player player ) {
-    if( player == PLAYER_SELF ) {
-      // I go second because I get the coin
-      order = ORDER_SECOND;
-    } else if( player == PLAYER_OPPONENT ) {
-      // Opponent got coin, so I go first
-      order = ORDER_FIRST;
-    }
+  const CardHistoryList& CardHistoryList() const {
+    return mCardHistoryList;
   }
 
 };

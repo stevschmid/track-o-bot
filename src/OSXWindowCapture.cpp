@@ -4,49 +4,49 @@
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
 OSXWindowCapture::OSXWindowCapture( const string& windowName )
-  : name( windowName ), winId( 0 )
+  : mWindowName( windowName ), mWinId( 0 )
 {
-  timer = new QTimer( this );
-  connect( timer, SIGNAL( timeout() ), this, SLOT( Update() ) );
-  timer->start( OSX_UPDATE_WINDOW_DATA_INTERVAL );
+  mTimer = new QTimer( this );
+  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Update() ) );
+  mTimer->start( OSX_UPDATE_WINDOW_DATA_INTERVAL );
 
   Update();
 }
 
 void OSXWindowCapture::Update() {
-  if( winId == 0 ) {
-    winId = FindWindow( name );
+  if( mWinId == 0 ) {
+    mWinId = FindWindow( mWindowName );
   }
 
-  if( winId && !GetWindowRect( winId, &rect ) ) {
+  if( mWinId && !WindowRect( mWinId, &mRect ) ) {
     // Window became invalid
-    winId = 0;
+    mWinId = 0;
   }
 }
 
 bool OSXWindowCapture::WindowFound() {
-  return winId != 0;
+  return mWinId != 0;
 }
 
-int OSXWindowCapture::GetWidth() {
-  return CGRectGetWidth(rect);
+int OSXWindowCapture::Width() {
+  return CGRectGetWidth( mRect );
 }
 
-int OSXWindowCapture::GetHeight() {
-  int height = CGRectGetHeight( rect );
-  return IsFullscreen() ? height : std::max< int >( height - OSX_WINDOW_TITLE_BAR_HEIGHT, 0 );
+int OSXWindowCapture::Height() {
+  int height = CGRectGetHeight( mRect );
+  return Fullscreen() ? height : std::max< int >( height - OSX_WINDOW_TITLE_BAR_HEIGHT, 0 );
 }
 
 QPixmap OSXWindowCapture::Capture( int x, int y, int w, int h ) {
   CGRect captureRect = CGRectMake(
-      x + CGRectGetMinX( rect ),
-      y + CGRectGetMinY( rect ) + ( IsFullscreen() ? 0 : OSX_WINDOW_TITLE_BAR_HEIGHT ),
+      x + CGRectGetMinX( mRect ),
+      y + CGRectGetMinY( mRect ) + ( Fullscreen() ? 0 : OSX_WINDOW_TITLE_BAR_HEIGHT ),
       w,
       h );
 
   CGImageRef image = CGWindowListCreateImage( captureRect,
       kCGWindowListOptionIncludingWindow,
-      winId,
+      mWinId,
       kCGWindowImageNominalResolution | kCGWindowImageBoundsIgnoreFraming );
 
   QPixmap pixmap = QPixmap::fromMacCGImageRef( image );
@@ -55,10 +55,10 @@ QPixmap OSXWindowCapture::Capture( int x, int y, int w, int h ) {
   return pixmap;
 }
 
-bool OSXWindowCapture::IsFullscreen() {
+bool OSXWindowCapture::Fullscreen() {
   // this is not the most elegant solution, but I couldn't find a better way
-  return CGRectGetMinX(rect) == 0.0f && CGRectGetMinY(rect) == 0.0f &&
-    ( int( CGRectGetHeight( rect ) ) & OSX_WINDOW_TITLE_BAR_HEIGHT ) != OSX_WINDOW_TITLE_BAR_HEIGHT;
+  return CGRectGetMinX( mRect ) == 0.0f && CGRectGetMinY( mRect ) == 0.0f &&
+    ( int( CGRectGetHeight( mRect ) ) & OSX_WINDOW_TITLE_BAR_HEIGHT ) != OSX_WINDOW_TITLE_BAR_HEIGHT;
 }
 
 int OSXWindowCapture::FindWindow( const string& name ) {
@@ -91,7 +91,7 @@ int OSXWindowCapture::FindWindow( const string& name ) {
   return winId;
 }
 
-bool OSXWindowCapture::GetWindowRect( int windowId, CGRect *rect ) {
+bool OSXWindowCapture::WindowRect( int windowId, CGRect *rect ) {
   CFArrayRef windowList = CGWindowListCopyWindowInfo( kCGWindowListOptionIncludingWindow, windowId );
   CFIndex numWindows = CFArrayGetCount( windowList );
 

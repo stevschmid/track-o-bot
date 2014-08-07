@@ -15,19 +15,19 @@ DEFINE_SINGLETON_SCOPE( Hearthstone )
 
 Hearthstone::Hearthstone() {
 #ifdef Q_WS_MAC
-  capture = new OSXWindowCapture( "Hearthstone" );
+  mCapture = new OSXWindowCapture( "Hearthstone" );
 #elif defined Q_WS_WIN
-  capture = new WinWindowCapture( "Hearthstone" );
+  mCapture = new WinWindowCapture( "Hearthstone" );
 #endif
 }
 
 Hearthstone::~Hearthstone() {
-  if( capture != NULL )
-    delete capture;
+  if( mCapture != NULL )
+    delete mCapture;
 }
 
-bool Hearthstone::IsRunning() {
-  return capture->WindowFound();
+bool Hearthstone::Running() {
+  return mCapture->WindowFound();
 }
 
 #ifdef Q_WS_WIN
@@ -36,11 +36,11 @@ inline float roundf( float x ) {
 }
 #endif
 
-QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh) {
+QPixmap Hearthstone::Capture( int vx, int vy, int vw, int vh ) {
   int x, y, w, h;
 
-  int realCanvasWidth = capture->GetWidth();
-  int realCanvasHeight = capture->GetHeight();
+  int realCanvasWidth = mCapture->Width();
+  int realCanvasHeight = mCapture->Height();
 
   int virtualCanvasWidth = VIRTUAL_CANVAS_WIDTH;
   int virtualCanvasHeight = VIRTUAL_CANVAS_HEIGHT;
@@ -55,14 +55,14 @@ QPixmap Hearthstone::Capture(int vx, int vy, int vw, int vh) {
   w = roundf( vw * scale );
   h = roundf( vh * scale );
 
-  return capture->Capture( x, y, w, h );
+  return mCapture->Capture( x, y, w, h );
 }
 
-void Hearthstone::SetWindowCapture( WindowCapture *wc ) {
-  if( capture != NULL )
-    delete capture;
+void Hearthstone::SetWindowCapture( WindowCapture *windowCapture ) {
+  if( mCapture != NULL )
+    delete mCapture;
 
-  capture = wc;
+  mCapture = windowCapture;
 }
 
 void Hearthstone::EnableLogging() {
@@ -81,7 +81,7 @@ void Hearthstone::EnableLogging() {
       file.close();
 
       LOG( "Ingame Log activated." );
-      if( IsRunning() ) {
+      if( Running() ) {
         LOG("Please restart Hearthstone for logging to take effect.");
       }
     }
@@ -101,7 +101,7 @@ string Hearthstone::LogConfigPath() {
   QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
   QString configPath = homeLocation + "/Library/Preferences/Blizzard/Hearthstone/log.config";
 #elif defined Q_WS_WIN
-  char buffer[MAX_PATH];
+  char buffer[ MAX_PATH ];
   SHGetSpecialFolderPathA( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
   QString localAppData( buffer );
   QString configPath = localAppData + "\\Blizzard\\Hearthstone\\log.config";
@@ -129,10 +129,10 @@ string Hearthstone::LogPath() {
   return logPath.toStdString();
 }
 
-int Hearthstone::GetWidth() {
-  return capture->GetWidth();
+int Hearthstone::Width() {
+  return mCapture->Width();
 }
 
-int Hearthstone::GetHeight() {
-  return capture->GetHeight();
+int Hearthstone::Height() {
+  return mCapture->Height();
 }

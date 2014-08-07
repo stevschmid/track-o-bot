@@ -22,7 +22,7 @@
 
 #include "Hearthstone.h"
 
-Updater *updater = NULL;
+Updater *gUpdater = NULL;
 
 int main( int argc, char **argv )
 {
@@ -67,9 +67,9 @@ int main( int argc, char **argv )
 
 #if defined Q_WS_MAC
   CocoaInitializer cocoaInitializer;
-  updater = new SparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast.xml" ) );
+  gUpdater = new SparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast.xml" ) );
 #elif defined Q_WS_WIN
-  updater = new WinSparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast_win.xml" ) );
+  gUpdater = new WinSparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast_win.xml" ) );
 #endif
 
   // Initalize Windows n stuff

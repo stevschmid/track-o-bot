@@ -7,8 +7,8 @@ class HearthstoneLogWatcher : public QObject
   Q_OBJECT
 
 private:
-  QString path;
-  qint64 lastSeekPos;
+  QString mPath;
+  qint64 mLastSeekPos;
 
 public:
   HearthstoneLogWatcher();

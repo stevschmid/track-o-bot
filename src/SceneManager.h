@@ -14,14 +14,13 @@ public:
 class SceneManager
 {
 private:
-  vector< SceneManagerObserver* > observers;
+  vector< SceneManagerObserver* > mObservers;
+  vector< Scene* >                mScenes;
+  Scene*                          mCurrentScene;
 
-  Scene *currentScene;
-  vector< Scene* > scenes;
-
-  void RegisterScene( Scene *scene );
-  Scene *FindActiveScene();
-  void Notify( Scene *oldScene, Scene *newScene );
+  void    RegisterScene( Scene *scene );
+  Scene*  FindActiveScene();
+  void    Notify( Scene *oldScene, Scene *newScene );
 
 public:
   SceneManager();
@@ -32,5 +31,5 @@ public:
 
   void Update();
 
-  const Scene* GetActiveScene();
+  const Scene* ActiveScene() const;
 };

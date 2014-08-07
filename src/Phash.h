@@ -7,9 +7,19 @@
 
 #define PHASH_HAMMING_DISTANCE_SIMILAR_THRESHOLD 10 // bits
 
-typedef quint64 phash;
+class Phash
+{
+private:
+  quint64 mHash;
 
-phash         phash_for_pixmap( const QPixmap& pixmap );
-unsigned int  phash_calculate_hamming_distance( phash v1, phash v2 );
-bool          phash_check_similarity( phash v1, phash v2 );
+  quint64 CalculateHashForPixmap( const QPixmap& pixmap );
+
+public:
+  Phash( quint64 hash = 0 );
+  Phash( const QPixmap& pixmap );
+
+  quint64 Hash() const;
+  bool operator==( const Phash& otherPhash ) const;
+  unsigned int CalculateHammingDistance( const Phash& otherPhash ) const;
+};
 

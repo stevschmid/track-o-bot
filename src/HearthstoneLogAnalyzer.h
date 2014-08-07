@@ -6,6 +6,12 @@ class HearthstoneLogAnalyzer : public QObject
 {
   Q_OBJECT
 
+private:
+  HearthstoneLogWatcher mLogWatcher;
+
+private slots:
+  void HandleLogLine( const QString& line );
+
 public:
   HearthstoneLogAnalyzer();
 
@@ -14,10 +20,4 @@ signals:
   void CardPlayed( Player player, const string& cardId );
   void CardReturned( Player player, const string& cardId );
   void CoinReceived( Player player );
-
-private slots:
-  void HandleLogLine( const QString& line );
-
-private:
-  HearthstoneLogWatcher logWatcher;
 };

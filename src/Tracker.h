@@ -12,17 +12,17 @@ class Tracker : public QObject
 DEFINE_SINGLETON( Tracker )
 
 private:
-  QNetworkAccessManager networkManager;
-  QSettings settings;
+  QNetworkAccessManager mNetworkManager;
+  QSettings mSettings;
+
+  int mSuccessfulResultCount;
+  int mUnknownOutcomeCount;
+  int mUnknownModeCount;
+  int mUnknownOrderCount;
+  int mUnknownClassCount;
+  int mUnknownOpponentCount;
 
   QNetworkReply* AuthPostJson( const QString& path, const QByteArray& data );
-
-  int successfulResultCount;
-  int unknownOutcomeCount;
-  int unknownModeCount;
-  int unknownOrderCount;
-  int unknownClassCount;
-  int unknownOpponentCount;
 
 private slots:
   void AddResultHandleReply();
@@ -33,26 +33,26 @@ private slots:
 
   QNetworkRequest CreateTrackerRequest( const QString& path );
 
-signals:
-  void AccountCreated();
-
 public:
-  bool IsAccountSetUp();
+  bool IsAccountSetUp() const;
 
   void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList );
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();
 
-  QString Username();
+  QString Username() const;
   void SetUsername( const QString& username );
 
-  QString Password();
+  QString Password() const;
   void SetPassword( const QString& password );
 
   QString WebserviceURL();
   QString WebserviceURL( const QString& path );
   void SetWebserviceURL( const QString& webserviceUrl );
+
+signals:
+  void AccountCreated();
 
 };
 

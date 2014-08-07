@@ -27,21 +27,21 @@ class SettingsTab : public QWidget
   Q_OBJECT
 
 private:
-  Ui::SettingsWidget *ui;
+  Ui::SettingsWidget *mUI;
 
 private slots:
-  void exportAccount();
-  void importAccount();
-  void checkForUpdatesNow();
-
-public slots:
-  void updateAutostart();
-  void updateUpdateCheck();
-  void loadSettings();
+  void ExportAccount();
+  void ImportAccount();
+  void CheckForUpdatesNow();
 
 public:
   explicit SettingsTab( QWidget *parent = 0 );
   ~SettingsTab();
+
+public slots:
+  void UpdateAutostart();
+  void UpdateUpdateCheck();
+  void LoadSettings();
 };
 
 namespace Ui { class LogWidget; }
@@ -51,14 +51,14 @@ class LogTab : public QWidget
   Q_OBJECT
 
 private:
-  Ui::LogWidget *ui;
+  Ui::LogWidget *mUI;
+
+private slots:
+  void AddLogEntry( const string& message );
 
 public:
   explicit LogTab( QWidget *parent = 0 );
   ~LogTab();
-
-private slots:
-  void addLogEntry( const string& message );
 };
 
 namespace Ui { class AboutWidget; }
@@ -68,12 +68,11 @@ class AboutTab : public QWidget
   Q_OBJECT
 
 private:
-  Ui::AboutWidget *ui;
+  Ui::AboutWidget *mUI;
 
 public:
   explicit AboutTab( QWidget *parent = 0 );
   ~AboutTab();
-
 };
 
 namespace Ui { class Window; }
@@ -82,32 +81,32 @@ class Window : public QDialog
 {
   Q_OBJECT
 
+private:
+  void CloseEvent( QCloseEvent *event );
+  void ShowEvent( QShowEvent *event );
+  void Reject();
+
+  void CreateActions();
+  void CreateTrayIcon();
+
+  Ui::Window        *mUI;
+
+  QAction           *mShowAction;
+  QAction           *mQuitAction;
+  QAction           *mOpenProfileAction;
+
+  QSystemTrayIcon   *mTrayIcon;
+  QMenu             *mTrayIconMenu;
+
+  Core              mCore;
+
+private slots:
+  void RiseAndShine();
+  void OpenProfile();
+  void TrayIconActivated( QSystemTrayIcon::ActivationReason reason );
+
 public:
   explicit Window();
   ~Window();
-
-private slots:
-  void riseAndShine();
-  void openProfile();
-  void trayIconActivated( QSystemTrayIcon::ActivationReason );
-
-private:
-  void closeEvent( QCloseEvent *event );
-  void showEvent( QShowEvent *event );
-  void reject();
-
-  void createActions();
-  void createTrayIcon();
-
-  Ui::Window *ui;
-
-  QAction *showAction;
-  QAction *quitAction;
-  QAction *openProfileAction;
-
-  QSystemTrayIcon *trayIcon;
-  QMenu *trayIconMenu;
-
-  Core core;
 };
 
