@@ -50,12 +50,22 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
   if( oldScene && oldScene->Name() == "Ingame" ) {
     IngameScene *ingame = ( IngameScene* )oldScene;
 
-    Tracker::Instance()->AddResult(
-        mCurrentGameMode,
-        ingame->Outcome(),
-        ingame->GoingOrder(),
-        ingame->OwnClass(),
-        ingame->OpponentClass(),
-        ingame->CardHistoryList() );
+    GameMode        gameMode        = mCurrentGameMode;
+    Outcome         outcome         = ingame->Outcome();
+    GoingOrder      order           = ingame->GoingOrder();
+    Class           ownClass        = ingame->OwnClass();
+    Class           opponentClass   = ingame->OpponentClass();
+    CardHistoryList cardHistoryList = mLogTracker.CardHistoryList();
+
+    // Use the log as fallback
+    if( outcome == OUTCOME_UNKNOWN ) {
+      outcome = mLogTracker.Outcome();
+    }
+
+    if( order == ORDER_UNKNOWN ) {
+      order = mLogTracker.Order();
+    }
+
+    Tracker::Instance()->AddResult( gameMode, outcome, order, ownClass, opponentClass, cardHistoryList );
   }
 }

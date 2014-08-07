@@ -17,8 +17,7 @@ HEADERS = src/Local.h \
           src/Logger.h \
           src/Tracker.h \
           src/HearthstoneLogWatcher.h \
-          src/HearthstoneLogAnalyzer.h \
-          src/scenes/IngameScene.h
+          src/HearthstoneLogTracker.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -31,7 +30,7 @@ SOURCES = src/Main.cpp \
           src/Json.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
-          src/HearthstoneLogAnalyzer.cpp
+          src/HearthstoneLogTracker.cpp
 
 FORMS   = src/Window.ui \
           src/SettingsWidget.ui \

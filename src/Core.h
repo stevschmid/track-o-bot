@@ -2,6 +2,7 @@
 
 #include "SceneManager.h"
 #include "Tracker.h"
+#include "HearthstoneLogTracker.h"
 
 #include <QTimer>
 
@@ -10,10 +11,11 @@ class Core : public QObject, public SceneManagerObserver
   Q_OBJECT
 
 private:
-  QTimer*       mTimer;
-  SceneManager  mSceneManager;
-  GameMode      mCurrentGameMode;
-  bool          mGameRunning;
+  QTimer*               mTimer;
+  SceneManager          mSceneManager;
+  GameMode              mCurrentGameMode;
+  bool                  mGameRunning;
+  HearthstoneLogTracker mLogTracker;
 
 private slots:
   void Tick();

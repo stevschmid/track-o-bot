@@ -1,59 +1,18 @@
-#include "../HearthstoneLogAnalyzer.h"
-
 #include "ShiftDetector.h"
 
 // if after X ms the ingame marker is still absent, look for a shift in
 // the scene (e.g. caused by a heavy minion or a spell)
 #define INGAME_SHIFT_DETECTION_GRACE_PERIOD 3000
 
-class IngameScene : public QObject, public Scene
+class IngameScene : public Scene
 {
-  Q_OBJECT
 private:
   Outcome      mOutcome;
   GoingOrder   mOrder;
   Class        mOwnClass;
   Class        mOpponentClass;
 
-  CardHistoryList mCardHistoryList;
-
-  HearthstoneLogAnalyzer mLogAnalyzer;
-
   ShiftDetector mShiftDetector;
-
-private slots:
-  void FromLogPlayerDied( Player player ) { // Not triggered when conceding
-    if( player == PLAYER_SELF ) {
-      mOutcome = OUTCOME_DEFEAT;
-    } else if( player == PLAYER_OPPONENT ) {
-      mOutcome = OUTCOME_VICTORY;
-    }
-  }
-
-  void FromLogCardPlayed( Player player, const string& cardId ) {
-    mCardHistoryList.push_back( CardHistoryItem( player, cardId ) );
-  }
-
-  void FromLogCardReturned( Player player, const string& cardId ) {
-    // Make sure we remove the "Choose One"-cards from the history
-    // if we decide to withdraw them after a second of thought
-    if( !mCardHistoryList.empty() &&
-         mCardHistoryList.back().player == player &&
-         mCardHistoryList.back().cardId == cardId )
-    {
-      mCardHistoryList.pop_back();
-    }
-  }
-
-  void FromLogCoinReceived( Player player ) {
-    if( player == PLAYER_SELF ) {
-      // I go second because I get the coin
-      mOrder = ORDER_SECOND;
-    } else if( player == PLAYER_OPPONENT ) {
-      // Opponent got coin, so I go first
-      mOrder = ORDER_FIRST;
-    }
-  }
 
 public:
   IngameScene()
@@ -96,11 +55,6 @@ public:
     ADD_GENERATED_MARKER( "own_class_hunter", INGAME_HUNTER_ME );
     ADD_GENERATED_MARKER( "opponent_class_hunter", INGAME_HUNTER_OPPONENT );
 
-    connect( &mLogAnalyzer, SIGNAL( PlayerDied(Player) ), this, SLOT( FromLogPlayerDied(Player) ) );
-    connect( &mLogAnalyzer, SIGNAL( CardPlayed(Player,const string&) ), this, SLOT( FromLogCardPlayed(Player, const string&) ) );
-    connect( &mLogAnalyzer, SIGNAL( CardReturned(Player,const string&) ), this, SLOT( FromLogCardReturned(Player,const string&) ) );
-    connect( &mLogAnalyzer, SIGNAL( CoinReceived(Player) ), this, SLOT( FromLogCoinReceived(Player) ) );
-
     Reset();
   }
 
@@ -112,7 +66,6 @@ public:
     mOwnClass      = CLASS_UNKNOWN;
     mOpponentClass = CLASS_UNKNOWN;
 
-    mCardHistoryList.clear();
     mShiftDetector.Reset();
   }
 
@@ -166,10 +119,6 @@ public:
 
   GoingOrder GoingOrder() const {
     return mOrder;
-  }
-
-  const CardHistoryList& CardHistoryList() const {
-    return mCardHistoryList;
   }
 
 };

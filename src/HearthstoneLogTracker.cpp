@@ -1,13 +1,20 @@
-#include "HearthstoneLogAnalyzer.h"
+#include "HearthstoneLogTracker.h"
 
 #include <QRegExp>
 #include <QStringList>
 
-HearthstoneLogAnalyzer::HearthstoneLogAnalyzer() {
+HearthstoneLogTracker::HearthstoneLogTracker() {
   connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+  Reset();
 }
 
-void HearthstoneLogAnalyzer::HandleLogLine( const QString& line ) {
+void HearthstoneLogTracker::Reset() {
+  mOutcome = OUTCOME_UNKNOWN;
+  mOrder = ORDER_UNKNOWN;
+  mCardHistoryList.clear();
+}
+
+void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   if( line.trimmed().isEmpty() )
     return;
 
@@ -27,22 +34,22 @@ void HearthstoneLogAnalyzer::HandleLogLine( const QString& line ) {
 
     if( !draw && !mulligan && !discard ) {
       if( from.contains( "FRIENDLY HAND" ) ) {
-        emit CardPlayed( PLAYER_SELF, cardId.toStdString() );
+        CardPlayed( PLAYER_SELF, cardId.toStdString() );
       } else if( from.contains( "OPPOSING HAND" ) ) {
-        emit CardPlayed( PLAYER_OPPONENT, cardId.toStdString() );
+        CardPlayed( PLAYER_OPPONENT, cardId.toStdString() );
       }
     }
 
     if( from.contains( "FRIENDLY PLAY" ) && to.contains( "FRIENDLY HAND" ) ) {
-      emit CardReturned( PLAYER_SELF, cardId.toStdString() );
+      CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
     // Player died? (unfortunately there is no log entry when conceding)
     if( to.contains( "GRAVEYARD" ) && from.contains( "PLAY (Hero)" ) ) {
       if( to.contains( "FRIENDLY" ) ) {
-        emit PlayerDied( PLAYER_SELF );
+        PlayerDied( PLAYER_SELF );
       } else if( to.contains( "OPPOSING" ) ) {
-        emit PlayerDied( PLAYER_OPPONENT );
+        PlayerDied( PLAYER_OPPONENT );
       }
     }
 
@@ -54,13 +61,49 @@ void HearthstoneLogAnalyzer::HandleLogLine( const QString& line ) {
   // ReceivedCoin
   QRegExp regexCoin( "ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
   if( regexCoin.indexIn(line) != -1 ) {
+    // The receiving of the coin marks a new game, so reset our state
+    Reset();
+
     QStringList captures = regexCoin.capturedTexts();
     QString to = captures[1];
 
     if( to.contains( "FRIENDLY HAND" ) ) {
-      emit CoinReceived( PLAYER_SELF );
+      CoinReceived( PLAYER_SELF );
     } else if( to.contains( "OPPOSING HAND" ) ) {
-      emit CoinReceived( PLAYER_OPPONENT );
+      CoinReceived( PLAYER_OPPONENT );
     }
+  }
+}
+
+void HearthstoneLogTracker::PlayerDied( Player player ) { // Not triggered when conceding
+  if( player == PLAYER_SELF ) {
+    mOutcome = OUTCOME_DEFEAT;
+  } else if( player == PLAYER_OPPONENT ) {
+    mOutcome = OUTCOME_VICTORY;
+  }
+}
+
+void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
+  mCardHistoryList.push_back( CardHistoryItem( player, cardId ) );
+}
+
+void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
+  // Make sure we remove the "Choose One"-cards from the history
+  // if we decide to withdraw them after a second of thought
+  if( !mCardHistoryList.empty() &&
+      mCardHistoryList.back().player == player &&
+      mCardHistoryList.back().cardId == cardId )
+  {
+    mCardHistoryList.pop_back();
+  }
+}
+
+void HearthstoneLogTracker::CoinReceived( Player player ) {
+  if( player == PLAYER_SELF ) {
+    // I go second because I get the coin
+    mOrder = ORDER_SECOND;
+  } else if( player == PLAYER_OPPONENT ) {
+    // Opponent got coin, so I go first
+    mOrder = ORDER_FIRST;
   }
 }
