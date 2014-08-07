@@ -1,4 +1,4 @@
-#include "win_sparkle_updater.h"
+#include "WinSparkleUpdater.h"
 
 #include <winsparkle.h>
 #include <QApplication>

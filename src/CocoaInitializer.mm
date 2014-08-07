@@ -1,4 +1,4 @@
-#include "cocoa_initializer.h"
+#include "CocoaInitializer.h"
 
 #include <AppKit/AppKit.h>
 #include <Cocoa/Cocoa.h>

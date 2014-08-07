@@ -10,34 +10,34 @@ MOC_DIR = tmp
 RCC_DIR = tmp
 UI_DIR = tmp
 
-PRECOMPILED_HEADER = src/local.h
-HEADERS = src/local.h \
-          src/window.h \
-          src/core.h \
-          src/logger.h \
-          src/tracker.h \
-          src/hearthstone_log_watcher.h \
-          src/hearthstone_log_analyzer.h \
-          src/scenes/ingame_scene.h
+PRECOMPILED_HEADER = src/Local.h
+HEADERS = src/Local.h \
+          src/Window.h \
+          src/Core.h \
+          src/Logger.h \
+          src/Tracker.h \
+          src/HearthstoneLogWatcher.h \
+          src/HearthstoneLogAnalyzer.h \
+          src/scenes/IngameScene.h
 
-SOURCES = src/main.cpp \
-          src/hearthstone.cpp \
-          src/dhash.cpp \
-          src/phash.cpp \
-          src/scene_manager.cpp \
-          src/tracker.cpp \
-          src/window.cpp \
-          src/core.cpp \
-          src/logger.cpp \
-          src/json.cpp \
-          src/autostart.cpp \
-          src/hearthstone_log_watcher.cpp \
-          src/hearthstone_log_analyzer.cpp
+SOURCES = src/Main.cpp \
+          src/Hearthstone.cpp \
+          src/Dhash.cpp \
+          src/Phash.cpp \
+          src/SceneManager.cpp \
+          src/Tracker.cpp \
+          src/Window.cpp \
+          src/Core.cpp \
+          src/Logger.cpp \
+          src/Json.cpp \
+          src/Autostart.cpp \
+          src/HearthstoneLogWatcher.cpp \
+          src/HearthstoneLogAnalyzer.cpp
 
-FORMS   = src/window.ui \
-          src/settings_widget.ui \
-          src/log_widget.ui \
-          src/about_widget.ui
+FORMS   = src/Window.ui \
+          src/SettingsWidget.ui \
+          src/LogWidget.ui \
+          src/AboutWidget.ui
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
@@ -49,14 +49,14 @@ CONFIG(debug, debug|release): DEFINES += _DEBUG
 mac {
   DEFINES += PLATFORM=\\\"mac\\\"
 
-  HEADERS += src/osx_window_capture.h
-  SOURCES += src/osx_window_capture.cpp
+  HEADERS += src/OSXWindowCapture.h
+  SOURCES += src/OSXWindowCapture.cpp
 
   LIBS += -framework ApplicationServices -framework Sparkle -framework AppKit
 
   OBJECTIVE_SOURCES += \
-    src/sparkle_updater.mm \
-    src/cocoa_initializer.mm
+    src/SparkleUpdater.mm \
+    src/CocoaInitializer.mm
 
   ICON = icons/logo.icns
 
@@ -74,8 +74,8 @@ win32 {
   INCLUDEPATH += . \
                  ../WinSparkle/include
 
-  SOURCES += src/win_window_capture.cpp \
-             src/win_sparkle_updater.cpp
+  SOURCES += src/WinWindowCapture.cpp \
+             src/WinSparkleUpdater.cpp
 
   DEFINES += _CRT_SECURE_NO_WARNINGS
 

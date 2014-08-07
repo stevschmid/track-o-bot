@@ -27,7 +27,7 @@ DEFINES += "slots=Q_SLOTS"
 DEFINES += "signals=Q_SIGNALS"
 DEFINES += "emit=Q_EMIT"
 
-SOURCES -= src/main.cpp
+SOURCES -= src/Main.cpp
 
 GMOCK_HEADERS = $$GMOCKPATH/include/gmock/*.h \
                 $$GMOCKPATH/include/gmock/internal/*.h

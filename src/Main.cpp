@@ -8,19 +8,19 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 
-#include "window.h"
-#include "tracker.h"
+#include "Window.h"
+#include "Tracker.h"
 
-#include "updater.h"
+#include "Updater.h"
 
 #if defined Q_WS_MAC
-#include "cocoa_initializer.h"
-#include "sparkle_updater.h"
+#include "CocoaInitializer.h"
+#include "SparkleUpdater.h"
 #elif defined Q_WS_WIN
-#include "win_sparkle_updater.h"
+#include "WinSparkleUpdater.h"
 #endif
 
-#include "hearthstone.h"
+#include "Hearthstone.h"
 
 Updater *updater = NULL;
 

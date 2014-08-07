@@ -1,4 +1,4 @@
-#include "tracker.h"
+#include "Tracker.h"
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -6,8 +6,8 @@
 #include <QTimer>
 #include <QDesktopServices>
 
-#include "json.h"
-#include "hearthstone.h"
+#include "Json.h"
+#include "Hearthstone.h"
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 

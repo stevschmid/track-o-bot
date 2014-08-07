@@ -1,4 +1,4 @@
-#include "win_window_capture.h"
+#include "WinWindowCapture.h"
 
 WinWindowCapture::WinWindowCapture(const string& windowName)
   :name(windowName)

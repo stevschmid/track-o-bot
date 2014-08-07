@@ -2,7 +2,7 @@
 
 #include <QPixmap>
 
-#include "window_capture.h"
+#include "WindowCapture.h"
 
 // Hearthstone provides a virtual canvas of 1024x768, which is independent
 // of the resolution set

@@ -1,4 +1,4 @@
-#include "sparkle_updater.h"
+#include "SparkleUpdater.h"
 
 #include <Cocoa/Cocoa.h>
 #include <Sparkle/Sparkle.h>

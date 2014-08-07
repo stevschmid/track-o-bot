@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hearthstone_log_watcher.h"
+#include "HearthstoneLogWatcher.h"
 
 class HearthstoneLogAnalyzer : public QObject
 {

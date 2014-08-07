@@ -1,10 +1,10 @@
 #pragma once
 
-#include "scenes/scene.h"
-#include "scenes/main_menu_scene.h"
-#include "scenes/constructed_scene.h"
-#include "scenes/arena_scene.h"
-#include "scenes/ingame_scene.h"
+#include "Scenes/Scene.h"
+#include "Scenes/MainMenuScene.h"
+#include "Scenes/ConstructedScene.h"
+#include "Scenes/ArenaScene.h"
+#include "Scenes/IngameScene.h"
 
 class SceneManagerObserver {
 public:

@@ -1,6 +1,5 @@
-#include "core.h"
-
-#include "tracker.h"
+#include "Core.h"
+#include "Tracker.h"
 
 Core::Core()
   :currentGameMode(MODE_UNKNOWN), gameRunning(false)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "window_capture.h"
+#include "WindowCapture.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

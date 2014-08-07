@@ -1,6 +1,6 @@
 #pragma once
 
-#include "window_capture.h"
+#include "WindowCapture.h"
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <QTimer>

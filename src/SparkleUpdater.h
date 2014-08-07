@@ -1,6 +1,6 @@
 #pragma once
 
-#include "updater.h"
+#include "Updater.h"
 
 #include <QString>
 

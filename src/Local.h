@@ -130,6 +130,6 @@ public:
 typedef vector<CardHistoryItem> CardHistoryList;
 
 
-#include "logger.h"
+#include "Logger.h"
 #define LOG(str, ...) Logger::Instance()->Add(str, ##__VA_ARGS__)
 

@@ -21,7 +21,7 @@
  */
 
 #include <QDateTime>
-#include "json.h"
+#include "Json.h"
 
 namespace QtJson {
     static QString dateFormat, dateTimeFormat;

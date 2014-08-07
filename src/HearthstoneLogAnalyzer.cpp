@@ -1,4 +1,4 @@
-#include "hearthstone_log_analyzer.h"
+#include "HearthstoneLogAnalyzer.h"
 
 #include <QRegExp>
 #include <QStringList>

@@ -1,13 +1,13 @@
-#include "hearthstone.h"
+#include "Hearthstone.h"
 
 #include <QFile>
 #include <QDesktopServices>
 #include <QSettings>
 
 #ifdef Q_WS_MAC
-#include "osx_window_capture.h"
+#include "OSXWindowCapture.h"
 #elif defined Q_WS_WIN
-#include "win_window_capture.h"
+#include "WinWindowCapture.h"
 #include "Shlobj.h"
 #endif
 

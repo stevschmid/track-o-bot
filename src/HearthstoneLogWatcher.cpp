@@ -1,5 +1,5 @@
-#include "hearthstone_log_watcher.h"
-#include "hearthstone.h"
+#include "HearthstoneLogWatcher.h"
+#include "Hearthstone.h"
 
 #include <QFile>
 #include <QTimer>

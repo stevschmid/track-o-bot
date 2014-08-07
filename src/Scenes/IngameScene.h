@@ -1,6 +1,6 @@
-#include "../hearthstone_log_analyzer.h"
+#include "../HearthstoneLogAnalyzer.h"
 
-#include "shift_detector.h"
+#include "ShiftDetector.h"
 
 // if after X ms the ingame marker is still absent, look for a shift in
 // the scene (e.g. caused by a heavy minion or a spell)

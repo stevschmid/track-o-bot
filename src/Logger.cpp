@@ -1,4 +1,4 @@
-#include "logger.h"
+#include "Logger.h"
 #include <ctime>
 
 DEFINE_SINGLETON_SCOPE(Logger);

@@ -1,13 +1,13 @@
 #include <QtGui>
-#include "window.h"
+#include "Window.h"
 
-#include "ui_window.h"
-#include "ui_settings_widget.h"
-#include "ui_log_widget.h"
-#include "ui_about_widget.h"
+#include "ui_Window.h"
+#include "ui_SettingsWidget.h"
+#include "ui_LogWidget.h"
+#include "ui_AboutWidget.h"
 
-#include "tracker.h"
-#include "updater.h"
+#include "Tracker.h"
+#include "Updater.h"
 extern Updater *updater;
 
 SettingsTab::SettingsTab(QWidget *parent)

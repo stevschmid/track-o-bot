@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene.h"
+#include "Scene.h"
 
 class ConstructedScene : public Scene
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../phash.h"
-#include "../hearthstone.h"
-#include "../generated_markers.h"
+#include "../Phash.h"
+#include "../Hearthstone.h"
+#include "../GeneratedMarkers.h"
 
 #include <QPixmap>
 

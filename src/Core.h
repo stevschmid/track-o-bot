@@ -1,7 +1,7 @@
 #pragma once
 
-#include "scene_manager.h"
-#include "tracker.h"
+#include "SceneManager.h"
+#include "Tracker.h"
 
 #include <QTimer>
 

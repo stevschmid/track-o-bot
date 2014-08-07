@@ -1,4 +1,4 @@
-#include "dhash.h"
+#include "Dhash.h"
 
 dhash dhash_for_pixmap(const QPixmap& pixmap) {
   dhash hash = 0;

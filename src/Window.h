@@ -3,8 +3,8 @@
 #include <QDialog>
 #include <QSystemTrayIcon>
 
-#include "core.h"
-#include "autostart.h"
+#include "Core.h"
+#include "Autostart.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
