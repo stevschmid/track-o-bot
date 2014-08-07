@@ -1,4 +1,4 @@
-include(tracking.pro)
+include(track-o-bot.pro)
 
 CONFIG += console
 CONFIG -= app_bundle
@@ -18,16 +18,8 @@ INCLUDEPATH += src \
                $$GMOCKPATH \
                $$GMOCKPATH/include
 
-DEFINES += QT_NO_KEYWORDS \
-           _WCHAR_H_CPLUSPLUS_98_CONFORMANCE_
-
-# We need to QT_NO_KEYWORDS because of forever def in gmock
-# Manually define slots etc.
-DEFINES += "slots=Q_SLOTS"
-DEFINES += "signals=Q_SIGNALS"
-DEFINES += "emit=Q_EMIT"
-
-SOURCES -= src/Main.cpp
+# Ignore forever definition of Qt (otherwise clash with gtest)
+DEFINES += "forever=forever"
 
 GMOCK_HEADERS = $$GMOCKPATH/include/gmock/*.h \
                 $$GMOCKPATH/include/gmock/internal/*.h
@@ -35,10 +27,16 @@ GMOCK_HEADERS = $$GMOCKPATH/include/gmock/*.h \
 GTEST_HEADERS = $$GTESTPATH/include/gtest/*.h \
                 $$GTESTPATH/include/gtest/internal/*.h
 
-HEADERS += $$GTEST_HEADERS \
-           $$GMOCK_HEADERS
+HEADERS = $$GTEST_HEADERS \
+          $$GMOCK_HEADERS \
+          src/Local.h \
+          src/OSXWindowCapture.h \
+          src/Logger.h
 
-SOURCES += $$GMOCKPATH/src/gmock-all.cc \
-           $$GTESTPATH/src/gtest-all.cc \
-           $$GMOCKPATH/src/gmock_main.cc \
-           test/*_test.cpp
+SOURCES = $$GMOCKPATH/src/gmock-all.cc \
+          $$GTESTPATH/src/gtest-all.cc \
+          $$GMOCKPATH/src/gmock_main.cc \
+          test/*Test.cpp \
+          src/OSXWindowCapture.cpp \
+          src/Hearthstone.cpp \
+          src/Logger.cpp

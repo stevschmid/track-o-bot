@@ -1,15 +1,15 @@
-#include "hearthstone.h"
+#include "Hearthstone.h"
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include <QApplication>
 
-#include "mock_window_capture.h"
+#include "MockWindowCapture.h"
 
 using ::testing::Return;
 
 class HearthstoneTest : public ::testing::Test {
-private:
+public:
   QApplication *mApp;
   MockWindowCapture *mWindowCapture;
 
