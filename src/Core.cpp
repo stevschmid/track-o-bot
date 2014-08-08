@@ -38,10 +38,12 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
   if( newScene->Name() == "ClassSelection" ) {
     // The same class selection screen is used in many different places (practice, naxx, friendly)
     // Assume friendly game mode for all other scene transitions
-    if( oldScene->Name() == "SoloAdventures" ) {
-      mCurrentGameMode = MODE_SOLO_ADVENTURES;
-    } else {
-      mCurrentGameMode = MODE_FRIENDLY;
+    if( oldScene ) {
+      if( oldScene->Name() == "SoloAdventures" ) {
+        mCurrentGameMode = MODE_SOLO_ADVENTURES;
+      } else {
+        mCurrentGameMode = MODE_FRIENDLY;
+      }
     }
   }
 
