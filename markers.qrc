@@ -4,6 +4,7 @@
 <file>markers/constructed_casual_id.png</file>
 <file>markers/constructed_ranked_id.png</file>
 <file>markers/ingame_id.png</file>
+<file>markers/ingame_defeat_id3.png</file>
 <file>markers/ingame_defeat_id2.png</file>
 <file>markers/ingame_defeat_id1.png</file>
 <file>markers/ingame_druid_opponent.png</file>
@@ -22,6 +23,7 @@
 <file>markers/ingame_rogue_me.png</file>
 <file>markers/ingame_shaman_opponent.png</file>
 <file>markers/ingame_shaman_me.png</file>
+<file>markers/ingame_victory_id3.png</file>
 <file>markers/ingame_victory_id2.png</file>
 <file>markers/ingame_victory_id1.png</file>
 <file>markers/ingame_warlock_opponent.png</file>

@@ -28,6 +28,9 @@ public:
     ADD_GENERATED_MARKER( "victory2", INGAME_VICTORY_ID2 );
     ADD_GENERATED_MARKER( "defeat2", INGAME_DEFEAT_ID2 );
 
+    ADD_GENERATED_MARKER( "victory3", INGAME_VICTORY_ID3 );
+    ADD_GENERATED_MARKER( "defeat3", INGAME_DEFEAT_ID3 );
+
     ADD_GENERATED_MARKER( "own_class_priest", INGAME_PRIEST_ME );
     ADD_GENERATED_MARKER( "opponent_class_priest", INGAME_PRIEST_OPPONENT );
 
@@ -81,10 +84,10 @@ public:
       }
     }
     if( mOutcome == OUTCOME_UNKNOWN ) {
-      if( FindMarker("victory1") || FindMarker("victory2") ) {
+      if( FindMarker("victory1") || FindMarker("victory2") || FindMarker("victory3") ) {
         mOutcome = OUTCOME_VICTORY;
       }
-      if( FindMarker("defeat1") || FindMarker("defeat2") ) {
+      if( FindMarker("defeat1") || FindMarker("defeat2") || FindMarker("defeat3") ) {
         mOutcome = OUTCOME_DEFEAT;
       }
     }
