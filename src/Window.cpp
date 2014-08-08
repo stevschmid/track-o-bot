@@ -189,12 +189,12 @@ void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #endif
 }
 
-void Window::ShowEvent( QShowEvent *event ) {
+void Window::showEvent( QShowEvent *event ) {
   QDialog::showEvent( event );
   mUI->settingsTab->LoadSettings();
 }
 
-void Window::CloseEvent( QCloseEvent *event ) {
+void Window::closeEvent( QCloseEvent *event ) {
   if( mTrayIcon->isVisible() ) {
     hide();
     event->ignore();
@@ -202,7 +202,7 @@ void Window::CloseEvent( QCloseEvent *event ) {
 }
 
 // prevent esc from closing the app
-void Window::Reject() {
+void Window::reject() {
   if( mTrayIcon->isVisible() ) {
     hide();
   } else {

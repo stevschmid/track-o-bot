@@ -82,9 +82,9 @@ class Window : public QDialog
   Q_OBJECT
 
 private:
-  void CloseEvent( QCloseEvent *event );
-  void ShowEvent( QShowEvent *event );
-  void Reject();
+  void closeEvent( QCloseEvent *event );
+  void showEvent( QShowEvent *event );
+  void reject();
 
   void CreateActions();
   void CreateTrayIcon();
