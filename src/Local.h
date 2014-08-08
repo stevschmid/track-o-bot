@@ -71,7 +71,7 @@ typedef enum {
 const char MODE_NAMES[][128] = {
   "ranked",
   "casual",
-  "practice",
+  "solo",
   "arena",
   "friendly",
   "unknown"

@@ -5,6 +5,12 @@
 #define ARENA_ID_X 240
 #define ARENA_ID_Y 626
 
+#define CLASS_SELECTION_ID_PATH ":/markers/class_selection_id.png"
+#define CLASS_SELECTION_ID_WIDTH 118
+#define CLASS_SELECTION_ID_HEIGHT 118
+#define CLASS_SELECTION_ID_X 867
+#define CLASS_SELECTION_ID_Y 43
+
 #define CONSTRUCTED_CASUAL_ID_PATH ":/markers/constructed_casual_id.png"
 #define CONSTRUCTED_CASUAL_ID_WIDTH 59
 #define CONSTRUCTED_CASUAL_ID_HEIGHT 65

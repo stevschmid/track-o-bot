@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0"><qresource>
 <file>markers/arena_id.png</file>
+<file>markers/class_selection_id.png</file>
 <file>markers/constructed_casual_id.png</file>
 <file>markers/constructed_ranked_id.png</file>
 <file>markers/ingame_id.png</file>

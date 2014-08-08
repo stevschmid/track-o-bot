@@ -1,3 +1,7 @@
+#pragma once
+
+#include "Scene.h"
+
 class ArenaScene : public Scene
 {
 public:

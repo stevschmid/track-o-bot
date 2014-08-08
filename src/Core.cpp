@@ -35,20 +35,23 @@ void Core::Tick() {
 void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
   LOG( "Scene %s", newScene->Name().c_str() );
 
-  if( newScene->Name() ==  "Ingame" ) {
+  if( newScene->Name() == "ClassSelection" ) {
+    // The same class selection screen is used in many different places (practice, naxx, friendly)
+    // Assume friendly game mode for all other scene transitions
+    if( oldScene->Name() == "SoloAdventures" ) {
+      mCurrentGameMode = MODE_SOLO_ADVENTURES;
+    } else {
+      mCurrentGameMode = MODE_FRIENDLY;
+    }
+  }
+
+  if( newScene->Name() == "Ingame" ) {
     if( oldScene ) {
       if( oldScene->Name() == "Constructed" ) {
         ConstructedScene *constructed = ( ConstructedScene* )oldScene;
         mCurrentGameMode = constructed->GameMode();
       } else if( oldScene->Name() == "Arena" ) {
         mCurrentGameMode = MODE_ARENA;
-      } else if( oldScene->Name() == "SoloAdventures" ) {
-        mCurrentGameMode = MODE_SOLO_ADVENTURES;
-      } else {
-        // The same class selection screen is used in many different places (practice, naxx, friendly)
-        // So we cannot identify friendly games easily. Because we set the game mode for all other game modes explicitly,
-        // just assume friendly mode for the other scene transitions
-        mCurrentGameMode = MODE_FRIENDLY;
       }
     }
   }
