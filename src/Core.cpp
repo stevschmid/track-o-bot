@@ -78,5 +78,7 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
     }
 
     Tracker::Instance()->AddResult( gameMode, outcome, order, ownClass, opponentClass, cardHistoryList );
+
+    mLogTracker.Reset();
   }
 }

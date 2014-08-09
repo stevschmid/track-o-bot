@@ -61,9 +61,6 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   // ReceivedCoin
   QRegExp regexCoin( "ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
   if( regexCoin.indexIn(line) != -1 ) {
-    // The receiving of the coin marks a new game, so reset our state
-    Reset();
-
     QStringList captures = regexCoin.capturedTexts();
     QString to = captures[1];
 

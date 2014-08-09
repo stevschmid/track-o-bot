@@ -18,13 +18,13 @@ private:
   void CardReturned( Player player, const string& cardId );
   void CoinReceived( Player player );
 
-  void Reset();
-
 private slots:
   void HandleLogLine( const QString& line );
 
 public:
   HearthstoneLogTracker();
+
+  void Reset();
 
   Outcome Outcome() const { return mOutcome; }
   GoingOrder Order() const { return mOrder; }
