@@ -21,12 +21,12 @@ bool WinWindowCapture::WindowFound() {
   return FindHWND() != NULL;
 }
 
-int WinWindowCapture::GetWidth() {
+int WinWindowCapture::Width() {
   RECT rect = Rect();
   return rect.right - rect.left;
 }
 
-int WinWindowCapture::GetHeight() {
+int WinWindowCapture::Height() {
   RECT rect = Rect();
   return rect.bottom - rect.top;
 }
