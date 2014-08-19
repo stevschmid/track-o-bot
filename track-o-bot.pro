@@ -1,5 +1,5 @@
 TARGET = Track-o-Bot
-VERSION = 0.3.0
+VERSION = 0.3.1
 
 CONFIG += qt precompile_header debug_and_release
 QT += network
