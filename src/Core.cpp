@@ -32,9 +32,9 @@ void Core::Tick() {
   }
 
   if( mGameRunning ) {
-    LOG( "Tick %i ms", mDebugTimer->restart() );
+    LOG( "Last Tick was %i ms ago", mDebugTimer->restart() );
     mSceneManager.Update();
-    LOG( "SceneManager#Update took %i ms", mDebugTimer->restart() );
+    LOG( "SceneManager#Update took %i ms", mDebugTimer->elapsed() );
   }
 }
 
