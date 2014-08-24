@@ -9,9 +9,13 @@ Core::Core()
   mTimer = new QTimer( this );
   connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
   mTimer->start( 100 );
+
+  mDebugTimer = new QElapsedTimer();
+  mDebugTimer->start();
 }
 
 Core::~Core() {
+  delete mDebugTimer;
   delete mTimer;
 }
 
@@ -28,7 +32,9 @@ void Core::Tick() {
   }
 
   if( mGameRunning ) {
+    LOG( "Tick %i ms", mDebugTimer->restart() );
     mSceneManager.Update();
+    LOG( "SceneManager#Update took %i ms", mDebugTimer->restart() );
   }
 }
 

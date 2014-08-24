@@ -5,6 +5,7 @@
 #include "HearthstoneLogTracker.h"
 
 #include <QTimer>
+#include <QElapsedTimer>
 
 class Core : public QObject, public SceneManagerObserver
 {
@@ -12,6 +13,7 @@ class Core : public QObject, public SceneManagerObserver
 
 private:
   QTimer*               mTimer;
+  QElapsedTimer*        mDebugTimer;
   SceneManager          mSceneManager;
   GameMode              mCurrentGameMode;
   bool                  mGameRunning;
