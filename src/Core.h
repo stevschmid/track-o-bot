@@ -4,16 +4,13 @@
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
 
-#include <QTimer>
-#include <QElapsedTimer>
+#define CORE_POLLING_RATE_IN_MS    50
 
 class Core : public QObject, public SceneManagerObserver
 {
   Q_OBJECT
 
 private:
-  QTimer*               mTimer;
-  QElapsedTimer*        mDebugTimer;
   SceneManager          mSceneManager;
   GameMode              mCurrentGameMode;
   bool                  mGameRunning;
@@ -21,6 +18,7 @@ private:
 
 private slots:
   void Tick();
+  void Loop();
 
 public:
   Core();

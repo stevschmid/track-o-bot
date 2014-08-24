@@ -1,22 +1,28 @@
 #include "Core.h"
 #include "Tracker.h"
 
+#include <QTime>
+#include <QTimer>
+
 Core::Core()
   : mCurrentGameMode( MODE_UNKNOWN ), mGameRunning( false )
 {
   mSceneManager.RegisterObserver( this );
-
-  mTimer = new QTimer( this );
-  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
-  mTimer->start( 100 );
-
-  mDebugTimer = new QElapsedTimer();
-  mDebugTimer->start();
+  Loop();
 }
 
 Core::~Core() {
-  delete mDebugTimer;
-  delete mTimer;
+}
+
+void Core::Loop()
+{
+  QTime now;
+  now.start();
+  Tick();
+  int sleep = CORE_POLLING_RATE_IN_MS - now.elapsed();
+
+  // QTimer::timeout() seems to be inconsistent under heavy load, switch to single shot
+  QTimer::singleShot( sleep < 0 ? 0 : sleep, this, SLOT(Loop()) );
 }
 
 void Core::Tick() {
@@ -32,9 +38,7 @@ void Core::Tick() {
   }
 
   if( mGameRunning ) {
-    LOG( "Last Tick was %i ms ago", mDebugTimer->restart() );
     mSceneManager.Update();
-    LOG( "SceneManager#Update took %i ms", mDebugTimer->elapsed() );
   }
 }
 

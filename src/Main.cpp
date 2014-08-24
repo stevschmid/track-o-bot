@@ -10,6 +10,7 @@
 
 #include "Window.h"
 #include "Tracker.h"
+#include "Core.h"
 
 #include "Updater.h"
 
@@ -80,6 +81,9 @@ int main( int argc, char **argv )
 
   // Enable HS Logging
   Hearthstone::Instance()->EnableLogging();
+
+  // Enable Core
+  Core core;
 
   // Main Loop
   int exitCode = app.exec();

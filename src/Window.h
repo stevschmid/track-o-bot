@@ -3,7 +3,6 @@
 #include <QDialog>
 #include <QSystemTrayIcon>
 
-#include "Core.h"
 #include "Autostart.h"
 
 QT_BEGIN_NAMESPACE
@@ -97,8 +96,6 @@ private:
 
   QSystemTrayIcon   *mTrayIcon;
   QMenu             *mTrayIconMenu;
-
-  Core              mCore;
 
 private slots:
   void RiseAndShine();
