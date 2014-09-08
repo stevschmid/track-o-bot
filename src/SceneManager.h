@@ -34,4 +34,5 @@ public:
   void Update();
 
   const Scene* ActiveScene() const;
+  const Scene* FindScene( const char *name ) const;
 };

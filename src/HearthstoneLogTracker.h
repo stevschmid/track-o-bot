@@ -9,25 +9,22 @@ class HearthstoneLogTracker : public QObject
 private:
   HearthstoneLogWatcher mLogWatcher;
 
-  Outcome mOutcome;
-  GoingOrder mOrder;
   CardHistoryList mCardHistoryList;
 
-  void PlayerDied( Player player ); // Not triggered when conceding
   void CardPlayed( Player player, const string& cardId );
   void CardReturned( Player player, const string& cardId );
-  void CoinReceived( Player player );
 
 private slots:
   void HandleLogLine( const QString& line );
+
+signals:
+  void HandleOutcome( Outcome outcome );
+  void HandleOrder( GoingOrder order );
 
 public:
   HearthstoneLogTracker();
 
   void Reset();
 
-  Outcome Outcome() const { return mOutcome; }
-  GoingOrder Order() const { return mOrder; }
   const CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
-
 };

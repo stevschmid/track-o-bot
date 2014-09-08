@@ -9,8 +9,6 @@ HearthstoneLogTracker::HearthstoneLogTracker() {
 }
 
 void HearthstoneLogTracker::Reset() {
-  mOutcome = OUTCOME_UNKNOWN;
-  mOrder = ORDER_UNKNOWN;
   mCardHistoryList.clear();
 }
 
@@ -44,18 +42,20 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-    // Player died? (unfortunately there is no log entry when conceding)
-    if( to.contains( "GRAVEYARD" ) && from.contains( "PLAY (Hero)" ) ) {
-      if( to.contains( "FRIENDLY" ) ) {
-        PlayerDied( PLAYER_SELF );
-      } else if( to.contains( "OPPOSING" ) ) {
-        PlayerDied( PLAYER_OPPONENT );
-      }
-    }
-
 #ifdef _DEBUG
     LOG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d)", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard );
 #endif
+  }
+
+  QRegExp regexOutcome( "\\[Asset\\].*name=(\\w+)_screen_start" );
+  if( regexOutcome.indexIn(line) != -1 ) {
+    QStringList captures = regexOutcome.capturedTexts();
+    QString outcome = captures[1];
+    if( outcome == "victory" ) {
+      emit HandleOutcome( OUTCOME_VICTORY );
+    } else if( outcome == "defeat" ) {
+      emit HandleOutcome( OUTCOME_DEFEAT );
+    }
   }
 
   // ReceivedCoin
@@ -65,18 +65,12 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     QString to = captures[1];
 
     if( to.contains( "FRIENDLY HAND" ) ) {
-      CoinReceived( PLAYER_SELF );
+      // I go second because I get the coin
+      emit HandleOrder( ORDER_SECOND );
     } else if( to.contains( "OPPOSING HAND" ) ) {
-      CoinReceived( PLAYER_OPPONENT );
+      // Opponent got coin, so I go first
+      emit HandleOrder( ORDER_FIRST );
     }
-  }
-}
-
-void HearthstoneLogTracker::PlayerDied( Player player ) { // Not triggered when conceding
-  if( player == PLAYER_SELF ) {
-    mOutcome = OUTCOME_DEFEAT;
-  } else if( player == PLAYER_OPPONENT ) {
-    mOutcome = OUTCOME_VICTORY;
   }
 }
 
@@ -92,15 +86,5 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
       mCardHistoryList.back().cardId == cardId )
   {
     mCardHistoryList.pop_back();
-  }
-}
-
-void HearthstoneLogTracker::CoinReceived( Player player ) {
-  if( player == PLAYER_SELF ) {
-    // I go second because I get the coin
-    mOrder = ORDER_SECOND;
-  } else if( player == PLAYER_OPPONENT ) {
-    // Opponent got coin, so I go first
-    mOrder = ORDER_FIRST;
   }
 }

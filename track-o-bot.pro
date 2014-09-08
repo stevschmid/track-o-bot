@@ -16,6 +16,7 @@ HEADERS = src/Local.h \
           src/Core.h \
           src/Logger.h \
           src/Tracker.h \
+          src/Scenes/IngameScene.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h
 

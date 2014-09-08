@@ -4,13 +4,15 @@
 // the scene (e.g. caused by a heavy minion or a spell)
 #define INGAME_SHIFT_DETECTION_GRACE_PERIOD 3000
 
-class IngameScene : public Scene
+class IngameScene : public QObject, public Scene
 {
+  Q_OBJECT
+
 private:
-  Outcome      mOutcome;
-  GoingOrder   mOrder;
-  Class        mOwnClass;
-  Class        mOpponentClass;
+  bool mOutcomeDetected;
+  bool mOrderDetected;
+  bool mOwnClassDetected;
+  bool mOpponentClassDetected;
 
   ShiftDetector mShiftDetector;
 
@@ -64,10 +66,10 @@ public:
   void Reset() {
     Scene::Reset();
 
-    mOutcome       = OUTCOME_UNKNOWN;
-    mOrder         = ORDER_UNKNOWN;
-    mOwnClass      = CLASS_UNKNOWN;
-    mOpponentClass = CLASS_UNKNOWN;
+    mOutcomeDetected       = false;
+    mOrderDetected         = false;
+    mOwnClassDetected      = false;
+    mOpponentClassDetected = false;
 
     mShiftDetector.Reset();
   }
@@ -75,31 +77,64 @@ public:
   void Update() {
     mShiftDetector.Update();
 
-    if( mOrder == ORDER_UNKNOWN ) {
+    if( !mOrderDetected ) {
+      GoingOrder order = ORDER_UNKNOWN;
+
       if( FindMarker("going_first") ) {
-        mOrder = ORDER_FIRST;
+        order = ORDER_FIRST;
+      } else if( FindMarker("going_second") ) {
+        order = ORDER_SECOND;
       }
-      if( FindMarker("going_second") ) {
-        mOrder = ORDER_SECOND;
+
+      if( order != ORDER_UNKNOWN ) {
+        HandleOrder( order );
+        mOrderDetected = true;
       }
     }
-    if( mOutcome == OUTCOME_UNKNOWN ) {
+    if( !mOutcomeDetected ) {
+      Outcome outcome = OUTCOME_UNKNOWN;
+
       if( FindMarker("victory1") || FindMarker("victory2") || FindMarker("victory3") ) {
-        mOutcome = OUTCOME_VICTORY;
+        outcome = OUTCOME_VICTORY;
+      } else if( FindMarker("defeat1") || FindMarker("defeat2") || FindMarker("defeat3") ) {
+        outcome = OUTCOME_DEFEAT;
       }
-      if( FindMarker("defeat1") || FindMarker("defeat2") || FindMarker("defeat3") ) {
-        mOutcome = OUTCOME_DEFEAT;
+
+      if( outcome != OUTCOME_UNKNOWN ) {
+        HandleOutcome( outcome );
+        mOutcomeDetected = true;
       }
     }
-    if( mOwnClass == CLASS_UNKNOWN || mOpponentClass == CLASS_UNKNOWN ) {
+    if( !mOwnClassDetected ) {
+      Class ownClass = CLASS_UNKNOWN;
+
       for( int i = 0; i < NUM_CLASSES; i++ ) {
         string className = CLASS_NAMES[ i ];
         if( FindMarker( string( "own_class_" ) + className ) ) {
-          mOwnClass = ( Class )i;
+          ownClass = ( Class )i;
+          break;
         }
+      }
+
+      if( ownClass != CLASS_UNKNOWN ) {
+        HandleOwnClass( ownClass );
+        mOwnClassDetected = true;
+      }
+    }
+    if( !mOpponentClassDetected ) {
+      Class opponentClass = CLASS_UNKNOWN;
+
+      for( int i = 0; i < NUM_CLASSES; i++ ) {
+        string className = CLASS_NAMES[ i ];
         if( FindMarker( string( "opponent_class_" ) + className ) ) {
-          mOpponentClass = ( Class )i;
+          opponentClass = ( Class )i;
+          break;
         }
+      }
+
+      if( opponentClass != CLASS_UNKNOWN ) {
+        HandleOpponentClass( opponentClass );
+        mOpponentClassDetected = true;
       }
     }
   }
@@ -108,20 +143,10 @@ public:
     return FindMarker( "ingame" );
   }
 
-  Outcome Outcome() const {
-    return mOutcome;
-  }
-
-  Class OwnClass() const {
-    return mOwnClass;
-  }
-
-  Class OpponentClass() const {
-    return mOpponentClass;
-  }
-
-  GoingOrder GoingOrder() const {
-    return mOrder;
-  }
+signals:
+  void HandleOutcome( Outcome outcome );
+  void HandleOwnClass( Class ownClass );
+  void HandleOpponentClass( Class opponentClass );
+  void HandleOrder( GoingOrder order );
 
 };

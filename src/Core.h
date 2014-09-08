@@ -17,8 +17,23 @@ private:
   bool                  mGameRunning;
   HearthstoneLogTracker mLogTracker;
 
+  Outcome               mOutcome;
+  GoingOrder            mOrder;
+  Class                 mOwnClass;
+  Class                 mOpponentClass;
+
+  bool                  mCurrentResultTracked;
+
+  void ResetResult();
+  void TrackResult();
+
 private slots:
   void Tick();
+
+  void HandleOutcome( Outcome outcome );
+  void HandleOwnClass( Class ownClass );
+  void HandleOpponentClass( Class opponentClass );
+  void HandleOrder( GoingOrder order );
 
 public:
   Core();

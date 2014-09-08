@@ -2,17 +2,43 @@
 #include "Tracker.h"
 
 Core::Core()
-  : mCurrentGameMode( MODE_UNKNOWN ), mGameRunning( false )
+  : mCurrentGameMode( MODE_UNKNOWN ),
+    mGameRunning( false ),
+    mOutcome( OUTCOME_UNKNOWN ),
+    mOrder( ORDER_UNKNOWN ),
+    mOwnClass( CLASS_UNKNOWN ),
+    mOpponentClass( CLASS_UNKNOWN ),
+    mCurrentResultTracked( false )
 {
   mSceneManager.RegisterObserver( this );
 
   mTimer = new QTimer( this );
   connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
   mTimer->start( 100 );
+
+  // Connect log
+  connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
+  connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
+
+  // Connect scene (screen capture)
+  IngameScene *ingameScene = ( IngameScene* )mSceneManager.FindScene( "Ingame" );
+  connect( ingameScene, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
+  connect( ingameScene, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
+  connect( ingameScene, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
+  connect( ingameScene, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
+
+  ResetResult();
 }
 
 Core::~Core() {
   delete mTimer;
+}
+
+void Core::ResetResult() {
+  mOutcome       = OUTCOME_UNKNOWN;
+  mOrder         = ORDER_UNKNOWN;
+  mOwnClass      = CLASS_UNKNOWN;
+  mOpponentClass = CLASS_UNKNOWN;
 }
 
 void Core::Tick() {
@@ -48,6 +74,8 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
   }
 
   if( newScene->Name() == "Ingame" ) {
+    mCurrentResultTracked = false;
+
     if( oldScene ) {
       if( oldScene->Name() == "Constructed" ) {
         ConstructedScene *constructed = ( ConstructedScene* )oldScene;
@@ -57,28 +85,40 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
       }
     }
   }
+}
 
-  if( oldScene && oldScene->Name() == "Ingame" ) {
-    IngameScene *ingame = ( IngameScene* )oldScene;
+void Core::HandleOrder( GoingOrder order ) {
+  mOrder = order;
+}
 
-    GameMode        gameMode        = mCurrentGameMode;
-    Outcome         outcome         = ingame->Outcome();
-    GoingOrder      order           = ingame->GoingOrder();
-    Class           ownClass        = ingame->OwnClass();
-    Class           opponentClass   = ingame->OpponentClass();
-    CardHistoryList cardHistoryList = mLogTracker.CardHistoryList();
+void Core::HandleOutcome( Outcome outcome ) {
+  // HandleOutcome can be triggered by log or by screen capture
+  // So make sure we only upload the result once
+  if( !mCurrentResultTracked ) {
+    mCurrentResultTracked = true;
 
-    // Use the log as fallback
-    if( outcome == OUTCOME_UNKNOWN ) {
-      outcome = mLogTracker.Outcome();
-    }
-
-    if( order == ORDER_UNKNOWN ) {
-      order = mLogTracker.Order();
-    }
-
-    Tracker::Instance()->AddResult( gameMode, outcome, order, ownClass, opponentClass, cardHistoryList );
-
-    mLogTracker.Reset();
+    mOutcome = outcome;
+    TrackResult();
   }
+}
+
+void Core::HandleOwnClass( Class ownClass ) {
+  mOwnClass = ownClass;
+}
+
+void Core::HandleOpponentClass( Class opponentClass ) {
+  mOpponentClass = opponentClass;
+}
+
+void Core::TrackResult() {
+  Tracker::Instance()->AddResult( mCurrentGameMode,
+      mOutcome,
+      mOrder,
+      mOwnClass,
+      mOpponentClass,
+      mLogTracker.CardHistoryList() );
+
+  // Reset
+  mLogTracker.Reset();
+  ResetResult();
 }

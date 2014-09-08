@@ -65,6 +65,17 @@ const Scene* SceneManager::ActiveScene() const {
   return mCurrentScene;
 }
 
+const Scene* SceneManager::FindScene( const char *name ) const {
+  vector<Scene*>::const_iterator it;
+  for( it = mScenes.begin(); it != mScenes.end(); it++ ) {
+    Scene *scene = *it;
+    if( scene->Name() == string( name ) ) {
+      return scene;
+    }
+  }
+  return NULL;
+}
+
 void SceneManager::RegisterObserver( SceneManagerObserver *observer ) {
   mObservers.push_back( observer );
 }
@@ -79,3 +90,4 @@ void SceneManager::Notify( Scene *oldScene, Scene *newScene ) {
     (*it)->SceneChanged( oldScene, newScene );
   }
 }
+
