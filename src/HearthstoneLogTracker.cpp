@@ -45,9 +45,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-#ifdef _DEBUG
-    LOG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d)", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard );
-#endif
+    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d)", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard );
   }
 
   // Outcome
@@ -85,12 +83,12 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
-  LOG( "Card played %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+  DEBUG( "Card played %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
   mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId ) );
 }
 
 void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
-  LOG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+  DEBUG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
   // Make sure we remove the "Choose One"-cards from the history
   // if we decide to withdraw them after a second of thought
   if( !mCardHistoryList.empty() &&

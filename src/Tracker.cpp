@@ -50,7 +50,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
     cardHistoryOutput += (*it).player == PLAYER_SELF ? "SELF " : "OPPONENT ";
     cardHistoryOutput += (*it).cardId + "\n";
   }
-  LOG( "Card History: %s", cardHistoryOutput.c_str() );
+  DEBUG( "Card History: %s", cardHistoryOutput.c_str() );
 #endif
 
   if( outcome == OUTCOME_UNKNOWN ) {

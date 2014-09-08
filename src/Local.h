@@ -134,3 +134,9 @@ typedef vector< CardHistoryItem > CardHistoryList;
 #include "Logger.h"
 #define LOG(str, ...) Logger::Instance()->Add(str, ##__VA_ARGS__)
 
+#ifdef _DEBUG
+#define DEBUG(str, ...) Logger::Instance()->Add("[DEBUG] "str, ##__VA_ARGS__)
+#else
+#define DEBUG(str, ...)
+#endif
+

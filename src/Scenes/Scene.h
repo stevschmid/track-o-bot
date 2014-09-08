@@ -58,7 +58,7 @@ public:
     bool found = currentHash == marker.hash;
 #ifdef _DEBUG
     if( mDebugMarkerFound[ name ] != found ) {
-      LOG( "Marker %s in Scene %s %s", name.c_str(), mName.c_str(), found ? "found" : "disappeared" );
+      DEBUG( "Marker %s in Scene %s %s", name.c_str(), mName.c_str(), found ? "found" : "disappeared" );
       mDebugMarkerFound[ name ] = found;
     }
 #endif
