@@ -82,7 +82,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Turn Info
-  QRegExp regexTurn( "change=powerTask.*value=MAIN_ACTION" );
+  QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
   if( regexTurn.indexIn(line) != -1 ) {
     mTurnCounter++;
 
