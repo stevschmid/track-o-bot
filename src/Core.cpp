@@ -89,12 +89,12 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
 }
 
 void Core::HandleOrder( GoingOrder order ) {
-  LOG( "HandleOrder %s", ORDER_NAMES[ order ] );
+  DEBUG( "HandleOrder %s", ORDER_NAMES[ order ] );
   mOrder = order;
 }
 
 void Core::HandleOutcome( Outcome outcome ) {
-  LOG( "HandleOutcome %s", OUTCOME_NAMES[ outcome ] );
+  DEBUG( "HandleOutcome %s", OUTCOME_NAMES[ outcome ] );
 
   // HandleOutcome can be triggered by log or by screen capture
   // So make sure we only upload the result once
@@ -107,17 +107,17 @@ void Core::HandleOutcome( Outcome outcome ) {
 }
 
 void Core::HandleOwnClass( Class ownClass ) {
-  LOG( "HandleOwnClass %s", CLASS_NAMES[ ownClass ] );
+  DEBUG( "HandleOwnClass %s", CLASS_NAMES[ ownClass ] );
   mOwnClass = ownClass;
 }
 
 void Core::HandleOpponentClass( Class opponentClass ) {
-  LOG( "HandleOpponentClass %s", CLASS_NAMES[ opponentClass ] );
+  DEBUG( "HandleOpponentClass %s", CLASS_NAMES[ opponentClass ] );
   mOpponentClass = opponentClass;
 }
 
 void Core::TrackResult() {
-  LOG( "TrackResult" );
+  DEBUG( "TrackResult" );
 
   int durationInSeconds = mDurationTimer.elapsed() / 1000;
   Tracker::Instance()->AddResult( mCurrentGameMode,
