@@ -37,7 +37,7 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList )
+void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList, int durationInSeconds )
 {
   if( mode == MODE_SOLO_ADVENTURES ) {
     LOG( "Ignore solo adventure." );
@@ -98,6 +98,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   result[ "opponent" ] = CLASS_NAMES[ opponentClass ];
   result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
   result[ "mode" ]     = MODE_NAMES[ mode ];
+  result[ "duration" ] = durationInSeconds;
 
   QtJson::JsonArray card_history;
   for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {

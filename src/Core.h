@@ -5,6 +5,7 @@
 #include "HearthstoneLogTracker.h"
 
 #include <QTimer>
+#include <QTime>
 
 class Core : public QObject, public SceneManagerObserver
 {
@@ -16,6 +17,7 @@ private:
   GameMode              mCurrentGameMode;
   bool                  mGameRunning;
   HearthstoneLogTracker mLogTracker;
+  QTime                 mDurationTimer;
 
   Outcome               mOutcome;
   GoingOrder            mOrder;

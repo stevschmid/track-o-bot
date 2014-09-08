@@ -75,6 +75,7 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
 
   if( newScene->Name() == "Ingame" ) {
     mCurrentResultTracked = false;
+    mDurationTimer.start();
 
     if( oldScene ) {
       if( oldScene->Name() == "Constructed" ) {
@@ -117,12 +118,15 @@ void Core::HandleOpponentClass( Class opponentClass ) {
 
 void Core::TrackResult() {
   LOG( "TrackResult" );
+
+  int durationInSeconds = mDurationTimer.elapsed() / 1000;
   Tracker::Instance()->AddResult( mCurrentGameMode,
       mOutcome,
       mOrder,
       mOwnClass,
       mOpponentClass,
-      mLogTracker.CardHistoryList() );
+      mLogTracker.CardHistoryList(),
+      durationInSeconds );
 
   // Reset
   mLogTracker.Reset();
