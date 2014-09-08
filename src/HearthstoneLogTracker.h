@@ -11,6 +11,7 @@ private:
 
   int mTurnCounter;
   bool mHeroPowerUsed;
+  int mHeroPlayerId;
 
   CardHistoryList mCardHistoryList;
 

@@ -3,8 +3,13 @@
 #include <QRegExp>
 #include <QStringList>
 
+const int NUM_HERO_POWER_CARDS = 43;
+const char HERO_POWER_CARD_IDS[NUM_HERO_POWER_CARDS][32] = {
+"CS1h_001" /* Lesser Heal */, "CS2_017" /* Shapeshift */, "CS2_034" /* Fireblast */, "CS2_049" /* Totemic Call */, "CS2_056" /* Life Tap */, "CS2_083b" /* Dagger Mastery */, "CS2_101" /* Reinforce */, "CS2_102" /* Armor Up! */, "DS1h_292" /* Steady Shot */, "EX1_625t" /* Mind Spike */, "EX1_625t2" /* Mind Shatter */, "EX1_tk33" /* INFERNO! */, "NAX10_03" /* Hateful Strike */, "NAX10_03H" /* Hateful Strike */, "NAX11_02" /* Poison Cloud */, "NAX11_02H" /* Poison Cloud */, "NAX12_02" /* Decimate */, "NAX12_02H" /* Decimate */, "NAX13_02" /* Polarity Shift */, "NAX14_02" /* Frost Breath */, "NAX15_02" /* Frost Blast */, "NAX15_02H" /* Frost Blast */, "NAX15_04" /* Chains */, "NAX15_04H" /* Chains */, "NAX1_04" /* Skitter */, "NAX1h_04" /* Skitter */, "NAX2_03" /* Rain of Fire */, "NAX2_03H" /* Rain of Fire */, "NAX3_02" /* Web Wrap */, "NAX3_02H" /* Web Wrap */, "NAX4_04" /* Raise Dead */, "NAX4_04H" /* Raise Dead */, "NAX5_02" /* Eruption */, "NAX5_02H" /* Eruption */, "NAX6_02" /* Necrotic Aura */, "NAX6_02H" /* Necrotic Aura */, "NAX7_03" /* Unbalancing Strike */, "NAX7_03H" /* Unbalancing Strike */, "NAX8_02" /* Harvest */, "NAX8_02H" /* Harvest */, "NAX9_06" /* Unholy Shadow */, "TU4d_003" /* Shotgun Blast */, "TU4e_002" /* Flames of Azzinoth */
+};
+
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurnCounter( 0 ), mHeroPowerUsed( false )
+  : mTurnCounter( 0 ), mHeroPowerUsed( false ), mHeroPlayerId( 0 )
 {
   connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
   Reset();
@@ -85,16 +90,35 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     mHeroPowerUsed = false;
   }
 
+  // Hero Power
+  QRegExp regexHeroPowerEquip( "\\[Zone\\].*player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
+  if( regexHeroPowerEquip.indexIn(line) != -1 ) {
+    QStringList captures = regexHeroPowerEquip.capturedTexts();
+    QString playerId = captures[1];
+
+    mHeroPlayerId = playerId.toInt();
+    DEBUG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
+  }
+
   QRegExp regexHeroPower( "\\[Power\\].*cardId=(\\w+).*player=(\\d+)" );
   if( regexHeroPower.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPower.capturedTexts();
     QString cardId = captures[1];
-    Player player = ( captures[2] == "1" ) ? PLAYER_SELF : PLAYER_OPPONENT;
+    int playerId = captures[2].toInt();
+    Player player = ( playerId == mHeroPlayerId ) ? PLAYER_SELF : PLAYER_OPPONENT;
+
+    bool isHeroPower = false;
+    for( int i = 0; i < NUM_HERO_POWER_CARDS; i++ ) {
+      if( cardId == HERO_POWER_CARD_IDS[ i ] ) {
+        isHeroPower = true;
+        break;
+      }
+    }
 
     // Power log line is emitted twice
     // Make sure we only account for first occurrence
     // Plus line is emitted when match starts, so ignore turn 0
-    if( !mHeroPowerUsed && CurrentTurn() > 0 ) {
+    if( isHeroPower && !mHeroPowerUsed && CurrentTurn() > 0 ) {
       CardPlayed( player, cardId.toStdString() );
       mHeroPowerUsed = true;
     }
