@@ -66,8 +66,8 @@ void Hearthstone::SetWindowCapture( WindowCapture *windowCapture ) {
 }
 
 void Hearthstone::EnableLogging() {
-  const int   NUM_LOG_SYSTEMS = 3;
-  const char  LOG_SYSTEMS[ NUM_LOG_SYSTEMS ][ 32 ] = { "Zone", "Asset", "Bob" };
+  const int   NUM_LOG_MODULES = 4;
+  const char  LOG_MODULES[ NUM_LOG_MODULES ][ 32 ] = { "Zone", "Asset", "Bob", "Power" };
 
   string path = LogConfigPath();
   QFile file( path.c_str() );
@@ -85,14 +85,14 @@ void Hearthstone::EnableLogging() {
     LOG( "Couldn't create file %s", path.c_str() );
   } else {
     QTextStream out( &file );
-    for( int i = 0; i < NUM_LOG_SYSTEMS; i++ ) {
-      const char *logSysName = LOG_SYSTEMS[ i ];
-      if( !contents.contains( QString( "[%1]" ).arg( logSysName ) ) ) {
+    for( int i = 0; i < NUM_LOG_MODULES; i++ ) {
+      const char *logModuleName = LOG_MODULES[ i ];
+      if( !contents.contains( QString( "[%1]" ).arg( logModuleName ) ) ) {
         out << "\n";
-        out << "[" << LOG_SYSTEMS[i] << "]\n";
+        out << "[" << LOG_MODULES[i] << "]\n";
         out << "LogLevel=1\n";
         out << "ConsolePrinting=true\n";
-        LOG( "Enable Log System %s", logSysName );
+        LOG( "Enable Log Module %s", logModuleName );
       }
     }
     file.close();
