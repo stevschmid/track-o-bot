@@ -9,9 +9,10 @@ class HearthstoneLogTracker : public QObject
 private:
   HearthstoneLogWatcher mLogWatcher;
 
-  CardHistoryList mCardHistoryList;
-
   int mTurnCounter;
+  bool mHeroPowerUsed;
+
+  CardHistoryList mCardHistoryList;
 
   void CardPlayed( Player player, const string& cardId );
   void CardReturned( Player player, const string& cardId );

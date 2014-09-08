@@ -4,7 +4,7 @@
 #include <QStringList>
 
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurnCounter( 0 )
+  : mTurnCounter( 0 ), mHeroPowerUsed( false )
 {
   connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
   Reset();
@@ -12,6 +12,7 @@ HearthstoneLogTracker::HearthstoneLogTracker()
 
 void HearthstoneLogTracker::Reset() {
   mTurnCounter = 0;
+  mHeroPowerUsed = false;
   mCardHistoryList.clear();
 }
 
@@ -79,6 +80,24 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   QRegExp regexTurn( "change=powerTask.*value=MAIN_ACTION" );
   if( regexTurn.indexIn(line) != -1 ) {
     mTurnCounter++;
+
+    // reset hero power usage on turn change
+    mHeroPowerUsed = false;
+  }
+
+  QRegExp regexHeroPower( "\\[Power\\].*cardId=(\\w+).*player=(\\d+)" );
+  if( regexHeroPower.indexIn(line) != -1 ) {
+    QStringList captures = regexHeroPower.capturedTexts();
+    QString cardId = captures[1];
+    Player player = ( captures[2] == "1" ) ? PLAYER_SELF : PLAYER_OPPONENT;
+
+    // Power log line is emitted twice
+    // Make sure we only account for first occurrence
+    // Plus line is emitted when match starts, so ignore turn 0
+    if( !mHeroPowerUsed && CurrentTurn() > 0 ) {
+      CardPlayed( player, cardId.toStdString() );
+      mHeroPowerUsed = true;
+    }
   }
 }
 
