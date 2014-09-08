@@ -66,25 +66,36 @@ void Hearthstone::SetWindowCapture( WindowCapture *windowCapture ) {
 }
 
 void Hearthstone::EnableLogging() {
+  const int   NUM_LOG_SYSTEMS = 3;
+  const char  LOG_SYSTEMS[ NUM_LOG_SYSTEMS ][ 32 ] = { "Zone", "Asset", "Bob" };
+
   string path = LogConfigPath();
   QFile file( path.c_str() );
 
-  if( !file.exists() ) {
-    LOG( "Enable Hearthstone logging by creating file %s", path.c_str() );
-    if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) {
-      LOG( "Couldn't create file" );
-    } else {
-      QTextStream out( &file );
-      out << "[Zone]\n";
-      out << "LogLevel=1\n";
-      out << "ConsolePrinting=true\n";
-      file.close();
+  // Read file contents
+  QString contents;
+  if( file.exists() ) {
+    file.open( QIODevice::ReadOnly | QIODevice::Text );
+    QTextStream in( &file );
+    contents = in.readAll();
+    file.close();
+  }
 
-      LOG( "Ingame Log activated." );
-      if( Running() ) {
-        LOG("Please restart Hearthstone for logging to take effect.");
+  if( !file.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text ) ) {
+    LOG( "Couldn't create file %s", path.c_str() );
+  } else {
+    QTextStream out( &file );
+    for( int i = 0; i < NUM_LOG_SYSTEMS; i++ ) {
+      const char *logSysName = LOG_SYSTEMS[ i ];
+      if( !contents.contains( QString( "[%1]" ).arg( logSysName ) ) ) {
+        out << "\n";
+        out << "[" << LOG_SYSTEMS[i] << "]\n";
+        out << "LogLevel=1\n";
+        out << "ConsolePrinting=true\n";
+        LOG( "Enable Log System %s", logSysName );
       }
     }
+    file.close();
   }
 }
 
