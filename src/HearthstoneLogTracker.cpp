@@ -126,7 +126,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
-  DEBUG( "Card played %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+  DEBUG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
   mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId ) );
 }
 
