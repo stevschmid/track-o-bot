@@ -102,6 +102,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   QtJson::JsonArray card_history;
   for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
     QtJson::JsonObject item;
+    item[ "turn" ] = (*it).turn;
     item[ "player" ] = (*it).player == PLAYER_SELF ? "me" : "opponent";
     item[ "card_id" ] = (*it).cardId.c_str();
     card_history.append(item);

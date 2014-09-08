@@ -24,14 +24,8 @@ public:
     ADD_GENERATED_MARKER( "going_first", INGAME_MULLIGAN_1ST_ID );
     ADD_GENERATED_MARKER( "going_second", INGAME_MULLIGAN_2ND_ID );
 
-    ADD_GENERATED_MARKER( "victory1", INGAME_VICTORY_ID1 );
-    ADD_GENERATED_MARKER( "defeat1", INGAME_DEFEAT_ID1 );
-
-    ADD_GENERATED_MARKER( "victory2", INGAME_VICTORY_ID2 );
-    ADD_GENERATED_MARKER( "defeat2", INGAME_DEFEAT_ID2 );
-
-    ADD_GENERATED_MARKER( "victory3", INGAME_VICTORY_ID3 );
-    ADD_GENERATED_MARKER( "defeat3", INGAME_DEFEAT_ID3 );
+    ADD_GENERATED_MARKER( "victory", INGAME_VICTORY_ID );
+    ADD_GENERATED_MARKER( "defeat", INGAME_DEFEAT_ID );
 
     ADD_GENERATED_MARKER( "own_class_priest", INGAME_PRIEST_ME );
     ADD_GENERATED_MARKER( "opponent_class_priest", INGAME_PRIEST_OPPONENT );
@@ -94,9 +88,9 @@ public:
     if( !mOutcomeDetected ) {
       Outcome outcome = OUTCOME_UNKNOWN;
 
-      if( FindMarker("victory1") || FindMarker("victory2") || FindMarker("victory3") ) {
+      if( FindMarker("victory") ) {
         outcome = OUTCOME_VICTORY;
-      } else if( FindMarker("defeat1") || FindMarker("defeat2") || FindMarker("defeat3") ) {
+      } else if( FindMarker("defeat") ) {
         outcome = OUTCOME_DEFEAT;
       }
 

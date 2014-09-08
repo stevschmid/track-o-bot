@@ -11,8 +11,12 @@ private:
 
   CardHistoryList mCardHistoryList;
 
+  int mTurnCounter;
+
   void CardPlayed( Player player, const string& cardId );
   void CardReturned( Player player, const string& cardId );
+
+  int CurrentTurn() const;
 
 private slots:
   void HandleLogLine( const QString& line );

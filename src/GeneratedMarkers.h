@@ -29,23 +29,11 @@
 #define INGAME_ID_X 966
 #define INGAME_ID_Y 513
 
-#define INGAME_DEFEAT_ID3_PATH ":/markers/ingame_defeat_id3.png"
-#define INGAME_DEFEAT_ID3_WIDTH 74
-#define INGAME_DEFEAT_ID3_HEIGHT 34
-#define INGAME_DEFEAT_ID3_X 642
-#define INGAME_DEFEAT_ID3_Y 513
-
-#define INGAME_DEFEAT_ID2_PATH ":/markers/ingame_defeat_id2.png"
-#define INGAME_DEFEAT_ID2_WIDTH 62
-#define INGAME_DEFEAT_ID2_HEIGHT 55
-#define INGAME_DEFEAT_ID2_X 586
-#define INGAME_DEFEAT_ID2_Y 571
-
-#define INGAME_DEFEAT_ID1_PATH ":/markers/ingame_defeat_id1.png"
-#define INGAME_DEFEAT_ID1_WIDTH 29
-#define INGAME_DEFEAT_ID1_HEIGHT 48
-#define INGAME_DEFEAT_ID1_X 353
-#define INGAME_DEFEAT_ID1_Y 488
+#define INGAME_DEFEAT_ID_PATH ":/markers/ingame_defeat_id.png"
+#define INGAME_DEFEAT_ID_WIDTH 74
+#define INGAME_DEFEAT_ID_HEIGHT 34
+#define INGAME_DEFEAT_ID_X 642
+#define INGAME_DEFEAT_ID_Y 513
 
 #define INGAME_DRUID_OPPONENT_PATH ":/markers/ingame_druid_opponent.png"
 #define INGAME_DRUID_OPPONENT_WIDTH 50
@@ -143,23 +131,11 @@
 #define INGAME_SHAMAN_ME_X 487
 #define INGAME_SHAMAN_ME_Y 551
 
-#define INGAME_VICTORY_ID3_PATH ":/markers/ingame_victory_id3.png"
-#define INGAME_VICTORY_ID3_WIDTH 75
-#define INGAME_VICTORY_ID3_HEIGHT 49
-#define INGAME_VICTORY_ID3_X 377
-#define INGAME_VICTORY_ID3_Y 120
-
-#define INGAME_VICTORY_ID2_PATH ":/markers/ingame_victory_id2.png"
-#define INGAME_VICTORY_ID2_WIDTH 57
-#define INGAME_VICTORY_ID2_HEIGHT 47
-#define INGAME_VICTORY_ID2_X 568
-#define INGAME_VICTORY_ID2_Y 79
-
-#define INGAME_VICTORY_ID1_PATH ":/markers/ingame_victory_id1.png"
-#define INGAME_VICTORY_ID1_WIDTH 81
-#define INGAME_VICTORY_ID1_HEIGHT 53
-#define INGAME_VICTORY_ID1_X 318
-#define INGAME_VICTORY_ID1_Y 188
+#define INGAME_VICTORY_ID_PATH ":/markers/ingame_victory_id.png"
+#define INGAME_VICTORY_ID_WIDTH 57
+#define INGAME_VICTORY_ID_HEIGHT 47
+#define INGAME_VICTORY_ID_X 568
+#define INGAME_VICTORY_ID_Y 79
 
 #define INGAME_WARLOCK_OPPONENT_PATH ":/markers/ingame_warlock_opponent.png"
 #define INGAME_WARLOCK_OPPONENT_WIDTH 50

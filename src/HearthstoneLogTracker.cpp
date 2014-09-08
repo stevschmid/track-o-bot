@@ -3,12 +3,15 @@
 #include <QRegExp>
 #include <QStringList>
 
-HearthstoneLogTracker::HearthstoneLogTracker() {
+HearthstoneLogTracker::HearthstoneLogTracker()
+  : mTurnCounter( 0 )
+{
   connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
   Reset();
 }
 
 void HearthstoneLogTracker::Reset() {
+  mTurnCounter = 0;
   mCardHistoryList.clear();
 }
 
@@ -47,6 +50,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 #endif
   }
 
+  // Outcome
   QRegExp regexOutcome( "\\[Asset\\].*name=(\\w+)_screen_start" );
   if( regexOutcome.indexIn(line) != -1 ) {
     QStringList captures = regexOutcome.capturedTexts();
@@ -58,7 +62,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     }
   }
 
-  // ReceivedCoin
+  // Coin
   QRegExp regexCoin( "ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
   if( regexCoin.indexIn(line) != -1 ) {
     QStringList captures = regexCoin.capturedTexts();
@@ -72,19 +76,32 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       emit HandleOrder( ORDER_FIRST );
     }
   }
+
+  // Turn Info
+  QRegExp regexTurn( "change=powerTask.*value=MAIN_ACTION" );
+  if( regexTurn.indexIn(line) != -1 ) {
+    mTurnCounter++;
+  }
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
-  mCardHistoryList.push_back( CardHistoryItem( player, cardId ) );
+  LOG( "Card played %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+  mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId ) );
 }
 
 void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
+  LOG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
   // Make sure we remove the "Choose One"-cards from the history
   // if we decide to withdraw them after a second of thought
   if( !mCardHistoryList.empty() &&
+      mCardHistoryList.back().turn == CurrentTurn() &&
       mCardHistoryList.back().player == player &&
       mCardHistoryList.back().cardId == cardId )
   {
     mCardHistoryList.pop_back();
   }
+}
+
+int HearthstoneLogTracker::CurrentTurn() const {
+  return ( mTurnCounter + 1 ) / 2;
 }

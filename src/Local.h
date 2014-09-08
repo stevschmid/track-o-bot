@@ -119,11 +119,12 @@ const char CLASS_NAMES[][128] = {
 
 class CardHistoryItem {
 public:
+  int turn;
   Player player;
   string cardId;
 
-  CardHistoryItem( Player player, const string& cardId )
-    : player( player ), cardId( cardId )
+  CardHistoryItem( int turn, Player player, const string& cardId )
+    : turn( turn ), player( player ), cardId( cardId )
   {
   }
 };
