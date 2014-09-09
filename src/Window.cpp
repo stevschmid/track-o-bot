@@ -264,7 +264,7 @@ void Window::HandleGameClientRestartRequired( bool restartRequired ) {
     mTrayIconMenu->insertAction( separator, mGameClientRestartRequiredAction );
 
 #ifdef Q_WS_WIN
-    mTrayIcon->showMessage( tr( "Action required" ), "Please restart Hearthstone!" );
+    mTrayIcon->showMessage( tr( "Game log enabled" ), "Please restart Hearthstone for changes to take effect!" );
 #endif
   } else {
     mTrayIconMenu->removeAction( mGameClientRestartRequiredAction );
