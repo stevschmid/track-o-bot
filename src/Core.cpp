@@ -4,10 +4,12 @@
 Core::Core()
   : mCurrentGameMode( MODE_UNKNOWN ),
     mGameRunning( false ),
+    mGameMode( MODE_UNKNOWN ),
     mOutcome( OUTCOME_UNKNOWN ),
     mOrder( ORDER_UNKNOWN ),
     mOwnClass( CLASS_UNKNOWN ),
     mOpponentClass( CLASS_UNKNOWN ),
+    mDuration( 0 ),
     mCurrentResultTracked( false )
 {
   mSceneManager.RegisterObserver( this );
@@ -19,6 +21,9 @@ Core::Core()
   // Connect log
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
   connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
+  connect( &mLogTracker, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
+  connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
+  connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
 
   // Connect scene (screen capture)
   IngameScene *ingameScene = ( IngameScene* )mSceneManager.FindScene( "Ingame" );
@@ -35,10 +40,12 @@ Core::~Core() {
 }
 
 void Core::ResetResult() {
+  mGameMode      = MODE_UNKNOWN;
   mOutcome       = OUTCOME_UNKNOWN;
   mOrder         = ORDER_UNKNOWN;
   mOwnClass      = CLASS_UNKNOWN;
   mOpponentClass = CLASS_UNKNOWN;
+  mDuration      = 0;
 }
 
 void Core::Tick() {
@@ -75,7 +82,6 @@ void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
 
   if( newScene->Name() == "Ingame" ) {
     mCurrentResultTracked = false;
-    mDurationTimer.start();
 
     if( oldScene ) {
       if( oldScene->Name() == "Constructed" ) {
@@ -116,6 +122,21 @@ void Core::HandleOpponentClass( Class opponentClass ) {
   mOpponentClass = opponentClass;
 }
 
+void Core::HandleMatchStart() {
+  DEBUG( "HandleMatchStart" );
+  mDurationTimer.start();
+}
+
+void Core::HandleMatchEnd() {
+  DEBUG( "HandleMatchEnd" );
+  mDuration = mDurationTimer.elapsed() / 1000;
+}
+
+void Core::HandleGameMode( GameMode mode ) {
+  DEBUG( "HandleGameMode %s", MODE_NAMES[ mode ] );
+  mGameMode = mode;
+}
+
 void Core::TrackResult() {
   DEBUG( "TrackResult" );
 
@@ -132,3 +153,4 @@ void Core::TrackResult() {
   mLogTracker.Reset();
   ResetResult();
 }
+

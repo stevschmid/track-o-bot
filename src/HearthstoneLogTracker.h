@@ -24,8 +24,15 @@ private slots:
   void HandleLogLine( const QString& line );
 
 signals:
+  void HandleMatchStart();
+  void HandleMatchEnd();
+
   void HandleOutcome( Outcome outcome );
   void HandleOrder( GoingOrder order );
+  void HandleGameMode( GameMode mode );
+  void HandleOpponentClass( Class opponentClass );
+  void HandleOwnClass( Class ownClass );
+
 
 public:
   HearthstoneLogTracker();
