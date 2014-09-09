@@ -94,6 +94,7 @@ private:
   QAction           *mShowAction;
   QAction           *mQuitAction;
   QAction           *mOpenProfileAction;
+  QAction           *mGameClientRestartRequiredAction;
 
   QSystemTrayIcon   *mTrayIcon;
   QMenu             *mTrayIconMenu;
@@ -104,6 +105,8 @@ private slots:
   void RiseAndShine();
   void OpenProfile();
   void TrayIconActivated( QSystemTrayIcon::ActivationReason reason );
+
+  void HandleGameClientRestartRequired( bool restartRequired );
 
 public:
   explicit Window();

@@ -166,6 +166,7 @@ Window::Window()
   CreateTrayIcon();
 
   connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
+  connect( &mCore, SIGNAL( HandleGameClientRestartRequired(bool) ), this, SLOT( HandleGameClientRestartRequired(bool) ) );
 
 #ifdef Q_WS_WIN
   // Notify user the first time that the app runs in the taskbar
@@ -219,6 +220,9 @@ void Window::CreateActions() {
 
   mQuitAction = new QAction( tr("Quit"), this );
   connect( mQuitAction, SIGNAL( triggered() ), qApp, SLOT( quit() ) );
+
+  mGameClientRestartRequiredAction = new QAction( tr("Please restart Hearthstone!" ), this );
+  mGameClientRestartRequiredAction->setEnabled( false );
 }
 
 void Window::CreateTrayIcon() {
@@ -250,4 +254,22 @@ void Window::RiseAndShine() {
 
 void Window::OpenProfile() {
   Tracker::Instance()->OpenProfile();
+}
+
+void Window::HandleGameClientRestartRequired( bool restartRequired ) {
+  static QAction *separator = NULL;
+
+  if( restartRequired ) {
+    separator = mTrayIconMenu->insertSeparator( mOpenProfileAction );
+    mTrayIconMenu->insertAction( separator, mGameClientRestartRequiredAction );
+
+#ifdef Q_WS_WIN
+    mTrayIcon->showMessage( tr( "Action required" ), "Please restart Hearthstone!" );
+#endif
+  } else {
+    mTrayIconMenu->removeAction( mGameClientRestartRequiredAction );
+    if( separator ) {
+      mTrayIconMenu->removeAction( separator );
+    }
+  }
 }

@@ -17,6 +17,8 @@ class Hearthstone
 private:
   WindowCapture *mCapture;
 
+  bool mRestartRequired; // in case HS needs to be restarted for log changes to take effect
+
 public:
   // Allow to override window capture for test environment
   void SetWindowCapture( WindowCapture *windowCapture );
@@ -26,6 +28,9 @@ public:
 
   void EnableLogging();
   void DisableLogging();
+
+  void SetRestartRequired( bool restartRequired );
+  bool RestartRequired() const;
 
   string LogConfigPath();
   string LogPath();

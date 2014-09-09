@@ -13,7 +13,9 @@
 
 DEFINE_SINGLETON_SCOPE( Hearthstone )
 
-Hearthstone::Hearthstone() {
+Hearthstone::Hearthstone()
+ : mRestartRequired( false )
+{
 #ifdef Q_WS_MAC
   mCapture = new OSXWindowCapture( "Hearthstone" );
 #elif defined Q_WS_WIN
@@ -72,6 +74,8 @@ void Hearthstone::EnableLogging() {
   string path = LogConfigPath();
   QFile file( path.c_str() );
 
+  SetRestartRequired( false );
+
   // Read file contents
   QString contents;
   if( file.exists() ) {
@@ -93,6 +97,10 @@ void Hearthstone::EnableLogging() {
         out << "LogLevel=1\n";
         out << "ConsolePrinting=true\n";
         LOG( "Enable Log Module %s", logModuleName );
+
+        if( Running() ) {
+          SetRestartRequired( true );
+        }
       }
     }
     file.close();
@@ -146,4 +154,12 @@ int Hearthstone::Width() {
 
 int Hearthstone::Height() {
   return mCapture->Height();
+}
+
+void Hearthstone::SetRestartRequired( bool restartRequired ) {
+  mRestartRequired = restartRequired;
+}
+
+bool Hearthstone::RestartRequired() const {
+  return mRestartRequired;
 }

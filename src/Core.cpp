@@ -8,7 +8,8 @@ Core::Core()
     mOrder( ORDER_UNKNOWN ),
     mOwnClass( CLASS_UNKNOWN ),
     mOpponentClass( CLASS_UNKNOWN ),
-    mDuration( 0 )
+    mDuration( 0 ),
+    mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );
   connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
@@ -46,7 +47,13 @@ void Core::Tick() {
       LOG("Hearthstone found");
     } else {
       LOG("Hearthstone was closed");
+      Hearthstone::Instance()->SetRestartRequired( false );
     }
+  }
+
+  if( mGameClientRestartRequired != Hearthstone::Instance()->RestartRequired() ) {
+    mGameClientRestartRequired = Hearthstone::Instance()->RestartRequired();
+    emit HandleGameClientRestartRequired( mGameClientRestartRequired );
   }
 }
 
@@ -101,4 +108,3 @@ void Core::UploadResult() {
   mLogTracker.Reset();
   ResetResult();
 }
-

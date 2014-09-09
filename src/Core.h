@@ -29,6 +29,8 @@ private:
   void ResetResult();
   void UploadResult();
 
+  bool mGameClientRestartRequired;
+  void SetGameClientRestartRequired( bool restartRequired );
 
 private slots:
   void HandleMatchStart();
@@ -42,7 +44,11 @@ private slots:
 
   void Tick();
 
+signals:
+  void HandleGameClientRestartRequired( bool restartRequired );
+
 public:
+
   Core();
   ~Core();
 };
