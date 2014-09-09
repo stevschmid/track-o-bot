@@ -20,12 +20,14 @@ private:
 
   int CurrentTurn() const;
 
+  void Reset();
+
 private slots:
   void HandleLogLine( const QString& line );
 
 signals:
   void HandleMatchStart();
-  void HandleMatchEnd();
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
 
   void HandleOutcome( Outcome outcome );
   void HandleOrder( GoingOrder order );
@@ -33,11 +35,9 @@ signals:
   void HandleOpponentClass( Class opponentClass );
   void HandleOwnClass( Class ownClass );
 
-
 public:
   HearthstoneLogTracker();
 
-  void Reset();
 
   const CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
 };

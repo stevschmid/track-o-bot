@@ -23,6 +23,7 @@ private:
   Class                 mOwnClass;
   Class                 mOpponentClass;
   int                   mDuration;
+  CardHistoryList       mCardHistoryList;
 
   bool                  mCurrentResultTracked;
 
@@ -34,7 +35,7 @@ private:
 
 private slots:
   void HandleMatchStart();
-  void HandleMatchEnd();
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
 
   void HandleOutcome( Outcome outcome );
   void HandleOwnClass( Class ownClass );

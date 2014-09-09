@@ -23,9 +23,13 @@ const char HERO_IDS[NUM_HEROES][32] = {
   "HERO_06" // CLASS_DRUID,
 };
 
+Q_DECLARE_METATYPE( ::CardHistoryList );
+
 HearthstoneLogTracker::HearthstoneLogTracker()
   : mTurnCounter( 0 ), mHeroPowerUsed( false ), mHeroPlayerId( 0 )
 {
+  qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
+
   connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
   Reset();
 }
@@ -80,7 +84,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     } else if( outcome == "defeat" ) {
       emit HandleOutcome( OUTCOME_DEFEAT );
     }
-    emit HandleMatchEnd();
+    emit HandleMatchEnd( mCardHistoryList );
+    Reset();
   }
 
   // Coin

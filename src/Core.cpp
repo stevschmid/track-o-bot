@@ -22,6 +22,9 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
 
+  connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
+  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+
   ResetResult();
 }
 
@@ -36,6 +39,7 @@ void Core::ResetResult() {
   mOwnClass      = CLASS_UNKNOWN;
   mOpponentClass = CLASS_UNKNOWN;
   mDuration      = 0;
+  mCardHistoryList.clear();
 }
 
 void Core::Tick() {
@@ -82,8 +86,9 @@ void Core::HandleMatchStart() {
   mDurationTimer.start();
 }
 
-void Core::HandleMatchEnd() {
+void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
   DEBUG( "HandleMatchEnd" );
+  mCardHistoryList = cardHistoryList;
   mDuration = mDurationTimer.elapsed() / 1000;
   UploadResult();
 }
@@ -104,7 +109,5 @@ void Core::UploadResult() {
       mLogTracker.CardHistoryList(),
       mDuration );
 
-  // Reset
-  mLogTracker.Reset();
   ResetResult();
 }
