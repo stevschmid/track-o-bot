@@ -2,21 +2,17 @@
 #include "Tracker.h"
 
 Core::Core()
-  : mCurrentGameMode( MODE_UNKNOWN ),
-    mGameRunning( false ),
+  : mGameRunning( false ),
     mGameMode( MODE_UNKNOWN ),
     mOutcome( OUTCOME_UNKNOWN ),
     mOrder( ORDER_UNKNOWN ),
     mOwnClass( CLASS_UNKNOWN ),
     mOpponentClass( CLASS_UNKNOWN ),
-    mDuration( 0 ),
-    mCurrentResultTracked( false )
+    mDuration( 0 )
 {
-  mSceneManager.RegisterObserver( this );
-
   mTimer = new QTimer( this );
   connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
-  mTimer->start( 100 );
+  mTimer->start( 1000 );
 
   // Connect log
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
@@ -24,13 +20,6 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
-
-  // Connect scene (screen capture)
-  IngameScene *ingameScene = ( IngameScene* )mSceneManager.FindScene( "Ingame" );
-  connect( ingameScene, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
-  connect( ingameScene, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
-  connect( ingameScene, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
-  connect( ingameScene, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
 
   ResetResult();
 }
@@ -59,39 +48,6 @@ void Core::Tick() {
       LOG("Hearthstone was closed");
     }
   }
-
-  if( mGameRunning ) {
-    mSceneManager.Update();
-  }
-}
-
-void Core::SceneChanged( Scene *oldScene, Scene *newScene ) {
-  LOG( "Scene %s", newScene->Name().c_str() );
-
-  if( newScene->Name() == "ClassSelection" ) {
-    // The same class selection screen is used in many different places (practice, naxx, friendly)
-    // Assume friendly game mode for all other scene transitions (except ingame)
-    if( oldScene ) {
-      if( oldScene->Name() == "SoloAdventures" ) {
-        mCurrentGameMode = MODE_SOLO_ADVENTURES;
-      } else if( oldScene->Name() != "Ingame" ) {
-        mCurrentGameMode = MODE_FRIENDLY;
-      }
-    }
-  }
-
-  if( newScene->Name() == "Ingame" ) {
-    mCurrentResultTracked = false;
-
-    if( oldScene ) {
-      if( oldScene->Name() == "Constructed" ) {
-        ConstructedScene *constructed = ( ConstructedScene* )oldScene;
-        mCurrentGameMode = constructed->GameMode();
-      } else if( oldScene->Name() == "Arena" ) {
-        mCurrentGameMode = MODE_ARENA;
-      }
-    }
-  }
 }
 
 void Core::HandleOrder( GoingOrder order ) {
@@ -101,15 +57,7 @@ void Core::HandleOrder( GoingOrder order ) {
 
 void Core::HandleOutcome( Outcome outcome ) {
   DEBUG( "HandleOutcome %s", OUTCOME_NAMES[ outcome ] );
-
-  // HandleOutcome can be triggered by log or by screen capture
-  // So make sure we only upload the result once
-  if( !mCurrentResultTracked ) {
-    mCurrentResultTracked = true;
-
-    mOutcome = outcome;
-    TrackResult();
-  }
+  mOutcome = outcome;
 }
 
 void Core::HandleOwnClass( Class ownClass ) {
@@ -130,6 +78,7 @@ void Core::HandleMatchStart() {
 void Core::HandleMatchEnd() {
   DEBUG( "HandleMatchEnd" );
   mDuration = mDurationTimer.elapsed() / 1000;
+  UploadResult();
 }
 
 void Core::HandleGameMode( GameMode mode ) {
@@ -137,17 +86,16 @@ void Core::HandleGameMode( GameMode mode ) {
   mGameMode = mode;
 }
 
-void Core::TrackResult() {
-  DEBUG( "TrackResult" );
+void Core::UploadResult() {
+  DEBUG( "UploadResult" );
 
-  int durationInSeconds = mDurationTimer.elapsed() / 1000;
-  Tracker::Instance()->AddResult( mCurrentGameMode,
+  Tracker::Instance()->AddResult( mGameMode,
       mOutcome,
       mOrder,
       mOwnClass,
       mOpponentClass,
       mLogTracker.CardHistoryList(),
-      durationInSeconds );
+      mDuration );
 
   // Reset
   mLogTracker.Reset();

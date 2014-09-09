@@ -1,20 +1,18 @@
 #pragma once
 
-#include "SceneManager.h"
+#include "Hearthstone.h"
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
 
 #include <QTimer>
 #include <QTime>
 
-class Core : public QObject, public SceneManagerObserver
+class Core : public QObject
 {
   Q_OBJECT
 
 private:
   QTimer*               mTimer;
-  SceneManager          mSceneManager;
-  GameMode              mCurrentGameMode;
   bool                  mGameRunning;
   HearthstoneLogTracker mLogTracker;
   QTime                 mDurationTimer;
@@ -29,11 +27,10 @@ private:
   bool                  mCurrentResultTracked;
 
   void ResetResult();
-  void TrackResult();
+  void UploadResult();
+
 
 private slots:
-  void Tick();
-
   void HandleMatchStart();
   void HandleMatchEnd();
 
@@ -43,9 +40,9 @@ private slots:
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
 
+  void Tick();
+
 public:
   Core();
   ~Core();
-
-  void SceneChanged( Scene *oldScene, Scene *newScene );
 };
