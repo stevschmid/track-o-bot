@@ -5,8 +5,8 @@
 #include <QIcon>
 #include <QPointer>
 
-#include <QLocalServer>
-#include <QLocalSocket>
+#include <QtNetwork/QLocalServer>
+#include <QtNetwork/QLocalSocket>
 
 #include "Window.h"
 #include "Tracker.h"

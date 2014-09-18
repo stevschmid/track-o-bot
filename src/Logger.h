@@ -9,6 +9,8 @@
 
 #include <QDebug>
 
+#include "Local.h"
+
 class Logger : public QObject {
   Q_OBJECT;
 

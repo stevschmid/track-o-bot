@@ -1,9 +1,11 @@
 #pragma once
 
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
 #include <QSettings>
-#include <QSslError>
+#include <QtNetwork/QSslError>
+
+#include "Local.h"
 
 class Tracker : public QObject
 {

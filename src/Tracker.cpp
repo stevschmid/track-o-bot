@@ -1,7 +1,7 @@
 #include "Tracker.h"
 
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
 #include <QUrl>
 #include <QTimer>
 #include <QDesktopServices>
