@@ -63,6 +63,7 @@ bool Autostart::Active()
 
   return isAutoRun;
 #endif
+  return false;
 }
 
 void Autostart::SetActive( bool active )

@@ -58,19 +58,19 @@
   <customwidget>
    <class>SettingsTab</class>
    <extends>QWidget</extends>
-   <header>src/window.h</header>
+   <header>src/Window.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LogTab</class>
    <extends>QWidget</extends>
-   <header>src/window.h</header>
+   <header>src/Window.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AboutTab</class>
    <extends>QWidget</extends>
-   <header>src/window.h</header>
+   <header>src/Window.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

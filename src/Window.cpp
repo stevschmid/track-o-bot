@@ -183,8 +183,13 @@ Window::~Window() {
 }
 
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
-#ifdef Q_WS_WIN
+#ifdef Q_WS_WIN || Q_WS_X11
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
+    Tracker::Instance()->OpenProfile();
+  }
+#endif
+#ifdef Q_WS_X11
+  if( reason == QSystemTrayIcon::DoubleClick ) {
     Tracker::Instance()->OpenProfile();
   }
 #endif
@@ -241,6 +246,9 @@ void Window::CreateTrayIcon() {
   icon.addFile( ":/icons/mac_selected.png", QSize(), QIcon::Selected );
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
+#elif defined Q_WS_X11
+  QIcon icon = QIcon( ":/icons/logo.png" );
+  icon.addFile( ":/icons/logo_no_bg.png", QSize(), QIcon::Selected );
 #endif
 
   mTrayIcon->setIcon( icon );

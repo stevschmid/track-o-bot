@@ -18,7 +18,7 @@ class QCheckBox;
 class QLabel;
 QT_END_NAMESPACE
 
-#include "logger.h"
+#include "Logger.h"
 
 namespace Ui { class SettingsWidget; }
 

@@ -12,7 +12,7 @@
 class Logger : public QObject {
   Q_OBJECT;
 
-DEFINE_SINGLETON( Logger )
+DEFINE_SINGLETON( Logger );
 
 private:
   std::ofstream mOf;
