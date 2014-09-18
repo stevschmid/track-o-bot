@@ -13,7 +13,7 @@ private:
   bool mHeroPowerUsed;
   int mHeroPlayerId;
 
-  CardHistoryList mCardHistoryList;
+  ::CardHistoryList mCardHistoryList;
 
   void CardPlayed( Player player, const string& cardId );
   void CardReturned( Player player, const string& cardId );
@@ -39,5 +39,5 @@ public:
   HearthstoneLogTracker();
 
 
-  const CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
+  const ::CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
 };

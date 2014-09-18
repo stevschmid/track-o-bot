@@ -9,9 +9,12 @@
 #elif defined Q_WS_WIN
 #include "WinWindowCapture.h"
 #include "Shlobj.h"
+#elif defined Q_WS_X11
+#include <math.h>
+#include "LinuxWindowCapture.h"
 #endif
 
-DEFINE_SINGLETON_SCOPE( Hearthstone )
+DEFINE_SINGLETON_SCOPE( Hearthstone );
 
 Hearthstone::Hearthstone()
  : mRestartRequired( false )
@@ -20,6 +23,8 @@ Hearthstone::Hearthstone()
   mCapture = new OSXWindowCapture( "Hearthstone" );
 #elif defined Q_WS_WIN
   mCapture = new WinWindowCapture( "Hearthstone" );
+#elif defined Q_WS_X11
+ mCapture = new LinuxWindowCapture ( "Hearthstone" );
 #endif
 }
 
@@ -124,6 +129,10 @@ string Hearthstone::LogConfigPath() {
   SHGetSpecialFolderPathA( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
   QString localAppData( buffer );
   QString configPath = localAppData + "\\Blizzard\\Hearthstone\\log.config";
+#elif defined Q_WS_X11
+  QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+  QString configPath = homeLocation + "/.Hearthstone/log.config";
+  LOG("HS config file: %s", configPath.toStdString().c_str());
 #endif
   return configPath.toStdString();
 }
@@ -144,7 +153,11 @@ string Hearthstone::LogPath() {
     hsPath = programFiles + "\\Hearthstone";
   }
   QString logPath = hsPath + "\\Hearthstone_Data\\output_log.txt";
+#elif defined Q_WS_X11
+  QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+  QString logPath = homeLocation + "/.Hearthstone/output_log.txt";
 #endif
+  LOG("HS log file: %s", logPath.toStdString().c_str());
   return logPath.toStdString();
 }
 

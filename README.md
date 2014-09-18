@@ -21,6 +21,12 @@
 * Install [WinSparkle](https://github.com/vslavik/winsparkle) 
  * Clone the repository and build the library, for example with VS 2010. The precompiled releases are ancient.
 
+## GNU/Linux
+
+* Install Qt4.8 with your distribution package manager (apt, etc...)
+* Create folder .Hearthstone in your home directory
+* Create symlinks of the Hearthstone's output_log and log.config in the newly created folder
+
 # Build Instructions
 
 ```
