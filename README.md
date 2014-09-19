@@ -36,6 +36,13 @@ make
 
 (Use ``nmake`` instead of ``make`` on Windows)
 
+On Linux, you might have to do the following if you have qt5 installed
+
+```
+qtmake-qt4
+make
+```
+
 The resulting binary can be found in the ``build`` subfolder.
 
 # Contributing
