@@ -1,5 +1,3 @@
-#pragma once
-
 #include <string>
 using std::string;
 
@@ -36,10 +34,6 @@ private: \
 
 #define DEFINE_SINGLETON_SCOPE( CLASSNAME ) \
   CLASSNAME* CLASSNAME::_singletonptr = NULL;
-
-#define VERSION "0.4.0"
-
-#define PLATFORM "OSX"
 
 typedef enum {
   PLAYER_SELF = 0,
