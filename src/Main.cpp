@@ -18,6 +18,8 @@
 #include "SparkleUpdater.h"
 #elif defined Q_WS_WIN
 #include "WinSparkleUpdater.h"
+#elif defined Q_WS_X11
+#include "SparkleUpdater.h"
 #endif
 
 #include "Hearthstone.h"
@@ -32,6 +34,8 @@ int main( int argc, char **argv )
   QIcon icon = QIcon( ":/icons/mac.png" );
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
+#elif defined Q_WS_X11
+  QIcon icon = QIcon( ":/icons/Track-o-Bot.png" );
 #endif
   app.setApplicationName( "Track-o-Bot" ); // for proper DataLocation handling
   app.setOrganizationName( "spidy.ch" );
@@ -44,12 +48,14 @@ int main( int argc, char **argv )
   QLocalSocket socket;
   socket.connectToServer( serverName );
   if( socket.waitForConnected(500) ) {
+      std::cout << "Already running" << std::endl;
     return 1; // already running
   }
 
   QLocalServer::removeServer( serverName );
   QLocalServer server( NULL );
   if( !server.listen(serverName) ) {
+      std::cout << "Server not started" << std::endl;
     return 2;
   }
 
@@ -61,6 +67,7 @@ int main( int argc, char **argv )
   }
   string logFilePath = ( dataLocation + QDir::separator() + app.applicationName() + ".log" ).toStdString();
   Logger::Instance()->SetLogPath( logFilePath );
+  LOG("track-o-bot log file: %s",logFilePath.c_str());
 
   // Start
   LOG( "--> Launched v%s on %s", VERSION, QDate::currentDate().toString( Qt::ISODate ).toStdString().c_str() );
@@ -70,6 +77,8 @@ int main( int argc, char **argv )
   gUpdater = new SparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast.xml" ) );
 #elif defined Q_WS_WIN
   gUpdater = new WinSparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast_win.xml" ) );
+#elif defined Q_WS_X11
+  gUpdater = NULL;
 #endif
 
   // Initalize Windows n stuff

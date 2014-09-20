@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPixmap>
+#include <QDir>
 
 #include "WindowCapture.h"
 
@@ -12,7 +13,7 @@
 
 class Hearthstone
 {
-  DEFINE_SINGLETON( Hearthstone )
+  DEFINE_SINGLETON( Hearthstone );
 
 private:
   WindowCapture *mCapture;

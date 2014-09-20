@@ -9,7 +9,7 @@ class Tracker : public QObject
 {
   Q_OBJECT
 
-DEFINE_SINGLETON( Tracker )
+DEFINE_SINGLETON( Tracker );
 
 private:
   QNetworkAccessManager mNetworkManager;

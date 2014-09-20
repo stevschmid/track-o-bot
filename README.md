@@ -21,6 +21,12 @@
 * Install [WinSparkle](https://github.com/vslavik/winsparkle) 
  * Clone the repository and build the library, for example with VS 2010. The precompiled releases are ancient.
 
+## GNU/Linux
+
+* Install Qt4.8 with your distribution package manager (apt, etc...)
+* Create folder .Hearthstone in your home directory
+* Create symlinks of the Hearthstone's output_log and log.config in the newly created folder
+
 # Build Instructions
 
 ```
@@ -30,7 +36,26 @@ make
 
 (Use ``nmake`` instead of ``make`` on Windows)
 
+On Linux, you might have to do the following if you have qt5 installed
+
+```
+qtmake-qt4
+make
+```
+
 The resulting binary can be found in the ``build`` subfolder.
+
+# Install Instructions
+
+```
+sudo make install
+```
+
+Default install prefix is /usr/local. You can change it by adding PREFIX argument to qmake-qt4 command eg:
+
+```
+qmake-qt4 PREFIX=/usr
+```
 
 # Contributing
 
