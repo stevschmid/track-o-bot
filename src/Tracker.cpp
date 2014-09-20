@@ -4,6 +4,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QUrl>
 #include <QTimer>
+#include <QTime>
 #include <QDesktopServices>
 #include <QFile>
 #include <QTextStream>
@@ -134,10 +135,11 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   params[ "_meta" ] = meta;
   
   // TODO: abstract all the file saving
+    
   // write json to a text file in the user's home dir
   QString jsonText = QtJson::serializeStr( params );
     
-  QString pathString = QDir::homePath() + "/game.json";
+    QString pathString = QDir::homePath() + "/game." + QTime::currentTime().toString("hh.mm.ss") + ".json";
     
   QDir outpath( pathString );
     
@@ -149,7 +151,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
     
   QString path = outpath.path();
     
-  LOG( "file written to " + outpath.path().toAscii() + "/game.json" );
+  LOG( "file written to " + outpath.path().toAscii() );
 
 
   //QByteArray data = QtJson::serialize( params );
