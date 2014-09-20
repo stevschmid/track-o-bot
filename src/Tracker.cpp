@@ -132,21 +132,24 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   meta.append( PLATFORM );
 
   params[ "_meta" ] = meta;
-    
-    // write json to a text file in the user's home dir
+  
+  // TODO: abstract all the file saving
+  // write json to a text file in the user's home dir
   QString jsonText = QtJson::serializeStr( params );
     
-    QDir outpath = QDir::homePath();
+  QString pathString = QDir::homePath() + "/game.json";
     
-    QFile file( outpath.path().toAscii() + "/game.json" );
-    file.open( QIODevice::WriteOnly | QIODevice::Text );
-    QTextStream out( &file );
-    out << jsonText;
-    file.close();
+  QDir outpath( pathString );
     
-    QString path = outpath.path();
+  QFile file( pathString  );
+  file.open( QIODevice::WriteOnly | QIODevice::Text );
+  QTextStream out( &file );
+  out << jsonText;
+  file.close();
     
-    LOG( "file written to " + outpath.path().toAscii() + "/game.json" );
+  QString path = outpath.path();
+    
+  LOG( "file written to " + outpath.path().toAscii() + "/game.json" );
 
 
   //QByteArray data = QtJson::serialize( params );
