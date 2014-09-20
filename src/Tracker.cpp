@@ -5,11 +5,15 @@
 #include <QUrl>
 #include <QTimer>
 #include <QDesktopServices>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
 
 #include "Json.h"
 #include "Hearthstone.h"
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
+
 
 DEFINE_SINGLETON_SCOPE( Tracker );
 
@@ -128,11 +132,27 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   meta.append( PLATFORM );
 
   params[ "_meta" ] = meta;
+    
+    // write json to a text file in the user's home dir
+  QString jsonText = QtJson::serializeStr( params );
+    
+    QDir outpath = QDir::homePath();
+    
+    QFile file( outpath.path().toAscii() + "/game.json" );
+    file.open( QIODevice::WriteOnly | QIODevice::Text );
+    QTextStream out( &file );
+    out << jsonText;
+    file.close();
+    
+    QString path = outpath.path();
+    
+    LOG( "file written to " + outpath.path().toAscii() + "/game.json" );
 
-  QByteArray data = QtJson::serialize( params );
 
-  QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
-  connect( reply, SIGNAL( finished() ), this, SLOT( AddResultHandleReply() ) );
+  //QByteArray data = QtJson::serialize( params );
+
+  //QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
+  //connect( reply, SIGNAL( finished() ), this, SLOT( AddResultHandleReply() ) );
 }
 
 QNetworkReply* Tracker::AuthPostJson( const QString& path, const QByteArray& data ) {
