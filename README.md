@@ -45,6 +45,18 @@ make
 
 The resulting binary can be found in the ``build`` subfolder.
 
+# Install Instructions
+
+```
+sudo make install
+```
+
+Default install prefix is /usr/local. You can change it by adding PREFIX argument to qmake-qt4 command eg:
+
+```
+qmake-qt4 PREFIX=/usr
+```
+
 # Contributing
 
 Feel free to submit pull requests, suggest new ideas and discuss issues.
