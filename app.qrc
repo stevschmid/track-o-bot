@@ -4,5 +4,7 @@
         <file>icons/mac_selected.png</file>
         <file>icons/win.ico</file>
         <file>icons/logo.png</file>
+        <file>assets/track-o-bot.desktop</file>
+        <file>icons/Track-o-Bot.png</file>
     </qresource>
 </RCC>

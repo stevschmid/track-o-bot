@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=false
+Exec=Track-o-Bot
+Name=Track-o-Bot
+Icon=Track-o-Bot
+Categories=Game;Utility;Qt;

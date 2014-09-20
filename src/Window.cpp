@@ -168,7 +168,7 @@ Window::Window()
   connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
   connect( &mCore, SIGNAL( HandleGameClientRestartRequired(bool) ), this, SLOT( HandleGameClientRestartRequired(bool) ) );
 
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_X11)
   // Notify user the first time that the app runs in the taskbar
   QSettings settings;
   if( !settings.contains("taskbarHint") ) {
@@ -183,7 +183,7 @@ Window::~Window() {
 }
 
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
-#ifdef Q_WS_WIN || Q_WS_X11
+#if  Q_WS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
     Tracker::Instance()->OpenProfile();
   }
@@ -247,8 +247,8 @@ void Window::CreateTrayIcon() {
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #elif defined Q_WS_X11
-  QIcon icon = QIcon( ":/icons/logo.png" );
-  icon.addFile( ":/icons/logo_no_bg.png", QSize(), QIcon::Selected );
+  QIcon icon = QIcon( ":/icons/Track-o-Bot.png" );
+  icon.addFile( ":/icons/logo.png", QSize(), QIcon::Active );
 #endif
 
   mTrayIcon->setIcon( icon );
@@ -271,7 +271,7 @@ void Window::HandleGameClientRestartRequired( bool restartRequired ) {
     separator = mTrayIconMenu->insertSeparator( mOpenProfileAction );
     mTrayIconMenu->insertAction( separator, mGameClientRestartRequiredAction );
 
-#ifdef Q_WS_WIN
+#if defined(Q_WS_WIN) || defined(Q_WS_X11)
     mTrayIcon->showMessage( tr( "Game log enabled" ), "Please restart Hearthstone for changes to take effect!" );
 #endif
   } else {

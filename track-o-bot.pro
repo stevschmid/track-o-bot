@@ -19,7 +19,7 @@ HEADERS = src/Local.h \
           src/Scenes/IngameScene.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
-    src/Hearthstone.h
+          src/Hearthstone.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -87,9 +87,20 @@ win32 {
 
 unix {
     DEFINES += PLATFORM=\\\"linux\\\"
-  HEADERS += src/LinuxWindowCapture.h
-  SOURCES += src/LinuxWindowCapture.cpp
+    HEADERS += src/LinuxWindowCapture.h
+    SOURCES += src/LinuxWindowCapture.cpp
     LIBS += -lXext -lX11 -L/usr/lib/x86_64-linux-gnu/
-CONFIG += link_pkgconfig
-PKGCONFIG += x11
+    CONFIG += link_pkgconfig
+    PKGCONFIG += x11
+    desktop.path = $$PREFIX/share/applications
+    desktop.files += \
+        assets/track-o-bot.desktop
+    isEmpty(PREFIX){
+        PREFIX = /usr/local
+    }
+    target.path = $$PREFIX/bin
+    icon.path = $$PREFIX/share/icons/hicolor/256x256/apps
+    icon.files += icons/Track-o-Bot.png
+    INSTALLS += target desktop icon
 }
+

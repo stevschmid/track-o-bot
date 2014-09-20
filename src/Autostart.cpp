@@ -5,6 +5,7 @@
 #include <QString>
 #include <QSettings>
 #include <QFileInfo>
+#include <QDesktopServices>
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CoreFoundation.h>
@@ -62,6 +63,10 @@ bool Autostart::Active()
   CFRelease( loginItems );
 
   return isAutoRun;
+#elif defined(Q_WS_X11)
+    QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+    QDir* autostartPath = new QDir(homeLocation + "/.config/autostart/");
+    return autostartPath->exists("track-o-bot.desktop");
 #endif
   return false;
 }
@@ -101,5 +106,17 @@ void Autostart::SetActive( bool active )
 
   CFRelease( currentLoginItems );
   CFRelease( loginItems );
+#elif defined(Q_WS_X11)
+    QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+    QDir* autostartPath = new QDir(homeLocation + "/.config/autostart/");
+    if( !active ) {
+        QFile* desktopFile = new QFile(autostartPath->filePath("track-o-bot.desktop"));
+        desktopFile->remove();
+    } else {
+        QFile* srcFile = new QFile( ":/assets/track-o-bot.desktop" );
+        LOG("source: %s", srcFile->fileName().toStdString().c_str());
+        LOG("source exists: %s", QString::number(srcFile->exists()).toStdString().c_str());
+        srcFile->copy(autostartPath->filePath("track-o-bot.desktop"));
+    }
 #endif
 }

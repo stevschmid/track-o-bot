@@ -35,7 +35,7 @@ int main( int argc, char **argv )
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #elif defined Q_WS_X11
-  QIcon icon = QIcon( ":/icons/logo.png" );
+  QIcon icon = QIcon( ":/icons/Track-o-Bot.png" );
 #endif
   app.setApplicationName( "Track-o-Bot" ); // for proper DataLocation handling
   app.setOrganizationName( "spidy.ch" );
