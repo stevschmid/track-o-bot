@@ -1,7 +1,6 @@
 #include "Core.h"
 #include "Tracker.h"
-
-#include "JsonFileGameRecordSink.h"
+#include "LocalRecordSink.h"
 
 Core::Core()
   : mGameRunning( false ),
@@ -111,7 +110,7 @@ void Core::ArchiveResult() {
       mLogTracker.CardHistoryList(),
       mDuration );
     
-    JsonFileGameRecordSink::Instance()->AddResult( mGameMode,
+    LocalRecordSink::Instance()->AddResult( mGameMode,
                                                   mOutcome,
                                                   mOrder,
                                                   mOwnClass,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IGameRecordSink.h"
+#include "IRecordSink.h"
 #include "Json.h"
 #include "Hearthstone.h"
 #include "Tracker.h"
@@ -9,11 +9,11 @@
 #include <QDir>
 #include <QTime>
 
-class JsonFileGameRecordSink : public QObject, public IGameRecordSink
+class LocalRecordSink : public QObject, public IRecordSink
 {
   Q_OBJECT
     
-DEFINE_SINGLETON( JsonFileGameRecordSink )
+DEFINE_SINGLETON( LocalRecordSink )
     
 private:
     QSettings mSettings;
@@ -24,8 +24,10 @@ protected:
     
 public:
     
-  virtual void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds );
-    
+  void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds );
+  
+  QString SinkId() { return "JsonFile"; }
+
   void SetExportPath(QString path);
   QString ExportPath();
   

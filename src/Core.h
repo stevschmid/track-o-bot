@@ -3,6 +3,7 @@
 #include "Hearthstone.h"
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
+#include "IRecordSink.h"
 
 #include <QTimer>
 #include <QTime>
@@ -26,7 +27,7 @@ private:
   CardHistoryList       mCardHistoryList;
 
   bool                  mCurrentResultTracked;
-
+  
   void ResetResult();
   void ArchiveResult();
 

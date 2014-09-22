@@ -1,20 +1,17 @@
-//
-//  JsonFileGameRecordSink.cpp
-//
-#include "JsonFileGameRecordSink.h"
+#include "LocalRecordSink.h"
 
 #define DEFAULT_EXPORT_DIR QDir::homePath()
 const bool DEFAULT_IS_ENABLED = false;
 
-DEFINE_SINGLETON_SCOPE( JsonFileGameRecordSink );
+DEFINE_SINGLETON_SCOPE( LocalRecordSink );
 
-JsonFileGameRecordSink::JsonFileGameRecordSink() {
+LocalRecordSink::LocalRecordSink() {
 }
 
-JsonFileGameRecordSink::~JsonFileGameRecordSink() {
+LocalRecordSink::~LocalRecordSink() {
 }
 
-void JsonFileGameRecordSink::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds )
+void LocalRecordSink::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds )
 {
     // write json to a text file in the export directory
     QtJson::JsonObject gamejson;
@@ -37,7 +34,7 @@ void JsonFileGameRecordSink::AddResult( GameMode mode, Outcome outcome, GoingOrd
      LOG( "Match data written to " + pathString.toAscii() );
 }
 
-void JsonFileGameRecordSink::RecordToJson(QtJson::JsonObject& result, GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList, int durationInSeconds)
+void LocalRecordSink::RecordToJson(QtJson::JsonObject& result, GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList, int durationInSeconds)
 {
   if (!IsEnabled()) return;
   
@@ -59,12 +56,12 @@ void JsonFileGameRecordSink::RecordToJson(QtJson::JsonObject& result, GameMode m
   result[ "card_history" ] = card_history;
 }
 
-void JsonFileGameRecordSink::SetExportPath(QString path)
+void LocalRecordSink::SetExportPath(QString path)
 {
     mSettings.setValue( "jsonfilepath", path );
 }
 
-QString JsonFileGameRecordSink::ExportPath()
+QString LocalRecordSink::ExportPath()
 {
     if( !mSettings.contains( "jsonfilepath" ) || mSettings.value( "jsonfilepath" ).toString().isEmpty() ) {
         SetExportPath( DEFAULT_EXPORT_DIR );
@@ -73,7 +70,7 @@ QString JsonFileGameRecordSink::ExportPath()
     return mSettings.value( "jsonfilepath" ).toString();
 }
 
-bool JsonFileGameRecordSink::IsEnabled()
+bool LocalRecordSink::IsEnabled()
 {
   if( !mSettings.contains( "jsonfileEnabled" ) || mSettings.value( "jsonfileEnabled" ).toString().isEmpty() ) {
     SetIsEnabled( DEFAULT_IS_ENABLED );
@@ -82,7 +79,7 @@ bool JsonFileGameRecordSink::IsEnabled()
   return mSettings.value( "jsonfileEnabled" ).toBool();
 }
 
-void JsonFileGameRecordSink::SetIsEnabled(bool enabled)
+void LocalRecordSink::SetIsEnabled(bool enabled)
 {
   return mSettings.setValue( "jsonfileEnabled", enabled );
 }

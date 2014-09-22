@@ -4,9 +4,9 @@
 #include <QNetworkRequest>
 #include <QSettings>
 #include <QSslError>
-#include "IGameRecordSink.h"
+#include "IRecordSink.h"
 
-class Tracker : public QObject, public IGameRecordSink
+class Tracker : public QObject, public IRecordSink
 {
   Q_OBJECT
 
@@ -41,6 +41,8 @@ public:
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();
+  
+  QString SinkId() { return "Main"; }
 
   QString Username() const;
   void SetUsername( const QString& username );

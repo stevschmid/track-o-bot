@@ -9,7 +9,7 @@
 
 #include "Tracker.h"
 #include "Updater.h"
-#include "JsonFileGameRecordSink.h"
+#include "LocalRecordSink.h"
 
 extern Updater *gUpdater;
 
@@ -176,22 +176,17 @@ void AdvancedTab::ChangeExportDirectory() {
                                                          tr( "Choose Game Data Save Location" ), "/",
                                                          QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks );
     
-  if( dirPath.isEmpty() ) {
-      LOG( "Data export directory not changed." );
-      return;
-  }
+  if( dirPath.isEmpty() ) { return; }
   
-  JsonFileGameRecordSink::Instance()->SetExportPath(dirPath);
-    
-  LOG( "Data export directory set to " + dirPath.toAscii() );
+  LocalRecordSink::Instance()->SetExportPath(dirPath);
   LoadSettings();
 }
 
 void AdvancedTab::LoadSettings() {
-  mUI->exportToJsonFile->setChecked( JsonFileGameRecordSink::Instance()->IsEnabled() );
+  mUI->exportToJsonFile->setChecked( LocalRecordSink::Instance()->IsEnabled() );
   
   // Set button text to elided version of file path
-  QString pathText = JsonFileGameRecordSink::Instance()->ExportPath();
+  QString pathText = LocalRecordSink::Instance()->ExportPath();
 
   QFontMetrics metrix(mUI->changeExportPathButton->font());
   
@@ -203,7 +198,7 @@ void AdvancedTab::LoadSettings() {
 
 void AdvancedTab::UpdateEnabled()
 {
-  JsonFileGameRecordSink::Instance()->SetIsEnabled( mUI->exportToJsonFile->isChecked() );
+  LocalRecordSink::Instance()->SetIsEnabled( mUI->exportToJsonFile->isChecked() );
 }
 
 AdvancedTab::~AdvancedTab() {
