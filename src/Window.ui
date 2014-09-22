@@ -30,8 +30,11 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QTabWidget" name="tabWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="SettingsTab" name="settingsTab">
         <attribute name="title">
@@ -46,6 +49,11 @@
        <widget class="AboutTab" name="aboutTab">
         <attribute name="title">
          <string>About</string>
+        </attribute>
+       </widget>
+       <widget class="AdvancedTab" name="advancedTab">
+        <attribute name="title">
+         <string>Advanced</string>
         </attribute>
        </widget>
       </widget>
@@ -69,6 +77,12 @@
   </customwidget>
   <customwidget>
    <class>AboutTab</class>
+   <extends>QWidget</extends>
+   <header>src/window.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AdvancedTab</class>
    <extends>QWidget</extends>
    <header>src/window.h</header>
    <container>1</container>

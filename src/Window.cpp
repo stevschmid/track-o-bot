@@ -5,9 +5,12 @@
 #include "ui_SettingsWidget.h"
 #include "ui_LogWidget.h"
 #include "ui_AboutWidget.h"
+#include "ui_AdvancedWidget.h"
 
 #include "Tracker.h"
 #include "Updater.h"
+#include "JsonFileGameRecordSink.h"
+
 extern Updater *gUpdater;
 
 SettingsTab::SettingsTab( QWidget *parent )
@@ -20,6 +23,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
   connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
   connect( Tracker::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
+  
   LoadSettings();
 }
 
@@ -155,6 +159,57 @@ AboutTab::~AboutTab() {
   delete mUI;
 }
 
+AdvancedTab::AdvancedTab( QWidget *parent )
+: QWidget( parent ), mUI( new Ui::AdvancedWidget )
+{
+  mUI->setupUi( this );
+  
+  connect( mUI->changeExportPathButton, SIGNAL( clicked() ), this, SLOT( ChangeExportDirectory() ) );
+  connect( mUI->exportToJsonFile, SIGNAL( clicked(bool) ), this, SLOT( UpdateEnabled() ) );
+  
+  LoadSettings();
+}
+
+void AdvancedTab::ChangeExportDirectory() {
+  
+  QString dirPath = QFileDialog::getExistingDirectory( this,
+                                                         tr( "Choose Game Data Save Location" ), "/",
+                                                         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks );
+    
+  if( dirPath.isEmpty() ) {
+      LOG( "Data export directory not changed." );
+      return;
+  }
+  
+  JsonFileGameRecordSink::Instance()->SetExportPath(dirPath);
+    
+  LOG( "Data export directory set to " + dirPath.toAscii() );
+  LoadSettings();
+}
+
+void AdvancedTab::LoadSettings() {
+  mUI->exportToJsonFile->setChecked( JsonFileGameRecordSink::Instance()->IsEnabled() );
+  
+  // Set button text to elided version of file path
+  QString pathText = JsonFileGameRecordSink::Instance()->ExportPath();
+
+  QFontMetrics metrix(mUI->changeExportPathButton->font());
+  
+  // elidedText assumes a label width, button text area is a bit smaller than that
+  int width = mUI->changeExportPathButton->maximumWidth() - 25;
+  QString clippedText = metrix.elidedText(pathText, Qt::ElideRight, width);
+  mUI->changeExportPathButton->setText(clippedText);
+}
+
+void AdvancedTab::UpdateEnabled()
+{
+  JsonFileGameRecordSink::Instance()->SetIsEnabled( mUI->exportToJsonFile->isChecked() );
+}
+
+AdvancedTab::~AdvancedTab() {
+    delete mUI;
+}
+
 Window::Window()
   : mUI( new Ui::Window )
 {
@@ -273,3 +328,4 @@ void Window::HandleGameClientRestartRequired( bool restartRequired ) {
     }
   }
 }
+

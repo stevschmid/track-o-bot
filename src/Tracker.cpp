@@ -1,7 +1,7 @@
 #include "Tracker.h"
 
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QUrl>
 #include <QTimer>
 #include <QDesktopServices>
@@ -128,7 +128,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   meta.append( PLATFORM );
 
   params[ "_meta" ] = meta;
-
+    
   QByteArray data = QtJson::serialize( params );
 
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );

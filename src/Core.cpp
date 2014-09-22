@@ -1,6 +1,8 @@
 #include "Core.h"
 #include "Tracker.h"
 
+#include "JsonFileGameRecordSink.h"
+
 Core::Core()
   : mGameRunning( false ),
     mGameMode( MODE_UNKNOWN ),
@@ -90,7 +92,7 @@ void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
   DEBUG( "HandleMatchEnd" );
   mCardHistoryList = cardHistoryList;
   mDuration = mDurationTimer.elapsed() / 1000;
-  UploadResult();
+  ArchiveResult();
 }
 
 void Core::HandleGameMode( GameMode mode ) {
@@ -98,8 +100,8 @@ void Core::HandleGameMode( GameMode mode ) {
   mGameMode = mode;
 }
 
-void Core::UploadResult() {
-  DEBUG( "UploadResult" );
+void Core::ArchiveResult() {
+  DEBUG( "ArchiveResult" );
 
   Tracker::Instance()->AddResult( mGameMode,
       mOutcome,
@@ -108,6 +110,14 @@ void Core::UploadResult() {
       mOpponentClass,
       mLogTracker.CardHistoryList(),
       mDuration );
+    
+    JsonFileGameRecordSink::Instance()->AddResult( mGameMode,
+                                                  mOutcome,
+                                                  mOrder,
+                                                  mOwnClass,
+                                                  mOpponentClass,
+                                                  mLogTracker.CardHistoryList(),
+                                                  mDuration );
 
   ResetResult();
 }

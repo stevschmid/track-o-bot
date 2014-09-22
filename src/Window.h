@@ -75,6 +75,27 @@ public:
   ~AboutTab();
 };
 
+namespace Ui { class AdvancedWidget; }
+
+class AdvancedTab : public QWidget
+{
+  Q_OBJECT
+    
+private:
+  Ui::AdvancedWidget *mUI;
+    
+private slots:
+  void ChangeExportDirectory();
+  
+public:
+  explicit AdvancedTab( QWidget *parent = 0 );
+  ~AdvancedTab();
+  
+public slots:
+  void LoadSettings();
+  void UpdateEnabled();
+};
+
 namespace Ui { class Window; }
 
 class Window : public QDialog
@@ -112,4 +133,5 @@ public:
   explicit Window();
   ~Window();
 };
+
 

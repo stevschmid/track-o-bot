@@ -4,8 +4,9 @@
 #include <QNetworkRequest>
 #include <QSettings>
 #include <QSslError>
+#include "IGameRecordSink.h"
 
-class Tracker : public QObject
+class Tracker : public QObject, public IGameRecordSink
 {
   Q_OBJECT
 

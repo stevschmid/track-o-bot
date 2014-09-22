@@ -28,7 +28,7 @@ private:
   bool                  mCurrentResultTracked;
 
   void ResetResult();
-  void UploadResult();
+  void ArchiveResult();
 
   bool mGameClientRestartRequired;
   void SetGameClientRestartRequired( bool restartRequired );
