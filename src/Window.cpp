@@ -9,7 +9,7 @@
 
 #include "Tracker.h"
 #include "Updater.h"
-#include "LocalRecordSink.h"
+#include "LocalResultSink.h"
 
 extern Updater *gUpdater;
 
@@ -178,15 +178,15 @@ void AdvancedTab::ChangeExportDirectory() {
     
   if( dirPath.isEmpty() ) { return; }
   
-  LocalRecordSink::Instance()->SetExportPath(dirPath);
+  LocalResultSink::Instance()->SetExportPath(dirPath);
   LoadSettings();
 }
 
 void AdvancedTab::LoadSettings() {
-  mUI->exportToJsonFile->setChecked( LocalRecordSink::Instance()->IsEnabled() );
+  mUI->exportToJsonFile->setChecked( LocalResultSink::Instance()->IsEnabled() );
   
   // Set button text to elided version of file path
-  QString pathText = LocalRecordSink::Instance()->ExportPath();
+  QString pathText = LocalResultSink::Instance()->ExportPath();
 
   QFontMetrics metrix(mUI->changeExportPathButton->font());
   
@@ -198,7 +198,7 @@ void AdvancedTab::LoadSettings() {
 
 void AdvancedTab::UpdateEnabled()
 {
-  LocalRecordSink::Instance()->SetIsEnabled( mUI->exportToJsonFile->isChecked() );
+  LocalResultSink::Instance()->SetIsEnabled( mUI->exportToJsonFile->isChecked() );
 }
 
 AdvancedTab::~AdvancedTab() {

@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "Tracker.h"
-#include "LocalRecordSink.h"
+#include "LocalResultSink.h"
+#include "Result.h"
 
 Core::Core()
   : mGameRunning( false ),
@@ -102,21 +103,16 @@ void Core::HandleGameMode( GameMode mode ) {
 void Core::ArchiveResult() {
   DEBUG( "ArchiveResult" );
 
-  Tracker::Instance()->AddResult( mGameMode,
-      mOutcome,
-      mOrder,
-      mOwnClass,
-      mOpponentClass,
-      mLogTracker.CardHistoryList(),
-      mDuration );
-    
-    LocalRecordSink::Instance()->AddResult( mGameMode,
-                                                  mOutcome,
-                                                  mOrder,
-                                                  mOwnClass,
-                                                  mOpponentClass,
-                                                  mLogTracker.CardHistoryList(),
-                                                  mDuration );
+  Result game(  mGameMode,
+                mOutcome,
+                mOrder,
+                mOwnClass,
+                mOpponentClass,
+                mLogTracker.CardHistoryList(),
+                mDuration );
+  
+  Tracker::Instance()->AddResult( game );
+  LocalResultSink::Instance()->AddResult( game );
 
   ResetResult();
 }

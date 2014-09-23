@@ -3,7 +3,8 @@
 #include "Hearthstone.h"
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
-#include "IRecordSink.h"
+#include "IResultSink.h"
+#include "Result.h"
 
 #include <QTimer>
 #include <QTime>

@@ -19,8 +19,9 @@ HEADERS = src/Local.h \
           src/Scenes/IngameScene.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
-          src/IRecordSink.h \
-          src/LocalRecordSink.h
+          src/IResultSink.h \
+          src/LocalResultSink.h \
+          src/Result.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -34,8 +35,7 @@ SOURCES = src/Main.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
           src/HearthstoneLogTracker.cpp \
-          src/LocalRecordSink.cpp
-
+          src/LocalResultSink.cpp
 
 FORMS   = src/Window.ui \
           src/SettingsWidget.ui \

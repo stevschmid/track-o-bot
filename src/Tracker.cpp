@@ -26,7 +26,7 @@ Tracker::Tracker() {
 }
 
 Tracker::~Tracker() {
-}
+}	
 
 void Tracker::EnsureAccountIsSetUp() {
   if( !IsAccountSetUp() ) {
@@ -37,9 +37,9 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList, int durationInSeconds )
+void Tracker::AddResult( Result game )
 {
-  if( mode == MODE_SOLO_ADVENTURES ) {
+  if( game.mode == MODE_SOLO_ADVENTURES ) {
     LOG( "Ignore solo adventure." );
     return;
   }
@@ -53,31 +53,32 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   DEBUG( "Card History: %s", cardHistoryOutput.c_str() );
 #endif
 
-  if( outcome == OUTCOME_UNKNOWN ) {
+  // Filter bad game data
+  if( game.outcome == OUTCOME_UNKNOWN ) {
     mUnknownOutcomeCount++;
     LOG( "Outcome unknown. Skip result" );
     return;
   }
 
-  if( mode == MODE_UNKNOWN ) {
+  if( game.mode == MODE_UNKNOWN ) {
     mUnknownModeCount++;
     LOG( "Mode unknown. Skip result" );
     return;
   }
 
-  if( order == ORDER_UNKNOWN ) {
+  if( game.order == ORDER_UNKNOWN ) {
     mUnknownOrderCount++;
     LOG( "Order unknown. Skip result" );
     return;
   }
 
-  if( ownClass == CLASS_UNKNOWN ) {
+  if( game.ownClass == CLASS_UNKNOWN ) {
     mUnknownClassCount++;
     LOG( "Own Class unknown. Skip result" );
     return;
   }
 
-  if( opponentClass == CLASS_UNKNOWN ) {
+  if( game.opponentClass == CLASS_UNKNOWN ) {
     mUnknownOpponentCount++;
     LOG( "Class of Opponent unknown. Skip result" );
     return;
@@ -86,29 +87,14 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   mSuccessfulResultCount++;
 
   LOG( "Upload %s %s vs. %s as %s. Went %s",
-      MODE_NAMES[ mode ],
-      OUTCOME_NAMES[ outcome ],
-      CLASS_NAMES[ opponentClass ],
-      CLASS_NAMES[ ownClass ],
-      ORDER_NAMES[ order ] );
+      MODE_NAMES[ game.mode ],
+      OUTCOME_NAMES[ game.outcome ],
+      CLASS_NAMES[ game.opponentClass ],
+      CLASS_NAMES[ game.ownClass ],
+      ORDER_NAMES[ game.order ] );
 
-  QtJson::JsonObject result;
-  result[ "coin" ]     = ( order == ORDER_SECOND );
-  result[ "hero" ]     = CLASS_NAMES[ ownClass ];
-  result[ "opponent" ] = CLASS_NAMES[ opponentClass ];
-  result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
-  result[ "mode" ]     = MODE_NAMES[ mode ];
-  result[ "duration" ] = durationInSeconds;
-
-  QtJson::JsonArray card_history;
-  for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
-    QtJson::JsonObject item;
-    item[ "turn" ] = (*it).turn;
-    item[ "player" ] = (*it).player == PLAYER_SELF ? "me" : "opponent";
-    item[ "card_id" ] = (*it).cardId.c_str();
-    card_history.append(item);
-  }
-  result[ "card_history" ] = card_history;
+  // Upload game Result as json
+  QtJson::JsonObject result = game.AsJson();
 
   QtJson::JsonObject params;
   params[ "result" ] = result;

@@ -4,9 +4,10 @@
 #include <QNetworkRequest>
 #include <QSettings>
 #include <QSslError>
-#include "IRecordSink.h"
+#include "IResultSink.h"
+#include "Result.h"
 
-class Tracker : public QObject, public IRecordSink
+class Tracker : public QObject, public IResultSink
 {
   Q_OBJECT
 
@@ -36,8 +37,9 @@ private slots:
 
 public:
   bool IsAccountSetUp() const;
+  bool IsEnabled() { return true; }
 
-  void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds );
+  void AddResult( Result game );
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();
