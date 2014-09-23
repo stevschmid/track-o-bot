@@ -26,6 +26,10 @@ Core::Core()
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+  
+  // Initialize list of Result sinks
+  mResultSinks.insert(Tracker::Instance()->SinkId(), Tracker::Instance());
+  mResultSinks.insert(LocalResultSink::Instance()->SinkId(), LocalResultSink::Instance());
 
   ResetResult();
 }
@@ -111,8 +115,12 @@ void Core::ArchiveResult() {
                 mLogTracker.CardHistoryList(),
                 mDuration );
   
-  Tracker::Instance()->AddResult( game );
-  LocalResultSink::Instance()->AddResult( game );
+  // Send game results to everyone
+  QHash<QString, IResultSink*>::iterator i;
+  for (i = mResultSinks.begin(); i != mResultSinks.end(); i++)
+  {
+    i.value()->AddResult( game );
+  }
 
   ResetResult();
 }

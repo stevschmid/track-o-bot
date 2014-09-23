@@ -29,6 +29,8 @@ private:
 
   bool                  mCurrentResultTracked;
   
+  QHash<QString, IResultSink*> mResultSinks;
+  
   void ResetResult();
   void ArchiveResult();
 
