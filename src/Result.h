@@ -4,7 +4,6 @@
 struct Result
 {
 public:
-
   Result(GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds)
         : mode(mode),
           outcome(outcome),

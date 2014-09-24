@@ -115,7 +115,7 @@ void Core::ArchiveResult() {
                 mLogTracker.CardHistoryList(),
                 mDuration );
   
-  // Send game results to everyone
+  // Send game result to everyone
   QHash<QString, IResultSink*>::iterator i;
   for (i = mResultSinks.begin(); i != mResultSinks.end(); i++)
   {
