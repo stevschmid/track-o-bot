@@ -46,7 +46,7 @@ void Tracker::AddResult( Result game )
 
 #ifdef _DEBUG
   string cardHistoryOutput;
-  for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
+  for( CardHistoryList::const_iterator it = game.cardHistoryList.begin(); it != game.cardHistoryList.end(); ++it ) {
     cardHistoryOutput += (*it).player == PLAYER_SELF ? "SELF " : "OPPONENT ";
     cardHistoryOutput += (*it).cardId + "\n";
   }

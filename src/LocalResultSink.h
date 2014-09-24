@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QTime>
 
+// Archives match results to a local JSON file
 class LocalResultSink : public QObject, public IResultSink
 {
   Q_OBJECT

@@ -196,8 +196,7 @@ void AdvancedTab::LoadSettings() {
   mUI->changeExportPathButton->setText(clippedText);
 }
 
-void AdvancedTab::UpdateEnabled()
-{
+void AdvancedTab::UpdateEnabled() {
   LocalResultSink::Instance()->SetIsEnabled( mUI->exportToJsonFile->isChecked() );
 }
 
