@@ -4,11 +4,7 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QTimer>
-#include <QTime>
 #include <QDesktopServices>
-#include <QFile>
-#include <QTextStream>
-#include <QDir>
 
 #include "Json.h"
 #include "Hearthstone.h"
@@ -31,7 +27,7 @@ Tracker::Tracker() {
 }
 
 Tracker::~Tracker() {
-}	
+}
 
 void Tracker::EnsureAccountIsSetUp() {
   if( !IsAccountSetUp() ) {
@@ -119,7 +115,7 @@ void Tracker::AddResult( Result game )
   meta.append( PLATFORM );
 
   params[ "_meta" ] = meta;
-    
+  
   QByteArray data = QtJson::serialize( params );
 
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );

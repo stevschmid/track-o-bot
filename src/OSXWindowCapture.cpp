@@ -1,7 +1,5 @@
 #include "OSXWindowCapture.h"
 
-using std::string;
-
 // remove the window title bar which we are not interested in
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 

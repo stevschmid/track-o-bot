@@ -5,8 +5,6 @@
 #include <ApplicationServices/ApplicationServices.h>
 #include <QTimer>
 
-using std::string;
-
 // FindWindow is quite intensive in terms of performance
 #define OSX_UPDATE_WINDOW_DATA_INTERVAL 3000 // ms
 
