@@ -13,12 +13,6 @@
 
 * Install [Sparkle](http://sparkle.andymatuschak.org/) 
  * Move _Sparkle.framework_ to ``/Library/Frameworks``.
- * **Mavericks only:** Clang doesn't look in the usual framework directories, so you need to copy _Sparkle.framework_ where clang can find it.
- 
-        ```
-sudo cp -fR ~/Downloads/Sparkle-1.8.0/Sparkle.framework/  
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/
-        ```
 
 ## Windows
 
@@ -47,3 +41,4 @@ Feel free to submit pull requests, suggest new ideas and discuss issues.
 GNU Lesser General Public License (LGPL) Version 2.1.
 
 See [LICENSE](LICENSE).
+
