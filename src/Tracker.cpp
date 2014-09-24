@@ -4,12 +4,17 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QTimer>
+#include <QTime>
 #include <QDesktopServices>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
 
 #include "Json.h"
 #include "Hearthstone.h"
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
+
 
 DEFINE_SINGLETON_SCOPE( Tracker );
 
