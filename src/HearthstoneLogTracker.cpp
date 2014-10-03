@@ -196,11 +196,11 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     HandleGameMode( MODE_RANKED );
   }
 
-  // Handle Naxx properly
-  QRegExp regexNaxx( "name=NAX family=Board" );
-  if( regexNaxx.indexIn(line) != -1 ) {
-    HandleGameMode( MODE_SOLO_ADVENTURES );
-  }
+//  // Handle Naxx properly
+//  QRegExp regexNaxx( "name=NAX family=Board" );
+//  if( regexNaxx.indexIn(line) != -1 ) {
+//    HandleGameMode( MODE_SOLO_ADVENTURES );
+//  }
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
