@@ -20,16 +20,34 @@ version = File.read('track-o-bot.pro').match(/VERSION = (\d+\.\d+\.\d+)/)[1]
 # 3rd party
 `cp -R -H -f /Library/Frameworks/Sparkle.framework #{APP_DIR}/Contents/Frameworks`
 
-# Copy missing plist files
 frameworks = File.join(APP_DIR, 'Contents', 'Frameworks')
 Dir.foreach(frameworks) do |framework|
   next unless framework.match(/^Qt.*\.framework$/)
   path = File.join(frameworks, framework)
 
-  dst = File.join(path, 'Resources', 'Info.plist')
-  src = File.join(QT_LIB_DIR, framework, 'Contents', 'Info.plist')
+  # fix framework structure
+  # https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html
+  Dir.chdir(path) do
+    # Versions/Current -> Versions/4
+    lib_version = Dir.entries('Versions')[2]
+    lib = Dir.entries("Versions/#{lib_version}")[2]
+    FileUtils.ln_sf lib_version, File.join('Versions', 'Current')
 
-  FileUtils.cp(src, dst)
+    # QtXXX -> Versions/Current/QtXXX
+    FileUtils.ln_sf File.join('Versions', 'Current', lib), lib
+
+    # Versions/4/Resources
+    FileUtils.mkdir 'Resources' unless Dir.exists?('Resources')
+    res_path = File.join('Versions', lib_version, 'Resources')
+    FileUtils.mv 'Resources', res_path
+    # Resources -> Versions/Current/Resources
+    FileUtils.ln_sf File.join('Versions', 'Current', 'Resources'), 'Resources'
+
+    # copy missing Info.plist
+    # Versions/4/Resources/Info.plist
+    src = File.join(QT_LIB_DIR, framework, 'Contents', 'Info.plist')
+    FileUtils.cp(src, File.join(res_path, 'Info.plist'))
+  end
 end
 
 # Codesign frameworks
@@ -46,4 +64,3 @@ end
 puts "Creating DMG"
 `rm dist/mac/Track-o-Bot_#{version}.dmg`
 `appdmg dist/mac/track-o-bot.json dist/mac/Track-o-Bot_#{version}.dmg`
-

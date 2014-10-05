@@ -38,17 +38,26 @@ void HearthstoneLogWatcher::CheckForLogChanges() {
   if( size < mLastSeekPos ) {
     mLastSeekPos = size;
   } else {
-    QTextStream stream( &file );
-    stream.seek( mLastSeekPos );
+    // Use raw QFile instead of QTextStream
+    // QTextStream uses buffering and seems to skip some lines (see also QTextStream#pos)
+    file.seek( mLastSeekPos );
 
-    while( !stream.atEnd() ) {
-      QString line = stream.readLine();
+    char c;
+    while( !file.atEnd() ) {
+      QString line = file.readLine();
+
+      // We are not interested in the last line (in case it's not complete yet)
+      if( file.atEnd() )
+        break;
+
+      // Make absolutely sure this line has a newline at the end
+      file.seek( file.pos() - 1 );
+      file.getChar( &c );
+      if( c != 10 && c != 13 )
+        break;
+
       emit LineAdded(line);
+      mLastSeekPos = file.pos();
     }
-
-    mLastSeekPos = stream.pos();
   }
 }
-
-
-
