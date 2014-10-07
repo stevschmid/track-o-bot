@@ -1,5 +1,7 @@
 #include "Core.h"
 #include "Tracker.h"
+#include "LocalResultSink.h"
+#include "Result.h"
 
 Core::Core()
   : mGameRunning( false ),
@@ -24,6 +26,10 @@ Core::Core()
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+  
+  // Initialize list of Result sinks
+  mResultSinks.insert(Tracker::Instance()->SinkId(), Tracker::Instance());
+  mResultSinks.insert(LocalResultSink::Instance()->SinkId(), LocalResultSink::Instance());
 
   ResetResult();
 }
@@ -90,7 +96,7 @@ void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
   DEBUG( "HandleMatchEnd" );
   mCardHistoryList = cardHistoryList;
   mDuration = mDurationTimer.elapsed() / 1000;
-  UploadResult();
+  ArchiveResult();
 }
 
 void Core::HandleGameMode( GameMode mode ) {
@@ -98,16 +104,23 @@ void Core::HandleGameMode( GameMode mode ) {
   mGameMode = mode;
 }
 
-void Core::UploadResult() {
-  DEBUG( "UploadResult" );
+void Core::ArchiveResult() {
+  DEBUG( "ArchiveResult" );
 
-  Tracker::Instance()->AddResult( mGameMode,
-      mOutcome,
-      mOrder,
-      mOwnClass,
-      mOpponentClass,
-      mLogTracker.CardHistoryList(),
-      mDuration );
+  Result game(  mGameMode,
+                mOutcome,
+                mOrder,
+                mOwnClass,
+                mOpponentClass,
+                mLogTracker.CardHistoryList(),
+                mDuration );
+  
+  // Send game result to everyone
+  QHash<QString, IResultSink*>::iterator i;
+  for (i = mResultSinks.begin(); i != mResultSinks.end(); i++)
+  {
+    i.value()->AddResult( game );
+  }
 
   ResetResult();
 }

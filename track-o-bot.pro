@@ -18,7 +18,10 @@ HEADERS = src/Local.h \
           src/Tracker.h \
           src/Scenes/IngameScene.h \
           src/HearthstoneLogWatcher.h \
-          src/HearthstoneLogTracker.h
+          src/HearthstoneLogTracker.h \
+          src/IResultSink.h \
+          src/LocalResultSink.h \
+          src/Result.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -31,12 +34,14 @@ SOURCES = src/Main.cpp \
           src/Json.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
-          src/HearthstoneLogTracker.cpp
+          src/HearthstoneLogTracker.cpp \
+          src/LocalResultSink.cpp
 
 FORMS   = src/Window.ui \
           src/SettingsWidget.ui \
           src/LogWidget.ui \
-          src/AboutWidget.ui
+          src/AboutWidget.ui \
+          src/AdvancedWidget.ui
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

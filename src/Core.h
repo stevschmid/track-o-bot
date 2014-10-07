@@ -3,6 +3,8 @@
 #include "Hearthstone.h"
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
+#include "IResultSink.h"
+#include "Result.h"
 
 #include <QTimer>
 #include <QTime>
@@ -26,9 +28,11 @@ private:
   CardHistoryList       mCardHistoryList;
 
   bool                  mCurrentResultTracked;
-
+  
+  QHash<QString, IResultSink*> mResultSinks;
+  
   void ResetResult();
-  void UploadResult();
+  void ArchiveResult();
 
   bool mGameClientRestartRequired;
   void SetGameClientRestartRequired( bool restartRequired );
