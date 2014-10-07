@@ -16,14 +16,11 @@ HEADERS = src/Local.h \
           src/Core.h \
           src/Logger.h \
           src/Tracker.h \
-          src/Scenes/IngameScene.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
-          src/Phash.cpp \
-          src/SceneManager.cpp \
           src/Tracker.cpp \
           src/Window.cpp \
           src/Core.cpp \
@@ -41,7 +38,6 @@ FORMS   = src/Window.ui \
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
 RESOURCES += app.qrc
-RESOURCES += markers.qrc
 
 CONFIG(debug, debug|release): DEFINES += _DEBUG
 

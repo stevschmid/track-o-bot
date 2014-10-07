@@ -34,7 +34,7 @@ The resulting binary can be found in the ``build`` subfolder.
 
 # Contributing
 
-Feel free to submit pull requests, suggest new ideas and discuss issues. Track-o-Bot is about simplicity and a streamlined experience. Only features which benefit all users will be considered. 
+Feel free to submit pull requests, suggest new ideas and discuss issues. Track-o-Bot is about simplicity and usability. Only features which benefit all users will be considered. 
 
 # License
 
