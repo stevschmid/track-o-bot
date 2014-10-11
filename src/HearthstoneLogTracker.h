@@ -12,6 +12,8 @@ private:
   int mTurnCounter;
   bool mHeroPowerUsed;
   int mHeroPlayerId;
+  QString mOppName;
+  QString mPlayerName;
 
   CardHistoryList mCardHistoryList;
 
@@ -24,6 +26,7 @@ private:
 
 private slots:
   void HandleLogLine( const QString& line );
+  void LookForOppName( const QString& line );
 
 signals:
   void HandleMatchStart();
@@ -34,6 +37,7 @@ signals:
   void HandleGameMode( GameMode mode );
   void HandleOpponentClass( Class opponentClass );
   void HandleOwnClass( Class ownClass );
+  void HandleOppName( QString oppName );
 
 public:
   HearthstoneLogTracker();

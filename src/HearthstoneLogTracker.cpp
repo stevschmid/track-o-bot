@@ -38,11 +38,56 @@ void HearthstoneLogTracker::Reset() {
   mTurnCounter = 0;
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
+  mOppName = "HaveFun";
+  mPlayerName = "mharris717";
+}
+
+// void HearthstoneLogTracker::LookForOppName (const QString& line ) {
+//   QRegExp regex( "ProcessChanges.*name=([a-zA-Z0-9]+)].* entity=([a-zA-Z0-9]+) ");
+//   if( regex.indexIn(line) != -1 ) {
+//     QStringList captures = regex.capturedTexts();
+//     QString name = captures[1];
+//     QString entity = captures[2];
+
+//     if (name == entity && name != mOppName) {
+//       DEBUG( "Found Opp Name %s",name.toStdString().c_str() );
+//       mOppName = name;
+//     }
+
+//     if (name != entity) {
+//       DEBUG( "Opp Name Mismatch %s / %s",name.toStdString().c_str(),entity.toStdString().c_str() );
+//     }
+//   }
+// }
+
+void HearthstoneLogTracker::LookForOppName ( const QString& line ) {
+  QRegExp regex( "ProcessChanges.*name=([a-zA-Z0-9]+)\\].*\\sentity=([a-zA-Z0-9]+)\\s");
+  // QString line = "[Zone] ZoneChangeList.ProcessChanges() - processing index=11 change=powerTask=[power=[type=TAG_CHANGE entity=[id=2 cardId= name=Kajiura] tag=NUM_TURNS_LEFT value=1] complete=False] entity=Kajiura srcZoneTag=INVALID srcPos= dstZoneTag=INVALID dstPos=";
+  
+  if( regex.indexIn(line) != -1 ) {
+    QStringList captures = regex.capturedTexts();
+    QString name = captures[1];
+    QString entity = captures[2];
+
+    if (name != entity) {
+      DEBUG( "OPPNAME Mismatch %s / %s",name.toStdString().c_str(),entity.toStdString().c_str() );
+    }
+    else if (name == mPlayerName || name == "GameEntity") {
+      // DEBUG( "OPPNAME Found reserved name %s",name.toStdString().c_str() );
+    }
+    else if (name != mOppName) {
+      DEBUG( "OPPNAME Setting %s",name.toStdString().c_str() );
+      mOppName = name;
+      emit HandleOppName( name );
+    }
+  }
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   if( line.trimmed().isEmpty() )
     return;
+
+  LookForOppName(line);
 
   // CardPlayed / CardReturned / PlayerDied
   QRegExp regex( "ProcessChanges.*cardId=(\\w+).*zone from (.*) -> (.*)" );

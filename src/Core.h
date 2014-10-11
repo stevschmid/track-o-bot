@@ -22,6 +22,7 @@ private:
   GoingOrder            mOrder;
   Class                 mOwnClass;
   Class                 mOpponentClass;
+  QString               mOppName;
   int                   mDuration;
   CardHistoryList       mCardHistoryList;
 
@@ -42,6 +43,7 @@ private slots:
   void HandleOpponentClass( Class opponentClass );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
+  void HandleOppName (QString oppName );
 
   void Tick();
 

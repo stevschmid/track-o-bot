@@ -8,6 +8,7 @@ Core::Core()
     mOrder( ORDER_UNKNOWN ),
     mOwnClass( CLASS_UNKNOWN ),
     mOpponentClass( CLASS_UNKNOWN ),
+    mOppName ( "" ),
     mDuration( 0 ),
     mGameClientRestartRequired( false )
 {
@@ -21,6 +22,7 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
+  connect( &mLogTracker, SIGNAL( HandleOppName(QString) ), this, SLOT( HandleOppName(QString) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
@@ -98,6 +100,11 @@ void Core::HandleGameMode( GameMode mode ) {
   mGameMode = mode;
 }
 
+void Core::HandleOppName( QString oppName ) {
+  DEBUG( "HandleOppName %s", oppName.toStdString().c_str() );
+  mOppName = oppName;
+}
+
 void Core::UploadResult() {
   DEBUG( "UploadResult" );
 
@@ -106,6 +113,7 @@ void Core::UploadResult() {
       mOrder,
       mOwnClass,
       mOpponentClass,
+      mOppName,
       mLogTracker.CardHistoryList(),
       mDuration );
 
