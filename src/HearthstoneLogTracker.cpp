@@ -197,6 +197,14 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     }
   }
 
+  // Ranked level
+  QRegExp regexRankedLevel( "name=Medal_Ranked_(\\d+)" );
+  if( regexRankedLevel.indexIn(line) != -1 ) {
+    QStringList captures = regexRankedLevel.capturedTexts();
+    QString rank = captures[1];
+    HandleRankedLevel(rank.toInt());    
+  }
+
   // Casual/Ranked distinction
   QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {
