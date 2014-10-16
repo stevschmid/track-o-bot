@@ -102,6 +102,9 @@ typedef enum {
   CLASS_UNKNOWN
 } Class;
 
+
+#define RANK_UNKNOWN -1
+
 const char CLASS_NAMES[][128] = {
   "priest",
   "rogue",
