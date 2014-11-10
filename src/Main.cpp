@@ -26,6 +26,12 @@ Updater *gUpdater = NULL;
 
 int main( int argc, char **argv )
 {
+#ifdef Q_OS_MACX
+  if( QSysInfo::MacintoshVersion > QSysInfo::MV_10_8 ) {
+    QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue"); // Fix yosemite text in buttons etc.
+  }
+#endif
+
   // Basic setup
   QApplication app( argc, argv );
 #if defined Q_WS_MAC
