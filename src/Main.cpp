@@ -29,7 +29,9 @@ int main( int argc, char **argv )
   // Basic setup
   QApplication app( argc, argv );
 #if defined Q_WS_MAC
-  QIcon icon = QIcon( ":/icons/mac.png" );
+  app.setAttribute( Qt::AA_UseHighDpiPixmaps );
+  QIcon icon = QIcon( ":/icons/mac_black.png" );
+  icon.addFile( ":/icons/mac_black@2x.png" );
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif

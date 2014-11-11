@@ -237,8 +237,10 @@ void Window::CreateTrayIcon() {
   mTrayIcon->setContextMenu (mTrayIconMenu );
 
 #if defined Q_WS_MAC
-  QIcon icon = QIcon( ":/icons/mac.png" );
-  icon.addFile( ":/icons/mac_selected.png", QSize(), QIcon::Selected );
+  QIcon icon = QIcon( ":/icons/mac_black@2x.png" );
+  icon.addFile( ":/icons/mac_black.png" );
+  icon.addFile( ":/icons/mac_white.png", QSize(), QIcon::Selected );
+  icon.addFile( ":/icons/mac_white@2x.png", QSize(), QIcon::Selected );
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
