@@ -172,18 +172,32 @@ Window::Window()
   connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
   connect( &mCore, SIGNAL( HandleGameClientRestartRequired(bool) ), this, SLOT( HandleGameClientRestartRequired(bool) ) );
 
-#ifdef Q_WS_WIN
-  // Notify user the first time that the app runs in the taskbar
-  QSettings settings;
-  if( !settings.contains("taskbarHint") ) {
-    settings.setValue( "taskbarHint", true );
-    mTrayIcon->showMessage( tr( "Heads up!" ), "Track-o-Bot runs in your taskbar! Right click the icon for more options." );
-  }
-#endif
+  QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
 }
 
 Window::~Window() {
   delete mUI;
+}
+
+void Window::ShowNotification( const char *title, const char *message ) {
+#if defined Q_WS_WIN
+  mTrayIcon->showMessage( title, message );
+#elif defined Q_WS_MAC
+  OSX_ShowNotification( title, message );
+#endif
+}
+
+void Window::HandleFirstStartCheck() {
+  // Notify user the first time that the app runs in the taskbar
+  QSettings settings;
+  if( !settings.contains("taskbarHint") ) {
+    settings.setValue( "taskbarHint", true );
+#if defined Q_WS_WIN
+    ShowNotification( "Heads up!", "Track-o-Bot runs in your taskbar! Right click the icon for more options." );
+#elif defined Q_WS_MAC
+    ShowNotification( "Track-o-Bot", "Track-o-Bot runs in your menu bar! Click the icon for more options." );
+#endif
+  }
 }
 
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
@@ -277,9 +291,7 @@ void Window::HandleGameClientRestartRequired( bool restartRequired ) {
     separator = mTrayIconMenu->insertSeparator( mOpenProfileAction );
     mTrayIconMenu->insertAction( separator, mGameClientRestartRequiredAction );
 
-#ifdef Q_WS_WIN
-    mTrayIcon->showMessage( tr( "Game log enabled" ), "Please restart Hearthstone for changes to take effect!" );
-#endif
+    ShowNotification( "Game log enabled", "Please restart Hearthstone for changes to take effect!" );
   } else {
     mTrayIconMenu->removeAction( mGameClientRestartRequiredAction );
     if( separator ) {

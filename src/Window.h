@@ -89,6 +89,8 @@ private:
   void CreateActions();
   void CreateTrayIcon();
 
+  void ShowNotification( const char *title, const char *message );
+
   Ui::Window        *mUI;
 
   QAction           *mShowAction;
@@ -107,6 +109,7 @@ private slots:
   void TrayIconActivated( QSystemTrayIcon::ActivationReason reason );
 
   void HandleGameClientRestartRequired( bool restartRequired );
+  void HandleFirstStartCheck();
 
 public:
   explicit Window();

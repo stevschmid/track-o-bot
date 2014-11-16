@@ -45,13 +45,14 @@ mac {
   DEFINES += PLATFORM=\\\"mac\\\"
 
   HEADERS += src/OSXWindowCapture.h src/OSXLocal.h
-  SOURCES += src/OSXWindowCapture.cpp src/OSXLocal.mm
+  SOURCES += src/OSXWindowCapture.cpp
 
   LIBS += -framework ApplicationServices -framework Sparkle -framework AppKit
 
   OBJECTIVE_SOURCES += \
     src/SparkleUpdater.mm \
-    src/CocoaInitializer.mm
+    src/CocoaInitializer.mm \
+    src/OSXLocal.mm
 
   ICON = icons/logo.icns
 
