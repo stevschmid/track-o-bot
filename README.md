@@ -6,8 +6,7 @@
 
 ## Mac OS X
 
-* Install Qt
-[High DPI 4.8 backport](https://bugreports.qt-project.org/browse/QTBUG-23870)[patch](https://codereview.qt-project.org/#/c/54636/) is required
+* Install of the Qt [High DPI 4.8 backport](https://bugreports.qt-project.org/browse/QTBUG-23870) [patch](https://codereview.qt-project.org/#/c/54636/) is required
 ```
 brew edit qt
 ```
