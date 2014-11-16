@@ -10,6 +10,10 @@
 #include "Updater.h"
 extern Updater *gUpdater;
 
+#if defined Q_WS_MAC
+#include "OSXLocal.h"
+#endif
+
 SettingsTab::SettingsTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::SettingsWidget )
 {
@@ -237,10 +241,18 @@ void Window::CreateTrayIcon() {
   mTrayIcon->setContextMenu (mTrayIconMenu );
 
 #if defined Q_WS_MAC
-  QIcon icon = QIcon( ":/icons/mac_black@2x.png" );
-  icon.addFile( ":/icons/mac_black.png" );
-  icon.addFile( ":/icons/mac_white.png", QSize(), QIcon::Selected );
-  icon.addFile( ":/icons/mac_white@2x.png", QSize(), QIcon::Selected );
+  QIcon::Mode blackMode = QIcon::Normal;
+  QIcon::Mode whiteMode = QIcon::Selected;
+  if( OSX_YosemiteDarkModeEnabled() ) {
+    blackMode = QIcon::Disabled;
+    whiteMode = QIcon::Normal;
+  }
+
+  QIcon icon;
+  icon.addFile( ":/icons/mac_black@2x.png", QSize(), blackMode );
+  icon.addFile( ":/icons/mac_black.png", QSize(), blackMode );
+  icon.addFile( ":/icons/mac_white.png", QSize(), whiteMode );
+  icon.addFile( ":/icons/mac_white@2x.png", QSize(), whiteMode );
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
