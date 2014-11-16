@@ -37,7 +37,8 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList, int durationInSeconds, int rank )
+void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass,
+    const CardHistoryList& historyCardList, int durationInSeconds, int rank, int legend )
 {
   if( mode == MODE_SOLO_ADVENTURES ) {
     LOG( "Ignore solo adventure." );
@@ -100,10 +101,12 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   result[ "mode" ]     = MODE_NAMES[ mode ];
   result[ "duration" ] = durationInSeconds;
 
-  if ( mode == MODE_RANKED ) {
+  if( mode == MODE_RANKED && rank != RANK_UNKNOWN ) {
     result[ "rank" ] = rank;
   }
-  
+  if( mode == MODE_RANKED && legend != LEGEND_UNKNOWN ) {
+    result[ "legend" ] = legend;
+  }
 
   QtJson::JsonArray card_history;
   for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {

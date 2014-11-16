@@ -102,9 +102,6 @@ typedef enum {
   CLASS_UNKNOWN
 } Class;
 
-
-#define RANK_UNKNOWN -1
-
 const char CLASS_NAMES[][128] = {
   "priest",
   "rogue",
@@ -119,6 +116,9 @@ const char CLASS_NAMES[][128] = {
 };
 
 #define NUM_CLASSES 9
+
+#define RANK_UNKNOWN   0
+#define LEGEND_UNKNOWN  0
 
 class CardHistoryItem {
 public:

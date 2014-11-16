@@ -12,6 +12,7 @@ private:
   int mTurnCounter;
   bool mHeroPowerUsed;
   int mHeroPlayerId;
+  bool mLegendTracked;
 
   CardHistoryList mCardHistoryList;
 
@@ -34,7 +35,8 @@ signals:
   void HandleGameMode( GameMode mode );
   void HandleOpponentClass( Class opponentClass );
   void HandleOwnClass( Class ownClass );
-  void HandleRankedLevel( int rank );
+  void HandleRank( int rank );
+  void HandleLegend( int legend );
 
 public:
   HearthstoneLogTracker();

@@ -24,7 +24,9 @@ private:
   Class                 mOpponentClass;
   int                   mDuration;
   CardHistoryList       mCardHistoryList;
+
   int                   mRank;
+  int                   mLegend;
 
   bool                  mCurrentResultTracked;
 
@@ -43,7 +45,9 @@ private slots:
   void HandleOpponentClass( Class opponentClass );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
-  void HandleRankedLevel( int rank );
+
+  void HandleRank( int rank );
+  void HandleLegend( int legend );
 
   void Tick();
 
