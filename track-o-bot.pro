@@ -44,8 +44,8 @@ CONFIG(debug, debug|release): DEFINES += _DEBUG
 mac {
   DEFINES += PLATFORM=\\\"mac\\\"
 
-  HEADERS += src/OSXWindowCapture.h
-  SOURCES += src/OSXWindowCapture.cpp
+  HEADERS += src/OSXWindowCapture.h src/OSXLocal.h
+  SOURCES += src/OSXWindowCapture.cpp src/OSXLocal.mm
 
   LIBS += -framework ApplicationServices -framework Sparkle -framework AppKit
 

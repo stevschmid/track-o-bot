@@ -1,0 +1,2 @@
+bool OSX_YosemiteDarkModeEnabled();
+
