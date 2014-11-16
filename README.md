@@ -7,9 +7,21 @@
 ## Mac OS X
 
 * Install Qt
-  ```
-  brew install qt
-  ```
+[High DPI 4.8 backport](https://bugreports.qt-project.org/browse/QTBUG-23870)[patch](https://codereview.qt-project.org/#/c/54636/) is required
+```
+brew edit qt
+```
+Add the following patch
+```
+patch do
+  url "https://gist.githubusercontent.com/stevschmid/91a564b7a3f562e6a213/raw/ccfe0dcf2c5479356906fdfcdf229c2acb1bee39/qt48-high-dpi-backport-fixed.patch"
+  sha1 "8460eac1c2dfcff9dfbe240472ef6b66e58eb9f9"
+end
+```
+Build from source
+```
+brew reinstall qt --build-from-source
+```
 
 * Install [Sparkle](http://sparkle.andymatuschak.org/) 
  * Move _Sparkle.framework_ to ``/Library/Frameworks``.
