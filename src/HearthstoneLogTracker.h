@@ -34,6 +34,7 @@ signals:
   void HandleGameMode( GameMode mode );
   void HandleOpponentClass( Class opponentClass );
   void HandleOwnClass( Class ownClass );
+  void HandleRankedLevel( int rank );
 
 public:
   HearthstoneLogTracker();
