@@ -172,10 +172,6 @@ Window::Window()
   connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
   connect( &mCore, SIGNAL( HandleGameClientRestartRequired(bool) ), this, SLOT( HandleGameClientRestartRequired(bool) ) );
 
-<<<<<<< HEAD
-=======
-#if defined(Q_WS_WIN) || defined(Q_WS_X11)
->>>>>>> ca53965db94fac91a2af6560b03a7d77bf08e4b5
   QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
 }
 
