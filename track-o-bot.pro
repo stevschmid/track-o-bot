@@ -1,5 +1,5 @@
 TARGET = Track-o-Bot
-VERSION = 0.4.3
+VERSION = 0.4.4
 
 CONFIG += qt precompile_header debug_and_release
 QT += network
@@ -45,14 +45,15 @@ CONFIG(debug, debug|release): DEFINES += _DEBUG
 mac {
   DEFINES += PLATFORM=\\\"mac\\\"
 
-  HEADERS += src/OSXWindowCapture.h
+  HEADERS += src/OSXWindowCapture.h src/OSXLocal.h
   SOURCES += src/OSXWindowCapture.cpp
 
   LIBS += -framework ApplicationServices -framework Sparkle -framework AppKit
 
   OBJECTIVE_SOURCES += \
     src/SparkleUpdater.mm \
-    src/CocoaInitializer.mm
+    src/CocoaInitializer.mm \
+    src/OSXLocal.mm
 
   ICON = icons/logo.icns
 
