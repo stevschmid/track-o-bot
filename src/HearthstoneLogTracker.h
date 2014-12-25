@@ -13,6 +13,7 @@ private:
   bool mHeroPowerUsed;
   int mHeroPlayerId;
   bool mLegendTracked;
+  bool mSpectating;
 
   CardHistoryList mCardHistoryList;
 
@@ -28,7 +29,7 @@ private slots:
 
 signals:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating );
 
   void HandleOutcome( Outcome outcome );
   void HandleOrder( GoingOrder order );

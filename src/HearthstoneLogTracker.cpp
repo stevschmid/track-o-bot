@@ -39,6 +39,7 @@ void HearthstoneLogTracker::Reset() {
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
   mLegendTracked = false;
+  mSpectating = false;
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -85,7 +86,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     } else if( outcome == "defeat" ) {
       emit HandleOutcome( OUTCOME_DEFEAT );
     }
-    emit HandleMatchEnd( mCardHistoryList );
+    emit HandleMatchEnd( mCardHistoryList, mSpectating );
     Reset();
   }
 
@@ -228,6 +229,12 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {
     HandleGameMode( MODE_RANKED );
+  }
+
+  // Spectating games
+  QRegExp regexSpectating( "\\[Power\\].*Begin Spectating" );
+  if( regexSpectating.indexIn(line) != -1 ) {
+    mSpectating = true;
   }
 }
 

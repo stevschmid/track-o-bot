@@ -27,7 +27,7 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
-  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
 
   ResetResult();
 }
@@ -92,7 +92,13 @@ void Core::HandleMatchStart() {
   mDurationTimer.start();
 }
 
-void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
+void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating ) {
+  if( wasSpectating ) {
+    LOG( "Ignore spectated match" );
+    ResetResult();
+    return;
+  }
+
   DEBUG( "HandleMatchEnd" );
   mCardHistoryList = cardHistoryList;
   mDuration = mDurationTimer.elapsed() / 1000;

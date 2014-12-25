@@ -38,7 +38,7 @@ private:
 
 private slots:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating );
 
   void HandleOutcome( Outcome outcome );
   void HandleOwnClass( Class ownClass );
