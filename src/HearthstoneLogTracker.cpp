@@ -123,7 +123,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     DEBUG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
   }
 
-  QRegExp regexHeroPower( "\\[Power\\].*cardId=(\\w+).*player=(\\d+)" );
+  QRegExp regexHeroPower( "\\[Power\\] PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
   if( regexHeroPower.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPower.capturedTexts();
     QString cardId = captures[1];
@@ -138,7 +138,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    // Power log line is emitted twice
+    // Power log line is emitted multiple times
     // Make sure we only account for first occurrence
     // Plus line is emitted when match starts, so ignore turn 0
     if( isHeroPower && !mHeroPowerUsed && CurrentTurn() > 0 ) {
