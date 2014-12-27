@@ -19,7 +19,7 @@ end
 ```
 Build from source
 ```
-brew reinstall qt --build-from-source
+brew install qt --build-bottle --HEAD
 ```
 
 * Install [Sparkle](http://sparkle.andymatuschak.org/) 
