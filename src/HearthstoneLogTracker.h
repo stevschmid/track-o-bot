@@ -17,8 +17,10 @@ private:
 
   CardHistoryList mCardHistoryList;
 
-  void CardPlayed( Player player, const string& cardId );
+  void CardPlayed( Player player, const string& cardId, int internalId = 0 );
   void CardReturned( Player player, const string& cardId );
+
+  void SecretResolved( Player player, const string& cardId, int internalId );
 
   int CurrentTurn() const;
 
@@ -41,7 +43,6 @@ signals:
 
 public:
   HearthstoneLogTracker();
-
 
   const CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
 };

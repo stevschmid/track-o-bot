@@ -125,9 +125,10 @@ public:
   int turn;
   Player player;
   string cardId;
+  int internalId;
 
-  CardHistoryItem( int turn, Player player, const string& cardId )
-    : turn( turn ), player( player ), cardId( cardId )
+  CardHistoryItem( int turn, Player player, const string& cardId, int internalId = 0 )
+    : turn( turn ), player( player ), cardId( cardId ), internalId( internalId )
   {
   }
 };

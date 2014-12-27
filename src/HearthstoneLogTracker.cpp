@@ -47,12 +47,13 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     return;
 
   // CardPlayed / CardReturned / PlayerDied
-  QRegExp regex( "ProcessChanges.*cardId=(\\w+).*zone from (.*) -> (.*)" );
+  QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) -> (.*)" );
   if( regex.indexIn(line) != -1 ) {
     QStringList captures = regex.capturedTexts();
-    QString cardId = captures[1];
-    QString from = captures[2];
-    QString to = captures[3];
+    int id = captures[1].toInt();
+    QString cardId = captures[2];
+    QString from = captures[3];
+    QString to = captures[4];
 
     bool draw = from.contains( "DECK" ) && to.contains( "HAND" );
     bool mulligan = from.contains( "HAND" ) && to.contains( "DECK" );
@@ -62,9 +63,11 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
     if( !draw && !mulligan && !discard ) {
       if( from.contains( "FRIENDLY HAND" ) ) {
-        CardPlayed( PLAYER_SELF, cardId.toStdString() );
+        CardPlayed( PLAYER_SELF, cardId.toStdString(), id );
       } else if( from.contains( "OPPOSING HAND" ) ) {
-        CardPlayed( PLAYER_OPPONENT, cardId.toStdString() );
+        CardPlayed( PLAYER_OPPONENT, cardId.toStdString(), id );
+      } else if( from.contains( "OPPOSING SECRET" ) && to.contains( "OPPOSING GRAVEYARD" ) ) {
+        SecretResolved( PLAYER_OPPONENT, cardId.toStdString(), id );
       }
     }
 
@@ -72,7 +75,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d)", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard );
+    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard, id );
   }
 
   // Outcome
@@ -238,9 +241,9 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 }
 
-void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
+void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId, int internalId ) {
   DEBUG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
-  mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId ) );
+  mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
 }
 
 void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
@@ -253,6 +256,17 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
       mCardHistoryList.back().cardId == cardId )
   {
     mCardHistoryList.pop_back();
+  }
+}
+
+void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId, int internalId ) {
+  DEBUG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
+  std::vector< CardHistoryItem >::iterator it;
+  for( it = mCardHistoryList.begin(); it != mCardHistoryList.end(); ++it ) {
+    CardHistoryItem& item = *it;
+    if( item.player == player && item.internalId == internalId ) {
+      item.cardId = cardId;
+    }
   }
 }
 
