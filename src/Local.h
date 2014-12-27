@@ -117,9 +117,6 @@ const char CLASS_NAMES[][128] = {
 
 #define NUM_CLASSES 9
 
-#define RANK_UNKNOWN   0
-#define LEGEND_UNKNOWN  0
-
 class CardHistoryItem {
 public:
   int turn;

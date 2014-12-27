@@ -36,7 +36,7 @@ private slots:
 public:
   bool IsAccountSetUp() const;
 
-  void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds, int rank, int legend );
+  void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds );
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();

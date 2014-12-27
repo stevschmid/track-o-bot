@@ -9,8 +9,6 @@ Core::Core()
     mOwnClass( CLASS_UNKNOWN ),
     mOpponentClass( CLASS_UNKNOWN ),
     mDuration( 0 ),
-    mRank( RANK_UNKNOWN ),
-    mLegend( LEGEND_UNKNOWN ),
     mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );
@@ -23,8 +21,6 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
-  connect( &mLogTracker, SIGNAL( HandleRank(int) ), this, SLOT( HandleRank(int) ) );
-  connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
@@ -44,8 +40,6 @@ void Core::ResetResult() {
   mOpponentClass = CLASS_UNKNOWN;
   mDuration      = 0;
   mCardHistoryList.clear();
-  mRank          = RANK_UNKNOWN;
-  mLegend        = LEGEND_UNKNOWN;
 }
 
 void Core::Tick() {
@@ -110,16 +104,6 @@ void Core::HandleGameMode( GameMode mode ) {
   mGameMode = mode;
 }
 
-void Core::HandleRank( int rank ) {
-  DEBUG( "Set Rank %d", rank );
-  mRank = rank;
-}
-
-void Core::HandleLegend( int legend ) {
-  DEBUG( "Set Legend %d", legend );
-  mLegend = legend;
-}
-
 void Core::UploadResult() {
   DEBUG( "UploadResult" );
 
@@ -129,9 +113,7 @@ void Core::UploadResult() {
       mOwnClass,
       mOpponentClass,
       mLogTracker.CardHistoryList(),
-      mDuration,
-      mRank,
-      mLegend );
+      mDuration );
 
   ResetResult();
 }
