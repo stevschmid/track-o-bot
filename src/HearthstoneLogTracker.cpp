@@ -166,9 +166,9 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    // Set solo mode when encountering naxxramas heros
+    // Set solo mode when encountering naxxramas/blackrock mountain heroes
     if( hero == CLASS_UNKNOWN ) {
-      if( cardId.startsWith("NAX") ) {
+      if( cardId.startsWith("NAX") || cardId.startsWith("BRM") ) {
         HandleGameMode( MODE_SOLO_ADVENTURES );
       }
     }
