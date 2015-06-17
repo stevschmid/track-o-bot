@@ -161,7 +161,10 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     // So make sure we only account for the "initial" playable heroes
     Class hero = CLASS_UNKNOWN;
     for( int i = 0; i < NUM_HEROES; i++ ) {
-      if( cardId == HERO_IDS[ i ] ) {
+      // startsWith instead of exact match to support
+      // the new reasonably priced hero skins
+      // (e.g. HERO_01a instead of HERO_01)
+      if( cardId.startsWith( HERO_IDS[ i ] ) ) {
         hero = ( Class )i;
       }
     }
