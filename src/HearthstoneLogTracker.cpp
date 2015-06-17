@@ -204,6 +204,12 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     }
   }
 
+  // Tavern Brawl
+  QRegExp regexTavernBrawl( "SAVE --> NetCacheTavernBrawlRecord" );
+  if( regexTavernBrawl.indexIn(line) != -1 ) {
+    HandleGameMode( MODE_TAVERN_BRAWL );
+  }
+
   // Casual/Ranked distinction
   QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {

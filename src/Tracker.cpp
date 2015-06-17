@@ -40,7 +40,12 @@ void Tracker::EnsureAccountIsSetUp() {
 void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& historyCardList, int durationInSeconds )
 {
   if( mode == MODE_SOLO_ADVENTURES ) {
-    LOG( "Ignore solo adventure." );
+    LOG( "Ignore solo adventure" );
+    return;
+  }
+
+  if( mode == MODE_TAVERN_BRAWL ) {
+    LOG( "Ignore tavern brawl" );
     return;
   }
 
