@@ -216,10 +216,18 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     HandleGameMode( MODE_RANKED );
   }
 
-  // Spectating games
-  QRegExp regexSpectating( "\\[Power\\].*Begin Spectating" );
-  if( regexSpectating.indexIn(line) != -1 ) {
+  // flag current GAME as spectated
+  QRegExp regexBeginSpectating( "\\[Power\\].*Start Spectator Game" );
+  if( regexBeginSpectating.indexIn(line) != -1 ) {
+    DEBUG( "Begin spectator game" );
     mSpectating = true;
+  }
+
+  // disable spectating flag if we leave the spectator MODE
+  QRegExp regexEndSpectating( "\\[Power\\].*End Spectator Mode" );
+  if( regexEndSpectating.indexIn(line) != -1 ) {
+    DEBUG( "End spectator mode" );
+    mSpectating = false;
   }
 }
 
