@@ -26,7 +26,7 @@ const char HERO_IDS[NUM_HEROES][32] = {
 Q_DECLARE_METATYPE( ::CardHistoryList );
 
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurnCounter( 0 ), mHeroPowerUsed( false ), mHeroPlayerId( 0 )
+  : mTurnCounter( 0 ), mHeroPowerUsed( false ), mHeroPlayerId( 0 ), mLegendTracked( false )
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
@@ -38,6 +38,7 @@ void HearthstoneLogTracker::Reset() {
   mTurnCounter = 0;
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
+  mLegendTracked = false;
   mSpectating = false;
 }
 
@@ -208,6 +209,32 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   QRegExp regexTavernBrawl( "SAVE --> NetCacheTavernBrawlRecord" );
   if( regexTavernBrawl.indexIn(line) != -1 ) {
     HandleGameMode( MODE_TAVERN_BRAWL );
+  }
+
+  // Rank
+  QRegExp regexRank( "name=Medal_Ranked_(\\d+)" );
+  if( regexRank.indexIn(line) != -1 ) {
+    // If we play against a player with another rank, we will get a Medal_Ranked notification
+    // at the end of the game, so make sure we only set the rank at the beginning of a game
+    if( mTurnCounter == 0 ) {
+      QStringList captures = regexRank.capturedTexts();
+      int rank = captures[1].toInt();
+      if( rank > 0 ) {
+        HandleRank( rank );
+      }
+    }
+  }
+
+  // Legend
+  // Emitted at the end of the game twice, make sure we capture only the first time
+  QRegExp regexLegend( "legend rank (\\d+)" );
+  if( !mLegendTracked && regexLegend.indexIn(line) != -1 ) {
+    QStringList captures = regexLegend.capturedTexts();
+    int legend = captures[1].toInt();
+    if( legend > 0 ) {
+      mLegendTracked = true;
+      HandleLegend( legend );
+    }
   }
 
   // Casual/Ranked distinction
