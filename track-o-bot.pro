@@ -17,7 +17,10 @@ HEADERS = src/Local.h \
           src/Logger.h \
           src/Tracker.h \
           src/HearthstoneLogWatcher.h \
-          src/HearthstoneLogTracker.h
+          src/HearthstoneLogTracker.h \
+          src/NeuralNetwork.h \
+          src/RankClassifierData.h \
+          src/RankClassifier.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -28,7 +31,9 @@ SOURCES = src/Main.cpp \
           src/Json.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
-          src/HearthstoneLogTracker.cpp
+          src/HearthstoneLogTracker.cpp \
+          src/NeuralNetwork.cpp \ 
+          src/RankClassifier.cpp
 
 FORMS   = src/Window.ui \
           src/SettingsWidget.ui \

@@ -4,8 +4,12 @@
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
 
+#include "RankClassifier.h"
+
 #include <QTimer>
 #include <QTime>
+
+#include <vector>
 
 class Core : public QObject
 {
@@ -25,13 +29,18 @@ private:
   int                   mDuration;
   CardHistoryList       mCardHistoryList;
 
+  std::vector<int>      mRanks;
   int                   mRank;
   int                   mLegend;
 
   bool                  mCurrentResultTracked;
 
+  RankClassifier        mRankClassifier;
+
   void ResetResult();
   void UploadResult();
+
+  int DetermineRank();
 
   bool mGameClientRestartRequired;
   void SetGameClientRestartRequired( bool restartRequired );
@@ -45,6 +54,7 @@ private slots:
   void HandleOpponentClass( Class opponentClass );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
+  void HandleTurn( int turn );
 
   void HandleRank( int rank );
   void HandleLegend( int legend );

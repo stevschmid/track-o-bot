@@ -1,6 +1,8 @@
 #include "Core.h"
 #include "Tracker.h"
 
+#include <map>
+
 Core::Core()
   : mGameRunning( false ),
     mGameMode( MODE_UNKNOWN ),
@@ -25,6 +27,7 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
   connect( &mLogTracker, SIGNAL( HandleRank(int) ), this, SLOT( HandleRank(int) ) );
   connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
+  connect( &mLogTracker, SIGNAL( HandleTurn(int) ), this, SLOT( HandleTurn(int) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
@@ -46,6 +49,8 @@ void Core::ResetResult() {
   mCardHistoryList.clear();
   mRank          = RANK_UNKNOWN;
   mLegend        = LEGEND_UNKNOWN;
+
+  mRanks.clear();
 }
 
 void Core::Tick() {
@@ -120,8 +125,41 @@ void Core::HandleLegend( int legend ) {
   mLegend = legend;
 }
 
+void Core::HandleTurn( int turn ) {
+  int rank = mRankClassifier.DetectCurrentRank();
+  mRanks.push_back( rank );
+  DEBUG( "Turn %d. Set Rank %d", turn, rank );
+}
+
+// Screen capture can be tricky
+// So capture the rank a few times during the game
+// and the majority vote will be the determined rank
+int Core::DetermineRank() {
+  std::map< int, int > votesByRank;
+
+  int maxVote = 0;
+  int maxRank = RANK_UNKNOWN;
+
+  for( std::vector<int>::iterator it = mRanks.begin(); it != mRanks.end(); ++it ) {
+    votesByRank[ *it ] += 1;
+  }
+
+  for( std::map<int,int>::iterator it = votesByRank.begin(); it != votesByRank.end(); ++it ) {
+    if( (*it).second > maxVote ) {
+      maxVote = (*it).second;
+      maxRank = (*it).first;
+    }
+  }
+
+  return maxRank;
+}
+
 void Core::UploadResult() {
   DEBUG( "UploadResult" );
+
+  int rank = DetermineRank();
+
+  DEBUG( "Determined Rank: %d", rank );
 
   Tracker::Instance()->AddResult( mGameMode,
       mOutcome,
@@ -130,7 +168,7 @@ void Core::UploadResult() {
       mOpponentClass,
       mLogTracker.CardHistoryList(),
       mDuration,
-      mRank,
+      rank,
       mLegend );
 
   ResetResult();

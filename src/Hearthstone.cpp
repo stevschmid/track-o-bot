@@ -38,24 +38,20 @@ inline float roundf( float x ) {
 }
 #endif
 
-QPixmap Hearthstone::Capture( int vx, int vy, int vw, int vh ) {
+QPixmap Hearthstone::Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch )
+{
   int x, y, w, h;
 
-  int realCanvasWidth = mCapture->Width();
-  int realCanvasHeight = mCapture->Height();
+  int windowHeight = mCapture->Height();
+  float scale = windowHeight / float( canvasHeight );
 
-  int virtualCanvasWidth = VIRTUAL_CANVAS_WIDTH;
-  int virtualCanvasHeight = VIRTUAL_CANVAS_HEIGHT;
+  x = roundf( cx * scale );
+  y = roundf( cy * scale );
 
-  float dx = ( vx - virtualCanvasWidth/2 );
-  float dy = ( vy - virtualCanvasHeight/2 );
-  float scale = ( float )realCanvasHeight / virtualCanvasHeight;
+  w = roundf( cw * scale );
+  h = roundf( ch * scale );
 
-  // Rounding here is important for dhash calc
-  x = roundf( realCanvasWidth/2 + dx * scale );
-  y = roundf( realCanvasHeight/2 + dy * scale );
-  w = roundf( vw * scale );
-  h = roundf( vh * scale );
+  DEBUG("x %d y %d w %d h %d | ch %d wh %d", x, y, w, h, canvasHeight, windowHeight);
 
   return mCapture->Capture( x, y, w, h );
 }

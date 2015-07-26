@@ -111,10 +111,16 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   // Turn Info
   QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
   if( regexTurn.indexIn(line) != -1 ) {
+    int oldTurn = CurrentTurn();
+
     mTurnCounter++;
 
     // reset hero power usage on turn change
     mHeroPowerUsed = false;
+
+    if( oldTurn != CurrentTurn() ) {
+      emit HandleTurn( CurrentTurn() );
+    }
   }
 
   // Hero Power

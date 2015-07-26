@@ -40,6 +40,7 @@ signals:
   void HandleOwnClass( Class ownClass );
   void HandleRank( int rank );
   void HandleLegend( int legend );
+  void HandleTurn( int turn );
 
 public:
   HearthstoneLogTracker();

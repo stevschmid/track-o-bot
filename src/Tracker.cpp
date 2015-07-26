@@ -106,7 +106,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   result[ "mode" ]     = MODE_NAMES[ mode ];
   result[ "duration" ] = durationInSeconds;
 
-  if( mode == MODE_RANKED && rank != RANK_UNKNOWN ) {
+  if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
     result[ "rank" ] = rank;
   }
   if( mode == MODE_RANKED && legend != LEGEND_UNKNOWN ) {
