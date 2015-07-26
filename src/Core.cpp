@@ -145,6 +145,7 @@ int Core::DetermineRank() {
   }
 
   for( std::map<int,int>::iterator it = votesByRank.begin(); it != votesByRank.end(); ++it ) {
+    DEBUG( "Rank %d has %d votes", (*it).first, (*it).second );
     if( (*it).second > maxVote ) {
       maxVote = (*it).second;
       maxRank = (*it).first;
