@@ -218,18 +218,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Rank
-  QRegExp regexRank( "name=Medal_Ranked_(\\d+)" );
-  if( regexRank.indexIn(line) != -1 ) {
-    // If we play against a player with another rank, we will get a Medal_Ranked notification
-    // at the end of the game, so make sure we only set the rank at the beginning of a game
-    if( mTurnCounter == 0 ) {
-      QStringList captures = regexRank.capturedTexts();
-      int rank = captures[1].toInt();
-      if( rank > 0 ) {
-        HandleRank( rank );
-      }
-    }
-  }
+  // Rank events via log are unreliable
 
   // Legend
   // Emitted at the end of the game twice, make sure we capture only the first time

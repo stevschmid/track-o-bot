@@ -30,7 +30,6 @@ private:
   CardHistoryList       mCardHistoryList;
 
   std::vector<int>      mRanks;
-  int                   mRank;
   int                   mLegend;
 
   bool                  mCurrentResultTracked;
@@ -55,8 +54,6 @@ private slots:
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
   void HandleTurn( int turn );
-
-  void HandleRank( int rank );
   void HandleLegend( int legend );
 
   void Tick();

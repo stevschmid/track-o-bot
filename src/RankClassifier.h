@@ -9,7 +9,8 @@ class RankClassifier
 private:
   NN::NeuralNetwork mNeuralNetwork;
 
-  NN::NeuralNetwork BuildNN() const;
+  static NN::NeuralNetwork BuildNN();
+  static NN::Vector BinarizeImage( const QImage& img, float threshold );
 
 public:
   RankClassifier();
