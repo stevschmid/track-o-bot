@@ -60,6 +60,10 @@ int RankClassifier::DetectCurrentRank() const {
     Qt::IgnoreAspectRatio,
     Qt::SmoothTransformation );
 
+  if( label.width() != RC_LABEL_WIDTH || label.height() != RC_LABEL_HEIGHT ) {
+    return 0;
+  }
+
   return Classify( label );
 }
 
