@@ -40,7 +40,7 @@
        </widget>
        <widget class="LogTab" name="logsTab">
         <attribute name="title">
-         <string>Logs</string>
+         <string>Log</string>
         </attribute>
        </widget>
        <widget class="AboutTab" name="aboutTab">
