@@ -19,13 +19,6 @@ DEFINE_SINGLETON_SCOPE( Tracker );
 Tracker::Tracker() {
   qRegisterMetaType< Result >( "Result" );
 
-  mSuccessfulResultCount = 0;
-  mUnknownOutcomeCount = 0;
-  mUnknownModeCount = 0;
-  mUnknownOrderCount = 0;
-  mUnknownClassCount = 0;
-  mUnknownOpponentCount = 0;
-
   connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
       this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
 }
@@ -44,48 +37,6 @@ void Tracker::EnsureAccountIsSetUp() {
 
 void Tracker::UploadResult( const Result& res )
 {
-  if( res.mode == MODE_SOLO_ADVENTURES ) {
-    LOG( "Ignore solo adventure" );
-    return;
-  }
-
-  if( res.mode == MODE_TAVERN_BRAWL ) {
-    LOG( "Ignore tavern brawl" );
-    return;
-  }
-
-  if( res.outcome == OUTCOME_UNKNOWN ) {
-    mUnknownOutcomeCount++;
-    LOG( "Outcome unknown. Skip result" );
-    return;
-  }
-
-  if( res.mode == MODE_UNKNOWN ) {
-    mUnknownModeCount++;
-    LOG( "Mode unknown. Skip result" );
-    return;
-  }
-
-  if( res.order == ORDER_UNKNOWN ) {
-    mUnknownOrderCount++;
-    LOG( "Order unknown. Skip result" );
-    return;
-  }
-
-  if( res.hero == CLASS_UNKNOWN ) {
-    mUnknownClassCount++;
-    LOG( "Own Class unknown. Skip result" );
-    return;
-  }
-
-  if( res.opponent == CLASS_UNKNOWN ) {
-    mUnknownOpponentCount++;
-    LOG( "Class of Opponent unknown. Skip result" );
-    return;
-  }
-
-  mSuccessfulResultCount++;
-
   LOG( "Upload %s %s vs. %s as %s. Went %s",
       MODE_NAMES[ res.mode ],
       OUTCOME_NAMES[ res.outcome ],
@@ -93,48 +44,15 @@ void Tracker::UploadResult( const Result& res )
       CLASS_NAMES[ res.hero ],
       ORDER_NAMES[ res.order ] );
 
-  QJsonObject result;
-  result[ "coin" ]     = ( res.order == ORDER_SECOND );
-  result[ "hero" ]     = CLASS_NAMES[ res.hero ];
-  result[ "opponent" ] = CLASS_NAMES[ res.opponent ];
-  result[ "win" ]      = ( res.outcome == OUTCOME_VICTORY );
-  result[ "mode" ]     = MODE_NAMES[ res.mode ];
-  result[ "duration" ] = res.duration;
-
-  if( res.mode == MODE_RANKED && res.rank != RANK_UNKNOWN && res.legend == LEGEND_UNKNOWN ) {
-    result[ "rank" ] = res.rank;
-  }
-  if( res.mode == MODE_RANKED && res.legend != LEGEND_UNKNOWN ) {
-    result[ "legend" ] = res.legend;
-  }
-
-  QJsonArray card_history;
-  for( const CardHistoryItem chi : res.cardList ) {
-    QJsonObject item;
-    item[ "turn" ] = chi.turn;
-    item[ "player" ] = chi.player == PLAYER_SELF ? "me" : "opponent";
-    item[ "card_id" ] = chi.cardId.c_str();
-    card_history.append(item);
-  }
-  result[ "card_history" ] = card_history;
-
   QJsonObject params;
-  params[ "result" ] = result;
+  params[ "result" ] = res.AsJson();
 
   // Some metadata to find out room for improvement
   QJsonArray meta;
-
-  meta.append( mSuccessfulResultCount );
-  meta.append( mUnknownOutcomeCount );
-  meta.append( mUnknownModeCount );
-  meta.append( mUnknownOrderCount );
-  meta.append( mUnknownClassCount );
-  meta.append( mUnknownOpponentCount );
   meta.append( Hearthstone::Instance()->Width() );
   meta.append( Hearthstone::Instance()->Height() );
   meta.append( VERSION );
   meta.append( PLATFORM );
-
   params[ "_meta" ] = meta;
 
   QByteArray data = QJsonDocument( params ).toJson();

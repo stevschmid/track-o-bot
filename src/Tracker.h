@@ -17,13 +17,6 @@ private:
   QNetworkAccessManager mNetworkManager;
   QSettings mSettings;
 
-  int mSuccessfulResultCount;
-  int mUnknownOutcomeCount;
-  int mUnknownModeCount;
-  int mUnknownOrderCount;
-  int mUnknownClassCount;
-  int mUnknownOpponentCount;
-
   QNetworkReply* AuthPostJson( const QString& path, const QByteArray& data );
 
 private slots:

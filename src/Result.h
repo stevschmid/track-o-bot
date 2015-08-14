@@ -2,6 +2,9 @@
 
 #include "Local.h"
 
+#include <QJsonObject>
+#include <QJsonArray>
+
 typedef enum {
   PLAYER_SELF = 0,
   PLAYER_OPPONENT,
@@ -136,5 +139,34 @@ public:
 
     duration = 0;
   }
+
+  QJsonObject AsJson() const {
+    QJsonObject result;
+    result[ "coin" ]     = ( order == ORDER_SECOND );
+    result[ "hero" ]     = CLASS_NAMES[ hero ];
+    result[ "opponent" ] = CLASS_NAMES[ opponent ];
+    result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
+    result[ "mode" ]     = MODE_NAMES[ mode ];
+    result[ "duration" ] = duration;
+
+    if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
+      result[ "rank" ] = rank;
+    }
+    if( mode == MODE_RANKED && legend != LEGEND_UNKNOWN ) {
+      result[ "legend" ] = legend;
+    }
+
+    QJsonArray card_history;
+    for( const CardHistoryItem chi : cardList ) {
+      QJsonObject item;
+      item[ "turn" ] = chi.turn;
+      item[ "player" ] = chi.player == PLAYER_SELF ? "me" : "opponent";
+      item[ "card_id" ] = chi.cardId.c_str();
+      card_history.append(item);
+    }
+    result[ "card_history" ] = card_history;
+    return result;
+  }
 };
+
 
