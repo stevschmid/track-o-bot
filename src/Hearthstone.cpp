@@ -110,8 +110,8 @@ void Hearthstone::EnableLogging() {
   const int   NUM_INFO_MODULES = 4;
   const char  INFO_MODULES[ NUM_INFO_MODULES ][ 32 ] = { "Zone", "Asset", "Bob", "Power" };
 
-  string path = LogConfigPath();
-  QFile file( path.c_str() );
+  QString path = LogConfigPath();
+  QFile file( path );
 
   SetRestartRequired( false );
 
@@ -125,7 +125,7 @@ void Hearthstone::EnableLogging() {
   }
 
   if( !file.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text ) ) {
-    ERROR( "Couldn't create file %s", path.c_str() );
+    ERROR( "Couldn't create file %s", path.toStdString().c_str() );
   } else {
     QTextStream out( &file );
     for( int i = 0; i < NUM_INFO_MODULES; i++ ) {
@@ -147,27 +147,27 @@ void Hearthstone::EnableLogging() {
 }
 
 void Hearthstone::DisableLogging() {
-  QFile file( LogConfigPath().c_str() );
+  QFile file( LogConfigPath() );
   if( file.exists() ) {
     file.remove();
     INFO( "Ingame log deactivated." );
   }
 }
 
-string Hearthstone::LogConfigPath() {
+QString Hearthstone::LogConfigPath() {
 #ifdef Q_OS_MAC
   QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
   QString configPath = homeLocation + "/Library/Preferences/Blizzard/Hearthstone/log.config";
 #elif defined Q_OS_WIN
-  char buffer[ MAX_PATH ];
-  SHGetSpecialFolderPathA( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
-  QString localAppData( buffer );
+  wchar_t buffer[ MAX_PATH ];
+  SHGetSpecialFolderPathW( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
+  QString localAppData = QString::fromWCharArray( buffer );
   QString configPath = localAppData + "\\Blizzard\\Hearthstone\\log.config";
 #endif
-  return configPath.toStdString();
+  return configPath;
 }
 
-string Hearthstone::LogPath() {
+QString Hearthstone::LogPath() {
 #ifdef Q_OS_MAC
   QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
   QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
@@ -184,7 +184,7 @@ string Hearthstone::LogPath() {
   }
   QString logPath = hsPath + "\\Hearthstone_Data\\output_log.txt";
 #endif
-  return logPath.toStdString();
+  return logPath;
 }
 
 int Hearthstone::Width() {

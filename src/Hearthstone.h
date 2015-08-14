@@ -28,8 +28,8 @@ public:
   void SetRestartRequired( bool restartRequired );
   bool RestartRequired() const;
 
-  string LogConfigPath();
-  string LogPath();
+  QString LogConfigPath();
+  QString LogPath();
 
   int Width();
   int Height();
