@@ -64,8 +64,8 @@ void Hearthstone::SetWindowCapture( WindowCapture *windowCapture ) {
 }
 
 void Hearthstone::EnableLogging() {
-  const int   NUM_LOG_MODULES = 4;
-  const char  LOG_MODULES[ NUM_LOG_MODULES ][ 32 ] = { "Zone", "Asset", "Bob", "Power" };
+  const int   NUM_INFO_MODULES = 4;
+  const char  INFO_MODULES[ NUM_INFO_MODULES ][ 32 ] = { "Zone", "Asset", "Bob", "Power" };
 
   string path = LogConfigPath();
   QFile file( path.c_str() );
@@ -82,17 +82,17 @@ void Hearthstone::EnableLogging() {
   }
 
   if( !file.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text ) ) {
-    LOG( "Couldn't create file %s", path.c_str() );
+    ERROR( "Couldn't create file %s", path.c_str() );
   } else {
     QTextStream out( &file );
-    for( int i = 0; i < NUM_LOG_MODULES; i++ ) {
-      const char *logModuleName = LOG_MODULES[ i ];
+    for( int i = 0; i < NUM_INFO_MODULES; i++ ) {
+      const char *logModuleName = INFO_MODULES[ i ];
       if( !contents.contains( QString( "[%1]" ).arg( logModuleName ) ) ) {
         out << "\n";
-        out << "[" << LOG_MODULES[i] << "]\n";
+        out << "[" << INFO_MODULES[i] << "]\n";
         out << "LogLevel=1\n";
         out << "ConsolePrinting=true\n";
-        LOG( "Enable Log Module %s", logModuleName );
+        INFO( "Enable Log Module %s", logModuleName );
 
         if( Running() ) {
           SetRestartRequired( true );
@@ -107,7 +107,7 @@ void Hearthstone::DisableLogging() {
   QFile file( LogConfigPath().c_str() );
   if( file.exists() ) {
     file.remove();
-    LOG( "Ingame log deactivated." );
+    INFO( "Ingame log deactivated." );
   }
 }
 
@@ -132,7 +132,7 @@ string Hearthstone::LogPath() {
   QSettings hsKey( "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat );
   QString hsPath = hsKey.value( "InstallLocation" ).toString();
   if( hsPath.isEmpty() ) {
-    LOG( "LogPath Fallback" );
+    INFO( "LogPath Fallback" );
     QString programFiles( getenv( "PROGRAMFILES(X86)" ) );
     if( programFiles.isEmpty() ) {
       programFiles = getenv( "PROGRAMFILES" );

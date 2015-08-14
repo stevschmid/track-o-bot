@@ -51,7 +51,7 @@ void SettingsTab::ExportAccount() {
     out << Tracker::Instance()->Password();
     out << Tracker::Instance()->WebserviceURL();
 
-    LOG( "Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
+    INFO( "Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
   }
 }
 
@@ -87,10 +87,10 @@ void SettingsTab::ImportAccount() {
       Tracker::Instance()->SetPassword( password );
       Tracker::Instance()->SetWebserviceURL( webserviceUrl );
 
-      LOG( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
+      INFO( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
       LoadSettings();
     } else {
-      LOG( "Import failed" );
+      ERROR( "Import failed" );
     }
   }
 }
@@ -128,19 +128,32 @@ LogTab::LogTab( QWidget *parent )
 {
   mUI->setupUi( this );
 
-  QFont font( "Monospace" );
-  font.setStyleHint( QFont::TypeWriter );
-  mUI->logText->setFont( font );
+  QFont fixedFont = QFontDatabase::systemFont( QFontDatabase::FixedFont );
+  mUI->logText->setFont( fixedFont );
 
-  connect( Logger::Instance(), SIGNAL( NewMessage(const string&) ), this, SLOT( AddLogEntry(const string&) ) );
+  connect( Logger::Instance(), SIGNAL( NewMessage(LogEventType, const string&) ), this, SLOT( AddLogEntry(LogEventType, const string&) ) );
 }
 
 LogTab::~LogTab() {
   delete mUI;
 }
 
-void LogTab::AddLogEntry( const string& msg ) {
+void LogTab::AddLogEntry( LogEventType type, const string& msg ) {
   mUI->logText->moveCursor( QTextCursor::End );
+
+  switch( type ) {
+    case LOG_ERROR:
+      mUI->logText->setTextColor( Qt::red );
+      break;
+
+    case LOG_DEBUG:
+      mUI->logText->setTextColor( Qt::gray );
+      break;
+
+    default:
+      mUI->logText->setTextColor( QApplication::palette().text().color() );
+  }
+
   mUI->logText->insertPlainText( msg.c_str() );
   mUI->logText->moveCursor( QTextCursor::End );
 }

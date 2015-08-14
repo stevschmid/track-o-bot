@@ -56,9 +56,9 @@ void Core::Tick() {
 
   if( wasGameRunning != mGameRunning ) {
     if( mGameRunning ) {
-      LOG("Hearthstone found");
+      INFO("Hearthstone found");
     } else {
-      LOG("Hearthstone was closed");
+      INFO("Hearthstone was closed");
       Hearthstone::Instance()->SetRestartRequired( false );
     }
   }
@@ -96,7 +96,7 @@ void Core::HandleMatchStart() {
 
 void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating ) {
   if( wasSpectating ) {
-    LOG( "Ignore spectated match" );
+    INFO( "Ignore spectated match" );
     ResetResult();
     return;
   }

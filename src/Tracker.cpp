@@ -30,10 +30,10 @@ Tracker::~Tracker() {
 
 void Tracker::EnsureAccountIsSetUp() {
   if( !IsAccountSetUp() ) {
-    LOG( "No account setup. Creating one for you." );
+    INFO( "No account setup. Creating one for you." );
     CreateAndStoreAccount();
   } else {
-    LOG( "Account %s found", Username().toStdString().c_str() );
+    INFO( "Account %s found", Username().toStdString().c_str() );
   }
 }
 
@@ -41,57 +41,48 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
     const CardHistoryList& historyCardList, int durationInSeconds, int rank, int legend )
 {
   if( mode == MODE_SOLO_ADVENTURES ) {
-    LOG( "Ignore solo adventure" );
+    INFO( "Ignore solo adventure" );
     return;
   }
 
   if( mode == MODE_TAVERN_BRAWL ) {
-    LOG( "Ignore tavern brawl" );
+    INFO( "Ignore tavern brawl" );
     return;
   }
 
-#ifdef _DEBUG
-  string cardHistoryOutput;
-  for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
-    cardHistoryOutput += (*it).player == PLAYER_SELF ? "SELF " : "OPPONENT ";
-    cardHistoryOutput += (*it).cardId + "\n";
-  }
-  DEBUG( "Card History: %s", cardHistoryOutput.c_str() );
-#endif
-
   if( outcome == OUTCOME_UNKNOWN ) {
     mUnknownOutcomeCount++;
-    LOG( "Outcome unknown. Skip result" );
+    INFO( "Outcome unknown. Skip result" );
     return;
   }
 
   if( mode == MODE_UNKNOWN ) {
     mUnknownModeCount++;
-    LOG( "Mode unknown. Skip result" );
+    INFO( "Mode unknown. Skip result" );
     return;
   }
 
   if( order == ORDER_UNKNOWN ) {
     mUnknownOrderCount++;
-    LOG( "Order unknown. Skip result" );
+    INFO( "Order unknown. Skip result" );
     return;
   }
 
   if( ownClass == CLASS_UNKNOWN ) {
     mUnknownClassCount++;
-    LOG( "Own Class unknown. Skip result" );
+    INFO( "Own Class unknown. Skip result" );
     return;
   }
 
   if( opponentClass == CLASS_UNKNOWN ) {
     mUnknownOpponentCount++;
-    LOG( "Class of Opponent unknown. Skip result" );
+    INFO( "Class of Opponent unknown. Skip result" );
     return;
   }
 
   mSuccessfulResultCount++;
 
-  LOG( "Upload %s %s vs. %s as %s. Went %s",
+  INFO( "Upload %s %s vs. %s as %s. Went %s",
       MODE_NAMES[ mode ],
       OUTCOME_NAMES[ outcome ],
       CLASS_NAMES[ opponentClass ],
@@ -167,10 +158,10 @@ QNetworkRequest Tracker::CreateTrackerRequest( const QString& path ) {
 void Tracker::AddResultHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
-    LOG( "Result was uploaded successfully!" );
+    INFO( "Result was uploaded successfully!" );
   } else {
     int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
-    LOG( "There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
+    ERROR( "There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
   }
 }
 
@@ -183,7 +174,7 @@ void Tracker::CreateAndStoreAccount() {
 void Tracker::CreateAndStoreAccountHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
-    LOG( "Account creation was successful!" );
+    INFO( "Account creation was successful!" );
 
     QByteArray jsonData = reply->readAll();
 
@@ -191,9 +182,9 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     QtJson::JsonObject user = QtJson::parse( jsonData, ok ).toMap();
 
     if( !ok ) {
-      LOG( "Couldn't parse response" );
+      ERROR( "Couldn't parse response" );
     } else {
-      LOG( "Welcome %s", user[ "username" ].toString().toStdString().c_str() );
+      INFO( "Welcome %s", user[ "username" ].toString().toStdString().c_str() );
 
       SetUsername( user["username"].toString() );
       SetPassword( user["password"].toString() );
@@ -202,7 +193,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
     }
   } else {
     int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
-    LOG( "There was a problem creating an account. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
+    ERROR( "There was a problem creating an account. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
   }
 }
 
@@ -220,14 +211,14 @@ void Tracker::OpenProfileHandleReply() {
     QtJson::JsonObject response = QtJson::parse( jsonData, ok ).toMap();
 
     if( !ok ) {
-      LOG( "Couldn't parse response" );
+      INFO( "Couldn't parse response" );
     } else {
       QString url = response[ "url" ].toString();
       QDesktopServices::openUrl( QUrl( url ) );
     }
   } else {
     int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
-    LOG( "There was a problem creating an auth token. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
+    ERROR( "There was a problem creating an auth token. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
   }
 }
 
