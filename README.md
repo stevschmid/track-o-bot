@@ -1,25 +1,14 @@
 # Build Dependencies
 
-* Qt 4.8
+* Qt 5.5
 * (OS X) Sparkle
 * (Windows) WinSparkle
 
 ## Mac OS X
 
-* Install of the Qt [High DPI 4.8 backport](https://bugreports.qt-project.org/browse/QTBUG-23870) [patch](https://codereview.qt-project.org/#/c/54636/) is required
 ```
-brew edit qt
-```
-Add the following patch
-```
-patch do
-  url "https://gist.githubusercontent.com/stevschmid/91a564b7a3f562e6a213/raw/ccfe0dcf2c5479356906fdfcdf229c2acb1bee39/qt48-high-dpi-backport-fixed.patch"
-  sha1 "8460eac1c2dfcff9dfbe240472ef6b66e58eb9f9"
-end
-```
-Build from source
-```
-brew install qt --build-bottle --HEAD
+brew install qt5
+brew link qt5 --force
 ```
 
 * Install [Sparkle](http://sparkle.andymatuschak.org/) 
@@ -28,7 +17,7 @@ brew install qt --build-bottle --HEAD
 ## Windows
 
 * Install [Qt](http://qt-project.org/downloads) 
- * I use the Qt libraries 4.8.6 for Windows VS 2010.
+ * I use the Qt libraries 5.5.0 for Windows VS 2010.
 * Install [WinSparkle](https://github.com/vslavik/winsparkle) 
  * Clone the repository and build the library, for example with VS 2010. The precompiled releases are ancient.
 
