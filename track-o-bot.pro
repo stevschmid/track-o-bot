@@ -28,7 +28,6 @@ SOURCES = src/Main.cpp \
           src/Window.cpp \
           src/Core.cpp \
           src/Logger.cpp \
-          src/Json.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
           src/HearthstoneLogTracker.cpp \

@@ -6,7 +6,10 @@
 #include <QTimer>
 #include <QDesktopServices>
 
-#include "Json.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 #include "Hearthstone.h"
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
@@ -89,7 +92,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
       CLASS_NAMES[ ownClass ],
       ORDER_NAMES[ order ] );
 
-  QtJson::JsonObject result;
+  QJsonObject result;
   result[ "coin" ]     = ( order == ORDER_SECOND );
   result[ "hero" ]     = CLASS_NAMES[ ownClass ];
   result[ "opponent" ] = CLASS_NAMES[ opponentClass ];
@@ -104,9 +107,9 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
     result[ "legend" ] = legend;
   }
 
-  QtJson::JsonArray card_history;
+  QJsonArray card_history;
   for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
-    QtJson::JsonObject item;
+    QJsonObject item;
     item[ "turn" ] = (*it).turn;
     item[ "player" ] = (*it).player == PLAYER_SELF ? "me" : "opponent";
     item[ "card_id" ] = (*it).cardId.c_str();
@@ -114,11 +117,11 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   }
   result[ "card_history" ] = card_history;
 
-  QtJson::JsonObject params;
+  QJsonObject params;
   params[ "result" ] = result;
 
   // Some metadata to find out room for improvement
-  QtJson::JsonArray meta;
+  QJsonArray meta;
 
   meta.append( mSuccessfulResultCount );
   meta.append( mUnknownOutcomeCount );
@@ -133,7 +136,7 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
 
   params[ "_meta" ] = meta;
 
-  QByteArray data = QtJson::serialize( params );
+  QByteArray data = QJsonDocument( params ).toJson();
 
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
   connect( reply, SIGNAL( finished() ), this, SLOT( AddResultHandleReply() ) );
@@ -178,11 +181,11 @@ void Tracker::CreateAndStoreAccountHandleReply() {
 
     QByteArray jsonData = reply->readAll();
 
-    bool ok;
-    QtJson::JsonObject user = QtJson::parse( jsonData, ok ).toMap();
+    QJsonParseError error;
+    QJsonObject user = QJsonDocument::fromJson( jsonData, &error ).object();
 
-    if( !ok ) {
-      ERROR( "Couldn't parse response" );
+    if( error.error != QJsonParseError::NoError ) {
+      ERROR( "Couldn't parse response %s", error.errorString().toStdString().c_str() );
     } else {
       INFO( "Welcome %s", user[ "username" ].toString().toStdString().c_str() );
 
@@ -207,11 +210,11 @@ void Tracker::OpenProfileHandleReply() {
   if( reply->error() == QNetworkReply::NoError ) {
     QByteArray jsonData = reply->readAll();
 
-    bool ok;
-    QtJson::JsonObject response = QtJson::parse( jsonData, ok ).toMap();
+    QJsonParseError error;
+    QJsonObject response = QJsonDocument::fromJson( jsonData, &error ).object();
 
-    if( !ok ) {
-      INFO( "Couldn't parse response" );
+    if( error.error != QJsonParseError::NoError ) {
+      ERROR( "Couldn't parse response %s", error.errorString().toStdString().c_str() );
     } else {
       QString url = response[ "url" ].toString();
       QDesktopServices::openUrl( QUrl( url ) );
