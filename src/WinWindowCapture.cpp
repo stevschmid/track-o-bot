@@ -1,4 +1,7 @@
-#include "WinWindowCapture.h"
+﻿#include "WinWindowCapture.h"
+
+#include <Windows.h>
+#include <QtWinExtras/qwinfunctions.h>
 
 WinWindowCapture::WinWindowCapture( const QString& windowName )
   : mWindowName( windowName )
@@ -43,7 +46,7 @@ QPixmap WinWindowCapture::Capture( int x, int y, int w, int h ) {
     SelectObject( hDCMem, hBitmap );
     BitBlt( hDCMem, 0, 0, w, h, hDCWindow, x, y, SRCCOPY );
 
-    pixmap = QPixmap::fromWinHBITMAP( hBitmap );
+    pixmap = QtWin::fromHBITMAP( hBitmap );
 
     ReleaseDC( hwnd, hDCWindow );
     DeleteDC( hDCMem );

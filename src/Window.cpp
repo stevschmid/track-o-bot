@@ -51,7 +51,7 @@ void SettingsTab::ExportAccount() {
     out << Tracker::Instance()->Password();
     out << Tracker::Instance()->WebserviceURL();
 
-    INFO( "Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
+    LOG( "Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
   }
 }
 
@@ -87,10 +87,10 @@ void SettingsTab::ImportAccount() {
       Tracker::Instance()->SetPassword( password );
       Tracker::Instance()->SetWebserviceURL( webserviceUrl );
 
-      INFO( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
+      LOG( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
       LoadSettings();
     } else {
-      ERROR( "Import failed" );
+      ERR( "Import failed" );
     }
   }
 }

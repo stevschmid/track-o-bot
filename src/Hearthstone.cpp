@@ -1,4 +1,4 @@
-#include "Hearthstone.h"
+﻿#include "Hearthstone.h"
 
 #include <QFile>
 #include <QDesktopServices>
@@ -59,7 +59,7 @@ QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
 
   QFile file( path );
   if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-    ERROR( "Couldn't open %s (%d)", path.toStdString().c_str(), file.error() );
+    ERR( "Couldn't open %s (%d)", path.toStdString().c_str(), file.error() );
     return "";
   }
 
@@ -72,7 +72,7 @@ QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
 
   QJsonObject hs;
   if( !FindJsonObject( root, keys, &hs ) ) {
-    ERROR( "Couldn't find HS key" );
+    ERR( "Couldn't find HS key" );
     return "";
   }
 
@@ -102,7 +102,7 @@ QPixmap Hearthstone::Capture( int canvasWidth, int canvasHeight, int cx, int cy,
   w = roundf( cw * scale );
   h = roundf( ch * scale );
 
-  DEBUG("x %d y %d w %d h %d | ch %d wh %d", x, y, w, h, canvasHeight, windowHeight);
+  DBG("x %d y %d w %d h %d | ch %d wh %d", x, y, w, h, canvasHeight, windowHeight);
 
   return mCapture->Capture( x, y, w, h );
 }
@@ -133,7 +133,7 @@ void Hearthstone::EnableLogging() {
   }
 
   if( !file.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text ) ) {
-    ERROR( "Couldn't create file %s", path.toStdString().c_str() );
+    ERR( "Couldn't create file %s", path.toStdString().c_str() );
   } else {
     QTextStream out( &file );
     for( int i = 0; i < NUM_INFO_MODULES; i++ ) {
@@ -143,7 +143,7 @@ void Hearthstone::EnableLogging() {
         out << "[" << INFO_MODULES[i] << "]\n";
         out << "LogLevel=1\n";
         out << "ConsolePrinting=true\n";
-        INFO( "Enable Log Module %s", logModuleName );
+        LOG( "Enable Log Module %s", logModuleName );
 
         if( Running() ) {
           SetRestartRequired( true );
@@ -158,7 +158,7 @@ void Hearthstone::DisableLogging() {
   QFile file( LogConfigPath() );
   if( file.exists() ) {
     file.remove();
-    INFO( "Ingame log deactivated." );
+    LOG( "Ingame log deactivated." );
   }
 }
 
@@ -182,15 +182,15 @@ QString Hearthstone::LogPath() const {
 #elif defined Q_OS_WIN
 
   QString hsPath = ReadAgentAttribute( "install_dir" );
-  if( hsPath.empty() ) {
-    INFO( "Registry fallback for path" );
+  if( hsPath.isEmpty() ) {
+    LOG( "Registry fallback for path" );
 
     QSettings hsKey( "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat );
     hsPath = hsKey.value( "InstallLocation" ).toString();
   }
 
-  if( hsPath.empty() ) {
-    ERROR( "Hearthstone path not found" );
+  if( hsPath.isEmpty() ) {
+    ERR( "Hearthstone path not found" );
     return "";
   }
 
@@ -215,6 +215,15 @@ QString Hearthstone::WindowName() const {
   } else if( locale == "koKR") {
     windowName = QString::fromWCharArray( L"하스스톤" );
   }
+
+  QFile file("C:\\tmp\\out.txt");
+  file.open(QIODevice::Text | QIODevice::WriteOnly );
+
+  QTextStream out(&file);
+  out << windowName << "\n";
+  file.close();
+
+  return windowName;
 }
 
 int Hearthstone::Width() const {

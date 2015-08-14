@@ -72,6 +72,8 @@ mac {
 }
 
 win32 {
+  QT += winextras
+
   CONFIG += embed_manifest_exe
 
   DEFINES += PLATFORM=\\\"win32\\\"

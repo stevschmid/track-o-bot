@@ -45,7 +45,7 @@ int RankClassifier::Classify( const QImage& label ) const {
 
   std::sort( scores.begin(), scores.end(), compareScore );
   for( int i = 0; i < (int)scores.size(); i++ ) {
-    DEBUG( "Rank %d = %.3f", scores[i].first, scores[i].second );
+    DBG( "Rank %d = %.3f", scores[i].first, scores[i].second );
   }
 
   return scores.front().first;

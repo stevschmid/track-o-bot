@@ -56,9 +56,9 @@ void Core::Tick() {
 
   if( wasGameRunning != mGameRunning ) {
     if( mGameRunning ) {
-      INFO("Hearthstone window found");
+      LOG("Hearthstone window found");
     } else {
-      INFO("Hearthstone window was closed");
+      LOG("Hearthstone window was closed");
       Hearthstone::Instance()->SetRestartRequired( false );
     }
   }
@@ -70,57 +70,57 @@ void Core::Tick() {
 }
 
 void Core::HandleOrder( GoingOrder order ) {
-  DEBUG( "HandleOrder %s", ORDER_NAMES[ order ] );
+  DBG( "HandleOrder %s", ORDER_NAMES[ order ] );
   mOrder = order;
 }
 
 void Core::HandleOutcome( Outcome outcome ) {
-  DEBUG( "HandleOutcome %s", OUTCOME_NAMES[ outcome ] );
+  DBG( "HandleOutcome %s", OUTCOME_NAMES[ outcome ] );
   mOutcome = outcome;
 }
 
 void Core::HandleOwnClass( Class ownClass ) {
-  DEBUG( "HandleOwnClass %s", CLASS_NAMES[ ownClass ] );
+  DBG( "HandleOwnClass %s", CLASS_NAMES[ ownClass ] );
   mOwnClass = ownClass;
 }
 
 void Core::HandleOpponentClass( Class opponentClass ) {
-  DEBUG( "HandleOpponentClass %s", CLASS_NAMES[ opponentClass ] );
+  DBG( "HandleOpponentClass %s", CLASS_NAMES[ opponentClass ] );
   mOpponentClass = opponentClass;
 }
 
 void Core::HandleMatchStart() {
-  DEBUG( "HandleMatchStart" );
+  DBG( "HandleMatchStart" );
   mDurationTimer.start();
 }
 
 void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating ) {
   if( wasSpectating ) {
-    INFO( "Ignore spectated match" );
+    LOG( "Ignore spectated match" );
     ResetResult();
     return;
   }
 
-  DEBUG( "HandleMatchEnd" );
+  DBG( "HandleMatchEnd" );
   mCardHistoryList = cardHistoryList;
   mDuration = mDurationTimer.elapsed() / 1000;
   UploadResult();
 }
 
 void Core::HandleGameMode( GameMode mode ) {
-  DEBUG( "HandleGameMode %s", MODE_NAMES[ mode ] );
+  DBG( "HandleGameMode %s", MODE_NAMES[ mode ] );
   mGameMode = mode;
 }
 
 void Core::HandleLegend( int legend ) {
-  DEBUG( "Set Legend %d", legend );
+  DBG( "Set Legend %d", legend );
   mLegend = legend;
 }
 
 void Core::HandleTurn( int turn ) {
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
-  DEBUG( "Turn %d. Set Rank %d", turn, rank );
+  DBG( "Turn %d. Set Rank %d", turn, rank );
 }
 
 // Screen capture can be tricky
@@ -137,7 +137,7 @@ int Core::DetermineRank() {
   }
 
   for( std::map<int,int>::iterator it = votesByRank.begin(); it != votesByRank.end(); ++it ) {
-    DEBUG( "Rank %d has %d votes", (*it).first, (*it).second );
+    DBG( "Rank %d has %d votes", (*it).first, (*it).second );
     if( (*it).second > maxVote ) {
       maxVote = (*it).second;
       maxRank = (*it).first;
@@ -148,10 +148,10 @@ int Core::DetermineRank() {
 }
 
 void Core::UploadResult() {
-  DEBUG( "UploadResult" );
+  DBG( "UploadResult" );
 
   int rank = DetermineRank();
-  DEBUG( "Determined Rank: %d", rank );
+  DBG( "Determined Rank: %d", rank );
 
   Tracker::Instance()->AddResult( mGameMode,
       mOutcome,

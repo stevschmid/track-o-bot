@@ -75,7 +75,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard, id );
+    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard, id );
   }
 
   // Outcome
@@ -130,7 +130,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     QString playerId = captures[1];
 
     mHeroPlayerId = playerId.toInt();
-    DEBUG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
+    DBG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
   }
 
   QRegExp regexHeroPower( "\\[Power\\] PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
@@ -241,25 +241,25 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   // flag current GAME as spectated
   QRegExp regexBeginSpectating( "\\[Power\\].*Start Spectator Game" );
   if( regexBeginSpectating.indexIn(line) != -1 ) {
-    DEBUG( "Begin spectator game" );
+    DBG( "Begin spectator game" );
     mSpectating = true;
   }
 
   // disable spectating flag if we leave the spectator MODE
   QRegExp regexEndSpectating( "\\[Power\\].*End Spectator Mode" );
   if( regexEndSpectating.indexIn(line) != -1 ) {
-    DEBUG( "End spectator mode" );
+    DBG( "End spectator mode" );
     mSpectating = false;
   }
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId, int internalId ) {
-  DEBUG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
+  DBG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
   mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
 }
 
 void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
-  DEBUG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+  DBG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
   // Make sure we remove the "Choose One"-cards from the history
   // if we decide to withdraw them after a second of thought
   if( !mCardHistoryList.empty() &&
@@ -272,7 +272,7 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
 }
 
 void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId, int internalId ) {
-  DEBUG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
+  DBG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
   std::vector< CardHistoryItem >::iterator it;
   for( it = mCardHistoryList.begin(); it != mCardHistoryList.end(); ++it ) {
     CardHistoryItem& item = *it;
