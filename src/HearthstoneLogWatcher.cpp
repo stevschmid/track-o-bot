@@ -5,7 +5,7 @@
 #include <QTimer>
 
 HearthstoneLogWatcher::HearthstoneLogWatcher()
-  : mPath( Hearthstone::Instance()->LogPath().c_str() ), mLastSeekPos( 0 )
+  : mPath( Hearthstone::Instance()->LogPath() ), mLastSeekPos( 0 )
 {
   // We used QFileSystemWatcher before but it fails on windows
   // Windows File Notification seems to be very tricky with files
