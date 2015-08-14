@@ -273,9 +273,7 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
 
 void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId, int internalId ) {
   DBG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
-  std::vector< CardHistoryItem >::iterator it;
-  for( it = mCardHistoryList.begin(); it != mCardHistoryList.end(); ++it ) {
-    CardHistoryItem& item = *it;
+  for( CardHistoryItem& item : mCardHistoryList ) {
     if( item.player == player && item.internalId == internalId ) {
       item.cardId = cardId;
     }

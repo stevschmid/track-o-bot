@@ -27,7 +27,6 @@ private:
   QNetworkReply* AuthPostJson( const QString& path, const QByteArray& data );
 
 private slots:
-  void AddResultHandleReply();
   void CreateAndStoreAccountHandleReply();
   void OpenProfileHandleReply();
 

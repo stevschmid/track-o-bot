@@ -109,11 +109,11 @@ void Tracker::UploadResult( const Result& res )
   }
 
   QJsonArray card_history;
-  for( CardHistoryList::const_iterator it = res.cardList.begin(); it != res.cardList.end(); ++it ) {
+  for( const CardHistoryItem chi : res.cardList ) {
     QJsonObject item;
-    item[ "turn" ] = (*it).turn;
-    item[ "player" ] = (*it).player == PLAYER_SELF ? "me" : "opponent";
-    item[ "card_id" ] = (*it).cardId.c_str();
+    item[ "turn" ] = chi.turn;
+    item[ "player" ] = chi.player == PLAYER_SELF ? "me" : "opponent";
+    item[ "card_id" ] = chi.cardId.c_str();
     card_history.append(item);
   }
   result[ "card_history" ] = card_history;
@@ -268,9 +268,7 @@ bool Tracker::IsAccountSetUp() const {
 void Tracker::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
   QList<QSslError> errorsToIgnore;
 
-  QList<QSslError>::const_iterator cit;
-  for( cit = errors.begin(); cit != errors.end(); ++cit ) {
-    const QSslError& err = *cit;
+  for( const QSslError& err : errors ) {
     if( err.error() == QSslError::SelfSignedCertificate ||
         err.error() == QSslError::SelfSignedCertificateInChain )
     {

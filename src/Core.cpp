@@ -115,8 +115,8 @@ int Core::DetermineRank() {
   int maxVote = 0;
   int maxRank = RANK_UNKNOWN;
 
-  for( std::vector<int>::iterator it = mRanks.begin(); it != mRanks.end(); ++it ) {
-    votesByRank[ *it ] += 1;
+  for( int rank : mRanks ) {
+    votesByRank[ rank ] += 1;
   }
 
   for( std::map<int,int>::iterator it = votesByRank.begin(); it != votesByRank.end(); ++it ) {
