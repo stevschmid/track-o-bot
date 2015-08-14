@@ -12,3 +12,4 @@ Makefile.*
 *.autosave
 *.o
 /scenes/*
+*.pch*

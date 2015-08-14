@@ -4,9 +4,9 @@
 #include <QDesktopServices>
 #include <QSettings>
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 #include "OSXWindowCapture.h"
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
 #include "WinWindowCapture.h"
 #include "Shlobj.h"
 #endif
@@ -16,9 +16,9 @@ DEFINE_SINGLETON_SCOPE( Hearthstone )
 Hearthstone::Hearthstone()
  : mRestartRequired( false )
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   mCapture = new OSXWindowCapture( "Hearthstone" );
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   mCapture = new WinWindowCapture( "Hearthstone" );
 #endif
 }
@@ -32,7 +32,7 @@ bool Hearthstone::Running() {
   return mCapture->WindowFound();
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 inline float roundf( float x ) {
    return x >= 0.0f ? floorf( x + 0.5f ) : ceilf( x - 0.5f );
 }
@@ -112,10 +112,10 @@ void Hearthstone::DisableLogging() {
 }
 
 string Hearthstone::LogConfigPath() {
-#ifdef Q_WS_MAC
-  QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+#ifdef Q_OS_MAC
+  QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
   QString configPath = homeLocation + "/Library/Preferences/Blizzard/Hearthstone/log.config";
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   char buffer[ MAX_PATH ];
   SHGetSpecialFolderPathA( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
   QString localAppData( buffer );
@@ -125,10 +125,10 @@ string Hearthstone::LogConfigPath() {
 }
 
 string Hearthstone::LogPath() {
-#ifdef Q_WS_MAC
-  QString homeLocation = QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+#ifdef Q_OS_MAC
+  QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
   QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   QSettings hsKey( "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat );
   QString hsPath = hsKey.value( "InstallLocation" ).toString();
   if( hsPath.isEmpty() ) {

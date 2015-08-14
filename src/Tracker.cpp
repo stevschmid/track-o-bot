@@ -149,10 +149,10 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
 }
 
 QNetworkReply* Tracker::AuthPostJson( const QString& path, const QByteArray& data ) {
-  QString credentials = "Basic " + ( Username() + ":" + Password() ).toAscii().toBase64();
+  QString credentials = "Basic " + ( Username() + ":" + Password() ).toLatin1().toBase64();
 
   QNetworkRequest request = CreateTrackerRequest( path );
-  request.setRawHeader( "Authorization", credentials.toAscii() );
+  request.setRawHeader( "Authorization", credentials.toLatin1() );
   request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
   return mNetworkManager.post( request, data );
 }

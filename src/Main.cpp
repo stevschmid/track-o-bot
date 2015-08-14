@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QDir>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDate>
 #include <QIcon>
 #include <QPointer>
@@ -13,10 +13,10 @@
 
 #include "Updater.h"
 
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
 #include "CocoaInitializer.h"
 #include "SparkleUpdater.h"
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
 #include "WinSparkleUpdater.h"
 #endif
 
@@ -29,21 +29,16 @@ Updater *gUpdater = NULL;
 
 int main( int argc, char **argv )
 {
-#ifdef Q_OS_MACX
-  if( QSysInfo::MacintoshVersion > QSysInfo::MV_10_8 ) {
-    QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue"); // Fix yosemite text in buttons etc.
-  }
-#endif
-
   // Basic setup
   QApplication app( argc, argv );
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
   app.setAttribute( Qt::AA_UseHighDpiPixmaps );
-  QIcon icon = QIcon( ":/icons/mac_black.png" );
+  QIcon icon( ":/icons/mac_black.png" );
   icon.addFile( ":/icons/mac_black@2x.png" );
-#elif defined Q_WS_WIN
-  QIcon icon = QIcon( ":/icons/win.ico" );
+#elif defined Q_OS_WIN
+  QIcon icon( ":/icons/win.ico" );
 #endif
+
   app.setApplicationName( "Track-o-Bot" ); // for proper DataLocation handling
   app.setOrganizationName( "spidy.ch" );
   app.setOrganizationDomain( "spidy.ch" );
@@ -65,7 +60,7 @@ int main( int argc, char **argv )
   }
 
   // Logging
-  QString dataLocation = QDesktopServices::storageLocation( QDesktopServices::DataLocation );
+  QString dataLocation = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
   if( !QFile::exists(dataLocation) ) {
     QDir dir;
     dir.mkpath( dataLocation );
@@ -76,10 +71,10 @@ int main( int argc, char **argv )
   // Start
   LOG( "--> Launched v%s on %s", VERSION, QDate::currentDate().toString( Qt::ISODate ).toStdString().c_str() );
 
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
   CocoaInitializer cocoaInitializer;
   gUpdater = new SparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast.xml" ) );
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   gUpdater = new WinSparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast_win.xml" ) );
 #endif
 

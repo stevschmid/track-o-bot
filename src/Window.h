@@ -2,6 +2,9 @@
 
 #include <QDialog>
 #include <QSystemTrayIcon>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QMenu>
 
 #include "Core.h"
 #include "Autostart.h"

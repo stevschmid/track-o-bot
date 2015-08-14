@@ -10,7 +10,7 @@
 #include "Updater.h"
 extern Updater *gUpdater;
 
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
 #include "OSXLocal.h"
 #endif
 
@@ -180,9 +180,9 @@ Window::~Window() {
 }
 
 void Window::ShowNotification( const char *title, const char *message ) {
-#if defined Q_WS_WIN
+#if defined Q_OS_WIN
   mTrayIcon->showMessage( title, message );
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
   OSX_ShowNotification( title, message );
 #endif
 }
@@ -192,16 +192,16 @@ void Window::HandleFirstStartCheck() {
   QSettings settings;
   if( !settings.contains("taskbarHint") ) {
     settings.setValue( "taskbarHint", true );
-#if defined Q_WS_WIN
+#if defined Q_OS_WIN
     ShowNotification( "Heads up!", "Track-o-Bot runs in your taskbar! Right click the icon for more options." );
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
     ShowNotification( "Track-o-Bot", "Track-o-Bot runs in your menu bar! Click the icon for more options." );
 #endif
   }
 }
 
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
     Tracker::Instance()->OpenProfile();
   }
@@ -254,7 +254,7 @@ void Window::CreateTrayIcon() {
   mTrayIcon = new QSystemTrayIcon( this );
   mTrayIcon->setContextMenu (mTrayIconMenu );
 
-#if defined Q_WS_MAC
+#if defined Q_OS_MAC
   QIcon::Mode blackMode = QIcon::Normal;
   QIcon::Mode whiteMode = QIcon::Selected;
   if( OSX_YosemiteDarkModeEnabled() ) {
@@ -267,7 +267,7 @@ void Window::CreateTrayIcon() {
   icon.addFile( ":/icons/mac_black.png", QSize(), blackMode );
   icon.addFile( ":/icons/mac_white.png", QSize(), whiteMode );
   icon.addFile( ":/icons/mac_white@2x.png", QSize(), whiteMode );
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
 

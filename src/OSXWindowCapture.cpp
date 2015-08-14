@@ -1,5 +1,7 @@
 #include "OSXWindowCapture.h"
 
+#include <QtMac>
+
 // remove the window title bar which we are not interested in
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
@@ -49,7 +51,7 @@ QPixmap OSXWindowCapture::Capture( int x, int y, int w, int h ) {
       mWinId,
       kCGWindowImageNominalResolution | kCGWindowImageBoundsIgnoreFraming );
 
-  QPixmap pixmap = QPixmap::fromMacCGImageRef( image );
+  QPixmap pixmap = QtMac::fromCGImageRef( image );
   CGImageRelease( image );
 
   return pixmap;
