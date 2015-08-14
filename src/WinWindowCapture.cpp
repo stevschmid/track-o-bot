@@ -1,12 +1,12 @@
 #include "WinWindowCapture.h"
 
-WinWindowCapture::WinWindowCapture( const string& windowName )
+WinWindowCapture::WinWindowCapture( const QString& windowName )
   : mWindowName( windowName )
 {
 }
 
 HWND WinWindowCapture::FindHWND() {
-  return FindWindowA( NULL, mWindowName.c_str() );
+  return FindWindowW( NULL, mWindowName.toStdWString().c_str() );
 }
 
 RECT WinWindowCapture::Rect() {

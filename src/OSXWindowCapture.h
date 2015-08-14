@@ -14,11 +14,11 @@ Q_OBJECT
 
 private:
   QTimer*  mTimer;
-  string   mWindowName;
+  QString  mWindowName;
   int      mWinId;
   CGRect   mRect;
 
-  static int FindWindow( const string& name );
+  static int FindWindow( const QString& name );
   static bool WindowRect( int windowId, CGRect *rect );
 
   bool Fullscreen();
@@ -27,7 +27,7 @@ private slots:
   void Update();
 
 public:
-  OSXWindowCapture( const string& windowName );
+  OSXWindowCapture( const QString& windowName );
 
   bool WindowFound();
   int Width();

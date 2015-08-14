@@ -13,13 +13,14 @@ private:
 
   bool mRestartRequired; // in case HS needs to be restarted for log changes to take effect
 
-  string ReadAgentAttribute( const char *attributeName );
+  QString ReadAgentAttribute( const char *attributeName ) const;
+  QString WindowName() const;
 
 public:
   // Allow to override window capture for test environment
   void SetWindowCapture( WindowCapture *windowCapture );
 
-  bool Running();
+  bool Running() const;
   QPixmap Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch  );
 
   void EnableLogging();
@@ -28,10 +29,10 @@ public:
   void SetRestartRequired( bool restartRequired );
   bool RestartRequired() const;
 
-  QString LogConfigPath();
-  QString LogPath();
+  QString LogConfigPath() const;
+  QString LogPath() const;
 
-  int Width();
-  int Height();
+  int Width() const;
+  int Height() const;
 
 };

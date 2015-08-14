@@ -20,9 +20,9 @@ Hearthstone::Hearthstone()
  : mRestartRequired( false )
 {
 #ifdef Q_OS_MAC
-  mCapture = new OSXWindowCapture( "Hearthstone" );
+  mCapture = new OSXWindowCapture( WindowName() );
 #elif defined Q_OS_WIN
-  mCapture = new WinWindowCapture( "Hearthstone" );
+  mCapture = new WinWindowCapture( WindowName() );
 #endif
 }
 
@@ -47,8 +47,16 @@ bool FindJsonObject( QJsonObject obj, QStringList keys, QJsonObject *out ) {
   return true;
 }
 
-string Hearthstone::ReadAgentAttribute( const char *attributeName ) {
-  QString path =  "/Users/Shared/Battle.net/Agent/agent.db";
+QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
+#ifdef Q_OS_MAC
+  QString path = "/Users/Shared/Battle.net/Agent/agent.db";
+#elif defined Q_OS_WIN
+  wchar_t buffer[ MAX_PATH ];
+  SHGetSpecialFolderPathW( NULL, buffer, CSIDL_COMMON_APPDATA, FALSE );
+  QString programData = QString::fromWCharArray( buffer );
+  QString path = programData + "\\Battle.net\\Agent\\agent.db";
+#endif
+
   QFile file( path );
   if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
     ERROR( "Couldn't open %s (%d)", path.toStdString().c_str(), file.error() );
@@ -68,10 +76,10 @@ string Hearthstone::ReadAgentAttribute( const char *attributeName ) {
     return "";
   }
 
-  return hs[ QString( attributeName ) ].toString().toStdString();
+  return hs[ QString( attributeName ) ].toString();
 }
 
-bool Hearthstone::Running() {
+bool Hearthstone::Running() const {
   return mCapture->WindowFound();
 }
 
@@ -154,7 +162,7 @@ void Hearthstone::DisableLogging() {
   }
 }
 
-QString Hearthstone::LogConfigPath() {
+QString Hearthstone::LogConfigPath() const {
 #ifdef Q_OS_MAC
   QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
   QString configPath = homeLocation + "/Library/Preferences/Blizzard/Hearthstone/log.config";
@@ -167,31 +175,53 @@ QString Hearthstone::LogConfigPath() {
   return configPath;
 }
 
-QString Hearthstone::LogPath() {
+QString Hearthstone::LogPath() const {
 #ifdef Q_OS_MAC
   QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
   QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
 #elif defined Q_OS_WIN
-  QSettings hsKey( "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat );
-  QString hsPath = hsKey.value( "InstallLocation" ).toString();
-  if( hsPath.isEmpty() ) {
-    INFO( "LogPath Fallback" );
-    QString programFiles( getenv( "PROGRAMFILES(X86)" ) );
-    if( programFiles.isEmpty() ) {
-      programFiles = getenv( "PROGRAMFILES" );
-    }
-    hsPath = programFiles + "\\Hearthstone";
+
+  QString hsPath = ReadAgentAttribute( "install_dir" );
+  if( hsPath.empty() ) {
+    INFO( "Registry fallback for path" );
+
+    QSettings hsKey( "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat );
+    hsPath = hsKey.value( "InstallLocation" ).toString();
   }
+
+  if( hsPath.empty() ) {
+    ERROR( "Hearthstone path not found" );
+    return "";
+  }
+
   QString logPath = hsPath + "\\Hearthstone_Data\\output_log.txt";
 #endif
   return logPath;
 }
 
-int Hearthstone::Width() {
+QString Hearthstone::WindowName() const {
+  QString locale = ReadAgentAttribute( "selected_locale" );
+  QString windowName = "Hearthstone";
+
+#ifdef Q_OS_MAC
+  // Under mac the window name is not localized
+  return windowName;
+#endif
+
+  if( locale == "zhCN" ) {
+    windowName = QString::fromWCharArray( L"炉石传说" );
+  } else if( locale == "zhTW" ) {
+    windowName = QString::fromWCharArray( L"《爐石戰記》" );
+  } else if( locale == "koKR") {
+    windowName = QString::fromWCharArray( L"하스스톤" );
+  }
+}
+
+int Hearthstone::Width() const {
   return mCapture->Width();
 }
 
-int Hearthstone::Height() {
+int Hearthstone::Height() const {
   return mCapture->Height();
 }
 
