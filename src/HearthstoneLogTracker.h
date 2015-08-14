@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HearthstoneLogWatcher.h"
+#include "Result.h"
 
 class HearthstoneLogTracker : public QObject
 {

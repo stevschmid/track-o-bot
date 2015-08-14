@@ -1,18 +1,9 @@
 #include "Core.h"
-#include "Tracker.h"
 
 #include <map>
 
 Core::Core()
-  : mGameRunning( false ),
-    mGameMode( MODE_UNKNOWN ),
-    mOutcome( OUTCOME_UNKNOWN ),
-    mOrder( ORDER_UNKNOWN ),
-    mOwnClass( CLASS_UNKNOWN ),
-    mOpponentClass( CLASS_UNKNOWN ),
-    mDuration( 0 ),
-    mLegend( LEGEND_UNKNOWN ),
-    mGameClientRestartRequired( false )
+  : mGameRunning( false ), mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );
   connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
@@ -38,15 +29,7 @@ Core::~Core() {
 }
 
 void Core::ResetResult() {
-  mGameMode      = MODE_UNKNOWN;
-  mOutcome       = OUTCOME_UNKNOWN;
-  mOrder         = ORDER_UNKNOWN;
-  mOwnClass      = CLASS_UNKNOWN;
-  mOpponentClass = CLASS_UNKNOWN;
-  mDuration      = 0;
-  mCardHistoryList.clear();
-  mLegend        = LEGEND_UNKNOWN;
-
+  mResult.Reset();
   mRanks.clear();
 }
 
@@ -71,22 +54,22 @@ void Core::Tick() {
 
 void Core::HandleOrder( GoingOrder order ) {
   DBG( "HandleOrder %s", ORDER_NAMES[ order ] );
-  mOrder = order;
+  mResult.order = order;
 }
 
 void Core::HandleOutcome( Outcome outcome ) {
   DBG( "HandleOutcome %s", OUTCOME_NAMES[ outcome ] );
-  mOutcome = outcome;
+  mResult.outcome = outcome;
 }
 
 void Core::HandleOwnClass( Class ownClass ) {
   DBG( "HandleOwnClass %s", CLASS_NAMES[ ownClass ] );
-  mOwnClass = ownClass;
+  mResult.hero = ownClass;
 }
 
 void Core::HandleOpponentClass( Class opponentClass ) {
   DBG( "HandleOpponentClass %s", CLASS_NAMES[ opponentClass ] );
-  mOpponentClass = opponentClass;
+  mResult.opponent = opponentClass;
 }
 
 void Core::HandleMatchStart() {
@@ -102,19 +85,19 @@ void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpe
   }
 
   DBG( "HandleMatchEnd" );
-  mCardHistoryList = cardHistoryList;
-  mDuration = mDurationTimer.elapsed() / 1000;
+  mResult.cardList = cardHistoryList;
+  mResult.duration = mDurationTimer.elapsed() / 1000;
   UploadResult();
 }
 
 void Core::HandleGameMode( GameMode mode ) {
   DBG( "HandleGameMode %s", MODE_NAMES[ mode ] );
-  mGameMode = mode;
+  mResult.mode = mode;
 }
 
 void Core::HandleLegend( int legend ) {
   DBG( "Set Legend %d", legend );
-  mLegend = legend;
+  mResult.legend = legend;
 }
 
 void Core::HandleTurn( int turn ) {
@@ -150,18 +133,9 @@ int Core::DetermineRank() {
 void Core::UploadResult() {
   DBG( "UploadResult" );
 
-  int rank = DetermineRank();
-  DBG( "Determined Rank: %d", rank );
+  mResult.rank = DetermineRank();
+  DBG( "Determined Rank: %d", mResult.rank );
 
-  Tracker::Instance()->AddResult( mGameMode,
-      mOutcome,
-      mOrder,
-      mOwnClass,
-      mOpponentClass,
-      mLogTracker.CardHistoryList(),
-      mDuration,
-      rank,
-      mLegend );
-
+  mResultsQueue.Add( mResult );
   ResetResult();
 }

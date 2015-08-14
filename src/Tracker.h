@@ -5,6 +5,8 @@
 #include <QSettings>
 #include <QSslError>
 
+#include "Result.h"
+
 class Tracker : public QObject
 {
   Q_OBJECT
@@ -36,7 +38,7 @@ private slots:
 public:
   bool IsAccountSetUp() const;
 
-  void AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass, const CardHistoryList& cardHistoryList, int durationInSeconds, int rank, int legend );
+  void UploadResult( const Result& result );
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();
@@ -53,6 +55,7 @@ public:
 
 signals:
   void AccountCreated();
+  void UploadResultFailed( const Result& result );
 
 };
 

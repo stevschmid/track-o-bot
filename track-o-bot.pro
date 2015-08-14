@@ -1,7 +1,7 @@
 TARGET = Track-o-Bot
 VERSION = 0.5.0
 
-CONFIG += qt precompile_header debug_and_release
+CONFIG += qt precompile_header debug_and_release c++11
 QT += core network widgets gui
 
 DESTDIR = build
@@ -20,7 +20,8 @@ HEADERS = src/Local.h \
           src/HearthstoneLogTracker.h \
           src/NeuralNetwork.h \
           src/RankClassifierData.h \
-          src/RankClassifier.h
+          src/RankClassifier.h \
+          src/ResultQueue.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -31,8 +32,9 @@ SOURCES = src/Main.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
           src/HearthstoneLogTracker.cpp \
-          src/NeuralNetwork.cpp \ 
-          src/RankClassifier.cpp
+          src/NeuralNetwork.cpp \
+          src/RankClassifier.cpp \
+          src/ResultQueue.cpp
 
 FORMS   = src/Window.ui \
           src/SettingsWidget.ui \

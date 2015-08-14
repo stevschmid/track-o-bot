@@ -17,6 +17,8 @@
 DEFINE_SINGLETON_SCOPE( Tracker );
 
 Tracker::Tracker() {
+  qRegisterMetaType< Result >( "Result" );
+
   mSuccessfulResultCount = 0;
   mUnknownOutcomeCount = 0;
   mUnknownModeCount = 0;
@@ -40,44 +42,43 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class ownClass, Class opponentClass,
-    const CardHistoryList& historyCardList, int durationInSeconds, int rank, int legend )
+void Tracker::UploadResult( const Result& res )
 {
-  if( mode == MODE_SOLO_ADVENTURES ) {
+  if( res.mode == MODE_SOLO_ADVENTURES ) {
     LOG( "Ignore solo adventure" );
     return;
   }
 
-  if( mode == MODE_TAVERN_BRAWL ) {
+  if( res.mode == MODE_TAVERN_BRAWL ) {
     LOG( "Ignore tavern brawl" );
     return;
   }
 
-  if( outcome == OUTCOME_UNKNOWN ) {
+  if( res.outcome == OUTCOME_UNKNOWN ) {
     mUnknownOutcomeCount++;
     LOG( "Outcome unknown. Skip result" );
     return;
   }
 
-  if( mode == MODE_UNKNOWN ) {
+  if( res.mode == MODE_UNKNOWN ) {
     mUnknownModeCount++;
     LOG( "Mode unknown. Skip result" );
     return;
   }
 
-  if( order == ORDER_UNKNOWN ) {
+  if( res.order == ORDER_UNKNOWN ) {
     mUnknownOrderCount++;
     LOG( "Order unknown. Skip result" );
     return;
   }
 
-  if( ownClass == CLASS_UNKNOWN ) {
+  if( res.hero == CLASS_UNKNOWN ) {
     mUnknownClassCount++;
     LOG( "Own Class unknown. Skip result" );
     return;
   }
 
-  if( opponentClass == CLASS_UNKNOWN ) {
+  if( res.opponent == CLASS_UNKNOWN ) {
     mUnknownOpponentCount++;
     LOG( "Class of Opponent unknown. Skip result" );
     return;
@@ -86,29 +87,29 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   mSuccessfulResultCount++;
 
   LOG( "Upload %s %s vs. %s as %s. Went %s",
-      MODE_NAMES[ mode ],
-      OUTCOME_NAMES[ outcome ],
-      CLASS_NAMES[ opponentClass ],
-      CLASS_NAMES[ ownClass ],
-      ORDER_NAMES[ order ] );
+      MODE_NAMES[ res.mode ],
+      OUTCOME_NAMES[ res.outcome ],
+      CLASS_NAMES[ res.opponent ],
+      CLASS_NAMES[ res.hero ],
+      ORDER_NAMES[ res.order ] );
 
   QJsonObject result;
-  result[ "coin" ]     = ( order == ORDER_SECOND );
-  result[ "hero" ]     = CLASS_NAMES[ ownClass ];
-  result[ "opponent" ] = CLASS_NAMES[ opponentClass ];
-  result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
-  result[ "mode" ]     = MODE_NAMES[ mode ];
-  result[ "duration" ] = durationInSeconds;
+  result[ "coin" ]     = ( res.order == ORDER_SECOND );
+  result[ "hero" ]     = CLASS_NAMES[ res.hero ];
+  result[ "opponent" ] = CLASS_NAMES[ res.opponent ];
+  result[ "win" ]      = ( res.outcome == OUTCOME_VICTORY );
+  result[ "mode" ]     = MODE_NAMES[ res.mode ];
+  result[ "duration" ] = res.duration;
 
-  if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
-    result[ "rank" ] = rank;
+  if( res.mode == MODE_RANKED && res.rank != RANK_UNKNOWN && res.legend == LEGEND_UNKNOWN ) {
+    result[ "rank" ] = res.rank;
   }
-  if( mode == MODE_RANKED && legend != LEGEND_UNKNOWN ) {
-    result[ "legend" ] = legend;
+  if( res.mode == MODE_RANKED && res.legend != LEGEND_UNKNOWN ) {
+    result[ "legend" ] = res.legend;
   }
 
   QJsonArray card_history;
-  for( CardHistoryList::const_iterator it = historyCardList.begin(); it != historyCardList.end(); ++it ) {
+  for( CardHistoryList::const_iterator it = res.cardList.begin(); it != res.cardList.end(); ++it ) {
     QJsonObject item;
     item[ "turn" ] = (*it).turn;
     item[ "player" ] = (*it).player == PLAYER_SELF ? "me" : "opponent";
@@ -139,7 +140,15 @@ void Tracker::AddResult( GameMode mode, Outcome outcome, GoingOrder order, Class
   QByteArray data = QJsonDocument( params ).toJson();
 
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
-  connect( reply, SIGNAL( finished() ), this, SLOT( AddResultHandleReply() ) );
+  connect( reply, &QNetworkReply::finished, [&, reply, res]() {
+    if( reply->error() == QNetworkReply::NoError ) {
+      LOG( "Result was uploaded successfully!" );
+    } else {
+      int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
+      ERR( "There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
+      emit UploadResultFailed( res );
+    }
+  });
 }
 
 QNetworkReply* Tracker::AuthPostJson( const QString& path, const QByteArray& data ) {
@@ -156,16 +165,6 @@ QNetworkRequest Tracker::CreateTrackerRequest( const QString& path ) {
   QNetworkRequest request( url );
   request.setRawHeader( "User-Agent", "Track-o-Bot/" VERSION PLATFORM );
   return request;
-}
-
-void Tracker::AddResultHandleReply() {
-  QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
-  if( reply->error() == QNetworkReply::NoError ) {
-    LOG( "Result was uploaded successfully!" );
-  } else {
-    int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
-    ERR( "There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
-  }
 }
 
 void Tracker::CreateAndStoreAccount() {

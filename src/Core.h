@@ -3,6 +3,8 @@
 #include "Hearthstone.h"
 #include "Tracker.h"
 #include "HearthstoneLogTracker.h"
+#include "Result.h"
+#include "ResultQueue.h"
 
 #include "RankClassifier.h"
 
@@ -21,20 +23,12 @@ private:
   HearthstoneLogTracker mLogTracker;
   QTime                 mDurationTimer;
 
-  GameMode              mGameMode;
-  Outcome               mOutcome;
-  GoingOrder            mOrder;
-  Class                 mOwnClass;
-  Class                 mOpponentClass;
-  int                   mDuration;
-  CardHistoryList       mCardHistoryList;
-
+  Result                mResult;
   std::vector<int>      mRanks;
-  int                   mLegend;
-
-  bool                  mCurrentResultTracked;
 
   RankClassifier        mRankClassifier;
+
+  ResultQueue           mResultsQueue;
 
   void ResetResult();
   void UploadResult();
