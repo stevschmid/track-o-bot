@@ -56,9 +56,9 @@ void Core::Tick() {
 
   if( wasGameRunning != mGameRunning ) {
     if( mGameRunning ) {
-      INFO("Hearthstone found");
+      INFO("Hearthstone window found");
     } else {
-      INFO("Hearthstone was closed");
+      INFO("Hearthstone window was closed");
       Hearthstone::Instance()->SetRestartRequired( false );
     }
   }
