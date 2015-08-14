@@ -1,11 +1,40 @@
 #include "ResultQueue.h"
-#include "Tracker.h"
+
+#define RESULT_QUEUE_CHECK_PERIOD (30 * 60 * 1000)
+#define RESULT_QUEUE_UPLOAD_PERIOD (5 * 60 * 1000)
 
 ResultQueue::ResultQueue() {
-  connect( Tracker::Instance(), SIGNAL( UploadResultFailed(const Result&) ), this, SLOT( UploadResultFailed(const Result&) ) );
+  connect( Tracker::Instance(), SIGNAL( UploadResultFailed(const QJsonObject&, int) ), this, SLOT( UploadResultFailed(const QJsonObject&, int) ) );
+  connect( Tracker::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
+
+  mCheckTimer = new QTimer( this );
+  connect( mCheckTimer, SIGNAL( timeout() ), this, SLOT( Check() ) );
+  mCheckTimer->start( RESULT_QUEUE_CHECK_PERIOD );
+
+  mUploadTimer = new QTimer( this );
+  connect( mUploadTimer, SIGNAL( timeout() ), this, SLOT( Upload() ) );
+
+  Load();
 }
 
 ResultQueue::~ResultQueue() {
+  Save();
+}
+
+void ResultQueue::Load() {
+  QSettings settings;
+  if( settings.contains( "resultsQueue" ) ) {
+    QJsonDocument doc = QJsonDocument::fromJson( settings.value( "resultsQueue" ).toByteArray() );
+    mQueue = doc.array();
+    LOG( "%d unsaved results found", mQueue.size() );
+
+    settings.remove( "resultsQueue" );
+  }
+}
+
+void ResultQueue::Save() {
+  LOG( "Saving %d results", mQueue.size() );
+  QSettings().setValue( "resultsQueue", QJsonDocument( mQueue ).toJson() );
 }
 
 void ResultQueue::Add( const Result& res ) {
@@ -44,8 +73,49 @@ void ResultQueue::Add( const Result& res ) {
     return;
   }
 
-  Tracker::Instance()->UploadResult( res );
+  LOG( "Result: %s %s vs. %s as %s. Went %s",
+      MODE_NAMES[ res.mode ],
+      OUTCOME_NAMES[ res.outcome ],
+      CLASS_NAMES[ res.opponent ],
+      CLASS_NAMES[ res.hero ],
+      ORDER_NAMES[ res.order ] );
+
+  mQueue.append( res.AsJson() );
+  Upload();
 }
 
-void ResultQueue::UploadResultFailed( const Result& result ) {
+void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode ) {
+  ERR( "There was a problem uploading the result (Code %d). Will save the result locally and try again later.", errorCode );
+  mQueue.append( result );
+
+  // Upload not working, check periodically from now on
+  mUploadTimer->stop();
+}
+
+void ResultQueue::UploadResultSucceeded( const QJsonObject& result ) {
+  LOG( "Upload successful" );
+
+  // If we have items in the queue, it's time to slowly roll them out
+  mUploadTimer->start( RESULT_QUEUE_UPLOAD_PERIOD );
+}
+
+void ResultQueue::Upload() {
+  if( !mQueue.isEmpty() ) {
+    if( mQueue.size() == 1 ) {
+      LOG( "Upload result..." );
+    } else {
+      LOG( "Found an old result. Uploading that first..." );
+    }
+    QJsonObject result = mQueue.takeAt( 0 ).toObject();
+    Tracker::Instance()->UploadResult( result );
+  }
+}
+
+void ResultQueue::Check() {
+  if( mUploadTimer->isActive() ) {
+    // Upload works, nothing to be done
+    return;
+  }
+
+  Upload();
 }

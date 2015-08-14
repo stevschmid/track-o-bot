@@ -17,8 +17,6 @@
 DEFINE_SINGLETON_SCOPE( Tracker );
 
 Tracker::Tracker() {
-  qRegisterMetaType< Result >( "Result" );
-
   connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
       this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
 }
@@ -35,17 +33,10 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::UploadResult( const Result& res )
+void Tracker::UploadResult( const QJsonObject& result )
 {
-  LOG( "Upload %s %s vs. %s as %s. Went %s",
-      MODE_NAMES[ res.mode ],
-      OUTCOME_NAMES[ res.outcome ],
-      CLASS_NAMES[ res.opponent ],
-      CLASS_NAMES[ res.hero ],
-      ORDER_NAMES[ res.order ] );
-
   QJsonObject params;
-  params[ "result" ] = res.AsJson();
+  params[ "result" ] = result;
 
   // Some metadata to find out room for improvement
   QJsonArray meta;
@@ -58,13 +49,12 @@ void Tracker::UploadResult( const Result& res )
   QByteArray data = QJsonDocument( params ).toJson();
 
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
-  connect( reply, &QNetworkReply::finished, [&, reply, res]() {
+  connect( reply, &QNetworkReply::finished, [&, reply, result]() {
     if( reply->error() == QNetworkReply::NoError ) {
-      LOG( "Result was uploaded successfully!" );
+      emit UploadResultSucceeded( result );
     } else {
       int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
-      ERR( "There was a problem uploading the result. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
-      emit UploadResultFailed( res );
+      emit UploadResultFailed( result, statusCode );
     }
   });
 }

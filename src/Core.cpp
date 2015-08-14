@@ -22,10 +22,10 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
 
   ResetResult();
+
 }
 
 Core::~Core() {
-  delete mTimer;
 }
 
 void Core::ResetResult() {

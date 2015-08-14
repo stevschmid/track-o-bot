@@ -4,8 +4,7 @@
 #include <QNetworkRequest>
 #include <QSettings>
 #include <QSslError>
-
-#include "Result.h"
+#include <QJsonObject>
 
 class Tracker : public QObject
 {
@@ -30,7 +29,7 @@ private slots:
 public:
   bool IsAccountSetUp() const;
 
-  void UploadResult( const Result& result );
+  void UploadResult( const QJsonObject& result );
   void CreateAndStoreAccount();
   void OpenProfile();
   void EnsureAccountIsSetUp();
@@ -47,7 +46,8 @@ public:
 
 signals:
   void AccountCreated();
-  void UploadResultFailed( const Result& result );
+  void UploadResultFailed( const QJsonObject& result, int errorCode );
+  void UploadResultSucceeded( const QJsonObject& result );
 
 };
 
