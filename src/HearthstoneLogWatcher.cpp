@@ -62,5 +62,3 @@ void HearthstoneLogWatcher::CheckForLogChanges() {
   }
 }
 
-
-

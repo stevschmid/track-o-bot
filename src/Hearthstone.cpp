@@ -4,6 +4,9 @@
 #include <QDesktopServices>
 #include <QSettings>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #ifdef Q_OS_MAC
 #include "OSXWindowCapture.h"
 #elif defined Q_OS_WIN
@@ -26,6 +29,46 @@ Hearthstone::Hearthstone()
 Hearthstone::~Hearthstone() {
   if( mCapture != NULL )
     delete mCapture;
+}
+
+bool FindJsonObject( QJsonObject obj, QStringList keys, QJsonObject *out ) {
+  if( !keys.empty() ) {
+    QString key = keys.front();
+    keys.pop_front();
+
+    QJsonObject::iterator it = obj.find( key );
+    if( it == obj.end() )
+      return false;
+
+    return FindJsonObject( (*it).toObject(), keys, out );
+  }
+
+  *out = obj;
+  return true;
+}
+
+string Hearthstone::ReadAgentAttribute( const char *attributeName ) {
+  QString path =  "/Users/Shared/Battle.net/Agent/agent.db";
+  QFile file( path );
+  if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+    ERROR( "Couldn't open %s (%d)", path.toStdString().c_str(), file.error() );
+    return "";
+  }
+
+  QString contents = file.readAll();
+  QJsonDocument doc = QJsonDocument::fromJson( contents.toUtf8() );
+  QJsonObject root = doc.object();
+
+  QStringList keys;
+  keys << "/game/hs_beta" << "resource" << "game";
+
+  QJsonObject hs;
+  if( !FindJsonObject( root, keys, &hs ) ) {
+    ERROR( "Couldn't find HS key" );
+    return "";
+  }
+
+  return hs[ QString( attributeName ) ].toString().toStdString();
 }
 
 bool Hearthstone::Running() {

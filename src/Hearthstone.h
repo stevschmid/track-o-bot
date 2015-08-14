@@ -13,6 +13,8 @@ private:
 
   bool mRestartRequired; // in case HS needs to be restarted for log changes to take effect
 
+  string ReadAgentAttribute( const char *attributeName );
+
 public:
   // Allow to override window capture for test environment
   void SetWindowCapture( WindowCapture *windowCapture );
