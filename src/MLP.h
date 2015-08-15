@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace NN
+namespace MLP
 {
   typedef std::vector< float > Vector;
   typedef std::vector< Vector > Matrix;

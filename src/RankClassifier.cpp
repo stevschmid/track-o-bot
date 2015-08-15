@@ -1,5 +1,5 @@
 #include "RankClassifier.h"
-#include "NeuralNetwork.h"
+#include "MLP.h"
 
 #include "RankClassifierData.h"
 
@@ -23,7 +23,7 @@
 #define RC_BINARIZE_THRESHOLD 0.7f
 
 RankClassifier::RankClassifier()
-  : mNeuralNetwork( BuildNN() )
+  : mNeuralNetwork( BuildMLP() )
 {
   assert( RC_LABEL_WIDTH * RC_LABEL_HEIGHT == NN_INPUT_NODES );
 }
@@ -36,8 +36,8 @@ int RankClassifier::Classify( const QImage& label ) const {
   assert( label.width() == RC_LABEL_WIDTH );
   assert( label.height() == RC_LABEL_HEIGHT );
 
-  NN::Vector input = BinarizeImage( label, RC_BINARIZE_THRESHOLD );
-  NN::Vector result = mNeuralNetwork.Run( input );
+  MLP::Vector input = BinarizeImage( label, RC_BINARIZE_THRESHOLD );
+  MLP::Vector result = mNeuralNetwork.Run( input );
   std::vector< std::pair<int, float> > scores;
   for( int i = 0; i < (int)result.size(); i++ ) {
     scores.push_back( std::pair< int, float >( i, result[ i ] ) );
@@ -67,29 +67,29 @@ int RankClassifier::DetectCurrentRank() const {
   return Classify( label );
 }
 
-NN::NeuralNetwork RankClassifier::BuildNN() {
-  NN::Vector hiddenLayerBias( NN_HIDDEN_BIAS, NN_HIDDEN_BIAS + NN_HIDDEN_NODES );
-  NN::Vector outputLayerBias( NN_OUTPUT_BIAS, NN_OUTPUT_BIAS + NN_OUTPUT_NODES );
+MLP::NeuralNetwork RankClassifier::BuildMLP() {
+  MLP::Vector hiddenLayerBias( NN_HIDDEN_BIAS, NN_HIDDEN_BIAS + NN_HIDDEN_NODES );
+  MLP::Vector outputLayerBias( NN_OUTPUT_BIAS, NN_OUTPUT_BIAS + NN_OUTPUT_NODES );
 
-  NN::Matrix hiddenLayerWeights;
-  NN::Matrix outputLayerWeights;
+  MLP::Matrix hiddenLayerWeights;
+  MLP::Matrix outputLayerWeights;
 
   for( int i = 0; i < NN_HIDDEN_NODES; i++ ) {
     const float *w = NN_HIDDEN_WEIGHTS[ i ];
-    hiddenLayerWeights.push_back( NN::Vector( w, w + NN_INPUT_NODES ) );
+    hiddenLayerWeights.push_back( MLP::Vector( w, w + NN_INPUT_NODES ) );
   }
 
   for( int i = 0; i < NN_OUTPUT_NODES; i++ ) {
     const float *w = NN_OUTPUT_WEIGHTS[ i ];
-    outputLayerWeights.push_back( NN::Vector( w, w + NN_HIDDEN_NODES ) );
+    outputLayerWeights.push_back( MLP::Vector( w, w + NN_HIDDEN_NODES ) );
   }
 
-  return NN::NeuralNetwork( hiddenLayerBias, hiddenLayerWeights,
+  return MLP::NeuralNetwork( hiddenLayerBias, hiddenLayerWeights,
       outputLayerBias, outputLayerWeights );
 }
 
-NN::Vector RankClassifier::BinarizeImage( const QImage& img, float threshold ) {
-  NN::Vector out( img.width() * img.height() );
+MLP::Vector RankClassifier::BinarizeImage( const QImage& img, float threshold ) {
+  MLP::Vector out( img.width() * img.height() );
 
   for( int y = 0; y < img.height(); y++ ) {
     for( int x = 0; x < img.width(); x++ ) {

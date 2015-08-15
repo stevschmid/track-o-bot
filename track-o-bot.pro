@@ -18,7 +18,7 @@ HEADERS = src/Local.h \
           src/Tracker.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
-          src/NeuralNetwork.h \
+          src/MLP.h \
           src/RankClassifierData.h \
           src/RankClassifier.h \
           src/ResultQueue.h
@@ -32,7 +32,7 @@ SOURCES = src/Main.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
           src/HearthstoneLogTracker.cpp \
-          src/NeuralNetwork.cpp \
+          src/MLP.cpp \
           src/RankClassifier.cpp \
           src/ResultQueue.cpp
 
@@ -43,7 +43,7 @@ FORMS   = src/Window.ui \
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 
-RESOURCES += app.qrc
+RESOURCES += resources.qrc
 
 CONFIG(debug, debug|release): DEFINES += _DEBUG
 

@@ -1,11 +1,11 @@
-#include "NeuralNetwork.h"
+#include "MLP.h"
 
 #include <math.h>
 
 #include <cassert>
 #include <numeric>
 
-namespace NN
+namespace MLP
 {
   NeuralNetwork::NeuralNetwork() {
   }
