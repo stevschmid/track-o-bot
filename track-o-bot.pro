@@ -19,7 +19,6 @@ HEADERS = src/Local.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
           src/MLP.h \
-          src/RankClassifierData.h \
           src/RankClassifier.h \
           src/ResultQueue.h
 

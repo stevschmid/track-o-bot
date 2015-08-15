@@ -22,9 +22,6 @@
 
 #include "Hearthstone.h"
 
-#include "RankClassifier.h"
-#include <cassert>
-
 Updater *gUpdater = NULL;
 
 int main( int argc, char **argv )

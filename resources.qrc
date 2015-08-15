@@ -6,5 +6,7 @@
     <file>icons/mac_black@2x.png</file>
     <file>icons/win.ico</file>
     <file>icons/logo.png</file>
+
+    <file>data/rank_classifier.json</file>
   </qresource>
 </RCC>

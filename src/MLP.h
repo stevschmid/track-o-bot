@@ -7,24 +7,29 @@ namespace MLP
   typedef std::vector< float > Vector;
   typedef std::vector< Vector > Matrix;
 
-  // Simple predicting feed forward neural network with 1 hidden layer
-  // (using previously trained parameters)
-  class NeuralNetwork
-  {
+  typedef enum {
+    LAYER_SIGMOID,
+    LAYER_SOFTMAX
+  } LayerType;
+
+  typedef struct {
+    LayerType   type;
+    Vector      biases;
+    Matrix      weights;
+  } Layer;
+
+  // Simple feed forward Artificial Neural Network
+  // Only for prediction, using pretrained parameters
+  class MultiLayerPerceptron {
   private:
-    Vector mHiddenLayerBias;
-    Matrix mHiddenLayerWeights;
+    std::vector< Layer > mLayers;
 
-    Vector mOutputLayerBias;
-    Matrix mOutputLayerWeights;
-
-    Vector FeedForward( const Vector& input, const Vector& layerBias, const Matrix& layerWeights ) const;
+    Vector FeedForward( const Vector& input, const Layer& layer ) const;
 
   public:
-    NeuralNetwork();
-    NeuralNetwork( const Vector& hiddenLayerBias, const Matrix& hiddenLayerWeights,
-                   const Vector& outputLayerBias, const Matrix& outputLayerWeights );
+    MultiLayerPerceptron();
+    void AddLayer( const Layer& layer );
 
-    Vector Run( const Vector& input ) const;
+    Vector Compute( const Vector& input ) const;
   };
 }
