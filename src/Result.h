@@ -157,7 +157,7 @@ public:
     }
 
     QJsonArray card_history;
-    for( const CardHistoryItem chi : cardList ) {
+    for( const CardHistoryItem& chi : cardList ) {
       QJsonObject item;
       item[ "turn" ] = chi.turn;
       item[ "player" ] = chi.player == PLAYER_SELF ? "me" : "opponent";
