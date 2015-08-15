@@ -5,6 +5,7 @@
 #include "ui_SettingsWidget.h"
 #include "ui_LogWidget.h"
 #include "ui_AboutWidget.h"
+#include "ui_MainWindow.h"
 
 #include "Tracker.h"
 #include "Updater.h"
@@ -173,9 +174,10 @@ AboutTab::~AboutTab() {
 }
 
 Window::Window()
-  : mUI( new Ui::Window )
+  : mUI( new Ui::MainWindow )
 {
   mUI->setupUi( this );
+  setWindowFlags( (Qt::Window | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint) );
 
   setWindowTitle( qApp->applicationName() );
 
@@ -185,11 +187,33 @@ Window::Window()
   connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
   connect( &mCore, SIGNAL( HandleGameClientRestartRequired(bool) ), this, SLOT( HandleGameClientRestartRequired(bool) ) );
 
+  QActionGroup *group = new QActionGroup( this );
+  group->setExclusive( true );
+
+  mUI->actionSettings->setActionGroup( group );
+  mUI->actionSettings->setProperty( "pageIndex", 0 );
+
+  mUI->actionLog->setActionGroup( group );
+  mUI->actionLog->setProperty( "pageIndex", 1 );
+
+  mUI->actionAbout->setActionGroup( group );
+  mUI->actionAbout->setProperty( "pageIndex", 2 );
+
+  mUI->pageWidget->setCurrentIndex( 0 );
+  mUI->actionSettings->setChecked( true );
+
+  connect( group, SIGNAL( triggered(QAction*) ), this, SLOT( ActionTriggered(QAction*) ) );
+
   QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
 }
 
 Window::~Window() {
   delete mUI;
+}
+
+void Window::ActionTriggered( QAction *action ) {
+  int page = action->property( "pageIndex" ).toInt();
+  mUI->pageWidget->setCurrentIndex( page );
 }
 
 void Window::ShowNotification( const char *title, const char *message ) {
@@ -222,23 +246,14 @@ void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 }
 
 void Window::showEvent( QShowEvent *event ) {
-  QDialog::showEvent( event );
-  mUI->settingsTab->LoadSettings();
+  QWidget::showEvent( event );
+  mUI->settingsPage->LoadSettings();
 }
 
 void Window::closeEvent( QCloseEvent *event ) {
   if( mTrayIcon->isVisible() ) {
     hide();
     event->ignore();
-  }
-}
-
-// prevent esc from closing the app
-void Window::reject() {
-  if( mTrayIcon->isVisible() ) {
-    hide();
-  } else {
-    QDialog::reject();
   }
 }
 

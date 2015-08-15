@@ -35,7 +35,7 @@ SOURCES = src/Main.cpp \
           src/RankClassifier.cpp \
           src/ResultQueue.cpp
 
-FORMS   = src/Window.ui \
+FORMS   = src/MainWindow.ui \
           src/SettingsWidget.ui \
           src/LogWidget.ui \
           src/AboutWidget.ui

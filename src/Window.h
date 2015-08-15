@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMenu>
+#include <QMainWindow>
 
 #include "Core.h"
 #include "Autostart.h"
@@ -78,23 +79,22 @@ public:
   ~AboutTab();
 };
 
-namespace Ui { class Window; }
+namespace Ui { class MainWindow; }
 
-class Window : public QDialog
+class Window : public QMainWindow
 {
   Q_OBJECT
 
 private:
   void closeEvent( QCloseEvent *event );
   void showEvent( QShowEvent *event );
-  void reject();
 
   void CreateActions();
   void CreateTrayIcon();
 
   void ShowNotification( const char *title, const char *message );
 
-  Ui::Window        *mUI;
+  Ui::MainWindow    *mUI;
 
   QAction           *mShowAction;
   QAction           *mQuitAction;
@@ -113,6 +113,8 @@ private slots:
 
   void HandleGameClientRestartRequired( bool restartRequired );
   void HandleFirstStartCheck();
+
+  void ActionTriggered( QAction *action );
 
 public:
   explicit Window();
