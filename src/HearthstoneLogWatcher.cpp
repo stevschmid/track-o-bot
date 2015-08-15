@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QTimer>
 
+#define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 500
+
 HearthstoneLogWatcher::HearthstoneLogWatcher()
   : mPath( Hearthstone::Instance()->LogPath() ), mLastSeekPos( 0 )
 {

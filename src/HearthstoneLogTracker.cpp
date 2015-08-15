@@ -44,8 +44,9 @@ void HearthstoneLogTracker::Reset() {
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
-  if( line.trimmed().isEmpty() )
+  if( line.trimmed().isEmpty() || line.startsWith( "(Filename:" )  ) {
     return;
+  }
 
   // CardPlayed / CardReturned / PlayerDied
   QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) -> (.*)" );

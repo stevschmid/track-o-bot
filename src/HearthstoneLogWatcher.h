@@ -1,7 +1,5 @@
 #pragma once
 
-#define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 500
-
 class HearthstoneLogWatcher : public QObject
 {
   Q_OBJECT
