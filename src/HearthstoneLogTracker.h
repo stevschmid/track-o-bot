@@ -33,7 +33,7 @@ private slots:
 
 signals:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating );
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
 
   void HandleOutcome( Outcome outcome );
   void HandleOrder( GoingOrder order );
@@ -42,6 +42,8 @@ signals:
   void HandleOwnClass( Class ownClass );
   void HandleLegend( int legend );
   void HandleTurn( int turn, bool ownTurn );
+
+  void HandleSpectating( bool nowSpectating );
 
 public:
   HearthstoneLogTracker();

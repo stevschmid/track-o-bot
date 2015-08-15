@@ -20,6 +20,7 @@ class Core : public QObject
 private:
   QTimer*               mTimer;
   bool                  mGameRunning;
+  bool                  mSpectating;
   HearthstoneLogTracker mLogTracker;
   QTime                 mDurationTimer;
 
@@ -40,7 +41,7 @@ private:
 
 private slots:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating );
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
 
   void HandleOutcome( Outcome outcome );
   void HandleOwnClass( Class ownClass );
@@ -49,6 +50,7 @@ private slots:
   void HandleGameMode( GameMode mode );
   void HandleTurn( int turn, bool ownTurn );
   void HandleLegend( int legend );
+  void HandleSpectating( bool nowSpectating );
 
   void Tick();
 

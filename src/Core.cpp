@@ -3,7 +3,10 @@
 #include <map>
 
 Core::Core()
-  : mGameRunning( false ), mGameClientRestartRequired( false )
+  :
+    mGameRunning( false ),
+    mSpectating( false ),
+    mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );
   connect( mTimer, SIGNAL( timeout() ), this, SLOT( Tick() ) );
@@ -19,10 +22,10 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleTurn(int, bool) ), this, SLOT( HandleTurn(int, bool) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
-  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
+  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+  connect( &mLogTracker, SIGNAL( HandleSpectating(bool) ), this, SLOT( HandleSpectating(bool) ) );
 
   ResetResult();
-
 }
 
 Core::~Core() {
@@ -31,6 +34,7 @@ Core::~Core() {
 void Core::ResetResult() {
   mResult.Reset();
   mRanks.clear();
+  mSpectating = false;
 }
 
 void Core::Tick() {
@@ -77,8 +81,8 @@ void Core::HandleMatchStart() {
   mDurationTimer.start();
 }
 
-void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating ) {
-  if( wasSpectating ) {
+void Core::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
+  if( mSpectating ) {
     LOG( "Ignore spectated match" );
     ResetResult();
     return;
@@ -104,6 +108,11 @@ void Core::HandleTurn( int turn, bool ownTurn ) {
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
   DBG( "Turn %d (my turn %d). Set Rank %d", turn, ownTurn, rank );
+}
+
+void Core::HandleSpectating( bool nowSpectating ) {
+  DBG( "HandleSpectacting %d", nowSpectating );
+  mSpectating = nowSpectating;
 }
 
 // Screen capture can be tricky

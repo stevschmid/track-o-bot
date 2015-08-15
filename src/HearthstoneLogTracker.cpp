@@ -39,7 +39,6 @@ void HearthstoneLogTracker::Reset() {
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
   mLegendTracked = false;
-  mSpectating = false;
   mIsMyOwnTurnOdd = false;
 }
 
@@ -91,7 +90,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     } else if( outcome == "defeat" ) {
       emit HandleOutcome( OUTCOME_DEFEAT );
     }
-    emit HandleMatchEnd( mCardHistoryList, mSpectating );
+    emit HandleMatchEnd( mCardHistoryList );
     Reset();
   }
 
@@ -242,14 +241,14 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   static QRegExp regexBeginSpectating( "\\[Power\\].*Start Spectator Game" );
   if( regexBeginSpectating.indexIn(line) != -1 ) {
     DBG( "Begin spectator game" );
-    mSpectating = true;
+    emit HandleSpectating( true );
   }
 
   // disable spectating flag if we leave the spectator MODE
   static QRegExp regexEndSpectating( "\\[Power\\].*End Spectator Mode" );
   if( regexEndSpectating.indexIn(line) != -1 ) {
     DBG( "End spectator mode" );
-    mSpectating = false;
+    emit HandleSpectating( false );
   }
 }
 
