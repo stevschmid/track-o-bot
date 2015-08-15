@@ -16,7 +16,7 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
   connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
-  connect( &mLogTracker, SIGNAL( HandleTurn(int) ), this, SLOT( HandleTurn(int) ) );
+  connect( &mLogTracker, SIGNAL( HandleTurn(int, bool) ), this, SLOT( HandleTurn(int, bool) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
@@ -100,10 +100,10 @@ void Core::HandleLegend( int legend ) {
   mResult.legend = legend;
 }
 
-void Core::HandleTurn( int turn ) {
+void Core::HandleTurn( int turn, bool ownTurn ) {
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
-  DBG( "Turn %d. Set Rank %d", turn, rank );
+  DBG( "Turn %d (my turn %d). Set Rank %d", turn, ownTurn, rank );
 }
 
 // Screen capture can be tricky

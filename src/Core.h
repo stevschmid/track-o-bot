@@ -47,7 +47,7 @@ private slots:
   void HandleOpponentClass( Class opponentClass );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
-  void HandleTurn( int turn );
+  void HandleTurn( int turn, bool ownTurn );
   void HandleLegend( int legend );
 
   void Tick();
