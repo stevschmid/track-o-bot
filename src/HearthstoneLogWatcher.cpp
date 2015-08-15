@@ -38,7 +38,7 @@ void HearthstoneLogWatcher::CheckForLogChanges() {
 
   qint64 size = file.size();
   if( size < mLastSeekPos ) {
-    LOG( "Last seek pos is smaller than current size. Truncation!" );
+    LOG( "Log truncation detected. This is OK if game was restarted." );
     mLastSeekPos = size;
   } else {
     // Use raw QFile instead of QTextStream
