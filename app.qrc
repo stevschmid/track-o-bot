@@ -1,10 +1,10 @@
 <RCC>
-    <qresource prefix="/">
-        <file>icons/mac_white.png</file>
-        <file>icons/mac_black.png</file>
-        <file>icons/mac_white@2x.png</file>
-        <file>icons/mac_black@2x.png</file>
-        <file>icons/win.ico</file>
-        <file>icons/logo.png</file>
-    </qresource>
+  <qresource prefix="/">
+    <file>icons/mac_white.png</file>
+    <file>icons/mac_black.png</file>
+    <file>icons/mac_white@2x.png</file>
+    <file>icons/mac_black@2x.png</file>
+    <file>icons/win.ico</file>
+    <file>icons/logo.png</file>
+  </qresource>
 </RCC>
