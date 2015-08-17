@@ -67,6 +67,8 @@ inline float roundf( float x ) {
 
 QPixmap Hearthstone::Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch )
 {
+  UNUSED( canvasWidth );
+
   int x, y, w, h;
 
   int windowHeight = mCapture->Height();

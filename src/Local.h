@@ -46,3 +46,4 @@ private: \
 #define DBG(str, ...)
 #endif
 
+#define UNUSED(x) (void)(x)
