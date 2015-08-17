@@ -15,7 +15,6 @@ private:
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
-  bool mIsMyOwnTurnOdd;
 
   CardHistoryList mCardHistoryList;
 
@@ -41,7 +40,7 @@ signals:
   void HandleOpponentClass( Class opponentClass );
   void HandleOwnClass( Class ownClass );
   void HandleLegend( int legend );
-  void HandleTurn( int turn, bool ownTurn );
+  void HandleTurn( int turnCounter );
 
   void HandleSpectating( bool nowSpectating );
 

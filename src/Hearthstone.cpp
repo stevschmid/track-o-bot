@@ -65,6 +65,11 @@ inline float roundf( float x ) {
 }
 #endif
 
+bool Hearthstone::CaptureWholeScreen( QPixmap *screen ) {
+  *screen = mCapture->Capture( 0, 0, Width(), Height() );
+  return true;
+}
+
 QPixmap Hearthstone::Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch )
 {
   int x, y, w, h;
@@ -77,8 +82,6 @@ QPixmap Hearthstone::Capture( int canvasWidth, int canvasHeight, int cx, int cy,
 
   w = roundf( cw * scale );
   h = roundf( ch * scale );
-
-  DBG("x %d y %d w %d h %d | ch %d wh %d", x, y, w, h, canvasHeight, windowHeight);
 
   return mCapture->Capture( x, y, w, h );
 }

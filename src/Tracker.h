@@ -47,7 +47,7 @@ public:
 signals:
   void AccountCreated();
   void UploadResultFailed( const QJsonObject& result, int errorCode );
-  void UploadResultSucceeded( const QJsonObject& result );
+  void UploadResultSucceeded( const QJsonObject& response );
 
 };
 

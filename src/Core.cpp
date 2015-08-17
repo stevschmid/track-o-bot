@@ -6,6 +6,7 @@ Core::Core()
   :
     mGameRunning( false ),
     mSpectating( false ),
+    mBattleBoard( &mLogTracker ),
     mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );
@@ -19,7 +20,7 @@ Core::Core()
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
   connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
-  connect( &mLogTracker, SIGNAL( HandleTurn(int, bool) ), this, SLOT( HandleTurn(int, bool) ) );
+  connect( &mLogTracker, SIGNAL( HandleTurn(int) ), this, SLOT( HandleTurn(int) ) );
 
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
@@ -104,10 +105,10 @@ void Core::HandleLegend( int legend ) {
   mResult.legend = legend;
 }
 
-void Core::HandleTurn( int turn, bool ownTurn ) {
+void Core::HandleTurn( int turnCounter ) {
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
-  DBG( "Turn %d (my turn %d). Set Rank %d", turn, ownTurn, rank );
+  DBG( "TurnCounter %d (my turn %d). Set Rank %d", turnCounter, rank );
 }
 
 void Core::HandleSpectating( bool nowSpectating ) {

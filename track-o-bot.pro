@@ -20,7 +20,8 @@ HEADERS = src/Local.h \
           src/HearthstoneLogTracker.h \
           src/MLP.h \
           src/RankClassifier.h \
-          src/ResultQueue.h
+          src/ResultQueue.h \
+          src/BattleBoard.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -33,7 +34,8 @@ SOURCES = src/Main.cpp \
           src/HearthstoneLogTracker.cpp \
           src/MLP.cpp \
           src/RankClassifier.cpp \
-          src/ResultQueue.cpp
+          src/ResultQueue.cpp \
+          src/BattleBoard.cpp
 
 FORMS   = src/MainWindow.ui \
           src/SettingsWidget.ui \

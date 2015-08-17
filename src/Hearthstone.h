@@ -22,6 +22,7 @@ public:
 
   bool Running() const;
   QPixmap Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch  );
+  bool CaptureWholeScreen( QPixmap *screen );
 
   void EnableLogging();
   void DisableLogging();

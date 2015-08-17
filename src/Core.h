@@ -5,6 +5,7 @@
 #include "HearthstoneLogTracker.h"
 #include "Result.h"
 #include "ResultQueue.h"
+#include "BattleBoard.h"
 
 #include "RankClassifier.h"
 
@@ -24,12 +25,13 @@ private:
   HearthstoneLogTracker mLogTracker;
   QTime                 mDurationTimer;
 
+
   Result                mResult;
   std::vector<int>      mRanks;
 
   RankClassifier        mRankClassifier;
-
   ResultQueue           mResultsQueue;
+  BattleBoard           mBattleBoard;
 
   void ResetResult();
   void UploadResult();
@@ -48,7 +50,7 @@ private slots:
   void HandleOpponentClass( Class opponentClass );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
-  void HandleTurn( int turn, bool ownTurn );
+  void HandleTurn( int turnCounter );
   void HandleLegend( int legend );
   void HandleSpectating( bool nowSpectating );
 

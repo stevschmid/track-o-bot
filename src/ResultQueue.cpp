@@ -92,7 +92,7 @@ void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode )
   mUploadTimer->stop();
 }
 
-void ResultQueue::UploadResultSucceeded( const QJsonObject& result ) {
+void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
   LOG( "Upload successful" );
 
   // If we have items in the queue, it's time to slowly roll them out

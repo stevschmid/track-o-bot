@@ -39,7 +39,6 @@ void HearthstoneLogTracker::Reset() {
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
   mLegendTracked = false;
-  mIsMyOwnTurnOdd = false;
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -102,11 +101,9 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
     if( to.contains( "FRIENDLY HAND" ) ) {
       // I go second because I get the coin
-      mIsMyOwnTurnOdd = false;
       emit HandleOrder( ORDER_SECOND );
     } else if( to.contains( "OPPOSING HAND" ) ) {
       // Opponent got coin, so I go first
-      mIsMyOwnTurnOdd = true;
       emit HandleOrder( ORDER_FIRST );
     }
   }
@@ -115,8 +112,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   static QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
   if( regexTurn.indexIn(line) != -1 ) {
     mTurnCounter++;
-    bool myTurn = mTurnCounter % 2 ? mIsMyOwnTurnOdd : !mIsMyOwnTurnOdd;
-    emit HandleTurn( CurrentTurn(), myTurn );
+
+    emit HandleTurn( mTurnCounter );
 
     // reset hero power usage on turn change
     mHeroPowerUsed = false;

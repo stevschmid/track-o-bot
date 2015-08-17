@@ -24,6 +24,21 @@ Tracker::Tracker() {
 Tracker::~Tracker() {
 }
 
+bool JsonFromReply( QNetworkReply *reply, QJsonObject *object ) {
+  QByteArray jsonData = reply->readAll();
+  QJsonParseError error;
+  *object = QJsonDocument::fromJson( jsonData, &error ).object();
+
+  if( error.error != QJsonParseError::NoError ) {
+    ERR( "Couldn't parse response %s", error.errorString().toStdString().c_str() );
+    return false;
+  }
+
+  LOG( "Received %s", QString(jsonData).toStdString().c_str() );
+
+  return true;
+}
+
 void Tracker::EnsureAccountIsSetUp() {
   if( !IsAccountSetUp() ) {
     LOG( "No account setup. Creating one for you." );
@@ -51,7 +66,10 @@ void Tracker::UploadResult( const QJsonObject& result )
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
   connect( reply, &QNetworkReply::finished, [&, reply, result]() {
     if( reply->error() == QNetworkReply::NoError ) {
-      emit UploadResultSucceeded( result );
+      QJsonObject response;
+      if( JsonFromReply( reply, &response) ) {
+        emit UploadResultSucceeded( response );
+      }
     } else {
       int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
       emit UploadResultFailed( result, statusCode );
@@ -86,14 +104,8 @@ void Tracker::CreateAndStoreAccountHandleReply() {
   if( reply->error() == QNetworkReply::NoError ) {
     LOG( "Account creation was successful!" );
 
-    QByteArray jsonData = reply->readAll();
-
-    QJsonParseError error;
-    QJsonObject user = QJsonDocument::fromJson( jsonData, &error ).object();
-
-    if( error.error != QJsonParseError::NoError ) {
-      ERR( "Couldn't parse response %s", error.errorString().toStdString().c_str() );
-    } else {
+    QJsonObject user;
+    if( JsonFromReply( reply, &user ) ) {
       LOG( "Welcome %s", user[ "username" ].toString().toStdString().c_str() );
 
       SetUsername( user["username"].toString() );
@@ -115,14 +127,8 @@ void Tracker::OpenProfile() {
 void Tracker::OpenProfileHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
-    QByteArray jsonData = reply->readAll();
-
-    QJsonParseError error;
-    QJsonObject response = QJsonDocument::fromJson( jsonData, &error ).object();
-
-    if( error.error != QJsonParseError::NoError ) {
-      ERR( "Couldn't parse response %s", error.errorString().toStdString().c_str() );
-    } else {
+    QJsonObject response;
+    if( JsonFromReply( reply, &response ) ) {
       QString url = response[ "url" ].toString();
       QDesktopServices::openUrl( QUrl( url ) );
     }
