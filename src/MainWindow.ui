@@ -80,7 +80,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/gear.ico</normaloff>:/icons/gear.ico</iconset>
+     <normaloff>:/icons/switch.png</normaloff>:/icons/switch.png</iconset>
    </property>
    <property name="text">
     <string>Settings</string>
@@ -95,7 +95,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/document.ico</normaloff>:/icons/document.ico</iconset>
+     <normaloff>:/icons/log.png</normaloff>:/icons/log.png</iconset>
    </property>
    <property name="text">
     <string>Log</string>
@@ -107,7 +107,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/info.ico</normaloff>:/icons/info.ico</iconset>
+     <normaloff>:/icons/info.png</normaloff>:/icons/info.png</iconset>
    </property>
    <property name="text">
     <string>About</string>

@@ -1,9 +1,16 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/gear.png</file>
+    <file>icons/gear@2x.png</file>
+    <file>icons/cloud.png</file>
+    <file>icons/cloud@2x.png</file>
+    <file>icons/log.png</file>
+    <file>icons/log@2x.png</file>
+    <file>icons/info.png</file>
+    <file>icons/info@2x.png</file>
+    <file>icons/switch.png</file>
+    <file>icons/switch@2x.png</file>
     <file>icons/mac_white.png</file>
-    <file>icons/document.ico</file>
-    <file>icons/gear.ico</file>
-    <file>icons/info.ico</file>
     <file>icons/mac_black.png</file>
     <file>icons/mac_white@2x.png</file>
     <file>icons/mac_black@2x.png</file>

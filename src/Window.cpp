@@ -242,6 +242,8 @@ void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
     Tracker::Instance()->OpenProfile();
   }
+#else
+  UNUSED( reason );
 #endif
 }
 

@@ -93,6 +93,8 @@ void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode )
 }
 
 void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
+  UNUSED( response );
+
   LOG( "Upload successful" );
 
   // If we have items in the queue, it's time to slowly roll them out
