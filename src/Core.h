@@ -31,7 +31,7 @@ private:
 
   RankClassifier        mRankClassifier;
   ResultQueue           mResultsQueue;
-  BattleBoard           mBattleBoard;
+  Battleboard           mBattleboard;
 
   void ResetResult();
   void UploadResult();

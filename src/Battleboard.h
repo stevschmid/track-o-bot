@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QPixmap>
 
-class BattleBoard : public QObject
+class Battleboard : public QObject
 {
   Q_OBJECT
 
@@ -25,6 +25,6 @@ private slots:
   void UploadResultSucceeded( const QJsonObject& response );
 
 public:
-  BattleBoard( HearthstoneLogTracker *logTracker );
+  Battleboard( HearthstoneLogTracker *logTracker );
 
 };

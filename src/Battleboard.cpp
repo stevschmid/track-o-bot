@@ -1,9 +1,9 @@
-#include "BattleBoard.h"
+#include "Battleboard.h"
 #include "Hearthstone.h"
 
 #include <QDir>
 
-BattleBoard::BattleBoard( HearthstoneLogTracker *logTracker )
+Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
   : mSpectating( false )
 {
   connect( logTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
@@ -15,29 +15,34 @@ BattleBoard::BattleBoard( HearthstoneLogTracker *logTracker )
   connect( Tracker::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 }
 
-void BattleBoard::HandleMatchStart() {
+void Battleboard::HandleMatchStart() {
   mScreenshots.clear();
 }
 
-
-void BattleBoard::HandleTurn( int turnCounter ) {
+void Battleboard::HandleTurn( int turnCounter ) {
   if( !mSpectating ) {
-    QPixmap screen;
+    QTimer::singleShot( 2000, this, [turnCounter]() {
+      QPixmap screen;
 
-    if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
-      QString name = QString("%1").arg( turnCounter );
-      mScreenshots[ name ] = screen;
+      if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
+        QString name = QString("%1").arg( turnCounter );
+        mScreenshots[ name ] = screen;
 
-      DBG( "BattleBoard Screen %s", name.toStdString().c_str() );
-    }
+        DBG( "Battleboard Screen %s", name.toStdString().c_str() );
+      }
+    });
   }
 }
 
-void BattleBoard::HandleSpectating( bool nowSpectating ) {
+void Battleboard::Capture() {
+
+}
+
+void Battleboard::HandleSpectating( bool nowSpectating ) {
   mSpectating = nowSpectating;
 }
 
-void BattleBoard::UploadResultSucceeded( const QJsonObject& response ) {
+void Battleboard::UploadResultSucceeded( const QJsonObject& response ) {
   int id = response[ "result" ].toObject()[ "id" ].toInt();
   if( !id ) {
     ERR( "Invalid ID received. Cannot save battleboards" );
@@ -58,7 +63,7 @@ void BattleBoard::UploadResultSucceeded( const QJsonObject& response ) {
     const QPixmap& screenshot = it.value();
 
     QString path = QDir( directoryPath ).filePath( QString("%1.png").arg( name ) );
-    DBG( "Save BattleBoard Screen %s", path.toStdString().c_str() );
+    DBG( "Save Battleboard Screen %s", path.toStdString().c_str() );
     screenshot.save( path );
   }
 
