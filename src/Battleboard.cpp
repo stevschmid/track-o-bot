@@ -2,9 +2,10 @@
 #include "Hearthstone.h"
 
 #include <QDir>
+#include <QTimer>
 
 Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
-  : mSpectating( false )
+  : mSpectating( false ), mDropboxPath( RetrieveDropboxPath() )
 {
   connect( logTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( logTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
@@ -16,26 +17,22 @@ Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
 }
 
 void Battleboard::HandleMatchStart() {
-  mScreenshots.clear();
+  ClearScreenshots();
 }
 
 void Battleboard::HandleTurn( int turnCounter ) {
   if( !mSpectating ) {
-    QTimer::singleShot( 2000, this, [turnCounter]() {
+    QTimer::singleShot( 3500, this, [=]() {
       QPixmap screen;
 
       if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
-        QString name = QString("%1").arg( turnCounter );
-        mScreenshots[ name ] = screen;
+        QString name = QString("%1.jpg").arg( turnCounter );
+        SaveScreenshot( name, screen );
 
         DBG( "Battleboard Screen %s", name.toStdString().c_str() );
       }
     });
   }
-}
-
-void Battleboard::Capture() {
-
 }
 
 void Battleboard::HandleSpectating( bool nowSpectating ) {
@@ -49,22 +46,85 @@ void Battleboard::UploadResultSucceeded( const QJsonObject& response ) {
     return;
   }
 
-  QString directoryPath = QString("/Users/spidy/Dropbox/Apps/Track-o-Bot/%1").arg( id );
-  if( !QDir( directoryPath ).exists() && !QDir().mkdir( directoryPath ) ) {
-    ERR( "Couldn't create path %s", directoryPath.toStdString().c_str() );
+  QString path = QString( "%1" ).arg( id );
+  MoveScreenshots( path );
+}
+
+void Battleboard::SaveScreenshot( const QString& name, const QPixmap& screenshot ) {
+  QString path = AppDirectory( "Temp" );
+  if( path.isEmpty() )
     return;
+
+  if( !EnsureDirectory( path ) )
+    return;
+
+  QString filePath = path + "/" + name;
+  DBG( "Save screenshot to %s", filePath.toStdString().c_str() );
+  screenshot.save( filePath );
+}
+
+void Battleboard::ClearScreenshots() {
+  QString path = AppDirectory( "Temp" );
+  if( path.isEmpty() )
+    return;
+
+  QDir dir( path );
+  if( !dir.exists() )
+    return;
+
+  dir.setFilter( QDir::NoDotAndDotDot | QDir::Files );
+  for( QString dirFile : dir.entryList() ) {
+    dir.remove( dirFile );
+  }
+}
+
+bool Battleboard::MoveScreenshots( const QString& destination ) {
+  QString src = AppDirectory( "Temp" );
+  if( src.isEmpty() ) {
+    return false;
   }
 
-  QMapIterator <QString, QPixmap> it( mScreenshots );
-  while( it.hasNext() ) {
-    it.next();
+  QString dst = AppDirectory( destination );
+  return QDir().rename( src, dst );
+}
 
-    const QString& name = it.key();
-    const QPixmap& screenshot = it.value();
+QString Battleboard::AppDirectory( const QString& subFolder ) const {
+  return mDropboxPath + "/Apps/Track-o-Bot/" + subFolder;
+}
 
-    QString path = QDir( directoryPath ).filePath( QString("%1.png").arg( name ) );
-    DBG( "Save Battleboard Screen %s", path.toStdString().c_str() );
-    screenshot.save( path );
+bool Battleboard::EnsureDirectory( const QString& path ) {
+  if( !QDir( path ).exists() && !QDir().mkpath( path ) ) {
+    ERR( "Couldn't create path %s", path.toStdString().c_str() );
+    return false;
+  }
+  return true;
+}
+
+QString Battleboard::RetrieveDropboxPath() {
+#ifdef Q_OS_MAC
+  QString path = QDir::homePath() + "/.dropbox/host.db";
+#else
+  QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).first() + "/Dropbox/host.db";
+#endif
+
+  QFile file( path );
+  if( !file.open( QFile::ReadOnly | QFile::Text ) )
+    return QString();
+
+  QString hostDbContents;
+
+  QTextStream in( &file );
+  while( !in.atEnd() ) {
+    QString line = in.readLine();
+    if( !line.isEmpty() ) {
+      hostDbContents = line;
+    }
   }
 
+  if( hostDbContents.isEmpty() )
+    return QString();
+
+  QByteArray bytes;
+  bytes.append( hostDbContents );
+  return QByteArray::fromBase64( bytes );
 }

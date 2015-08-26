@@ -13,8 +13,16 @@ class Battleboard : public QObject
 
 private:
   bool mSpectating;
+  QString mDropboxPath;
 
-  QMap< QString, QPixmap > mScreenshots;
+  void ClearScreenshots();
+  bool MoveScreenshots( const QString& destination );
+
+  bool EnsureDirectory( const QString& path );
+  QString AppDirectory( const QString& subFolder ) const;
+  void SaveScreenshot( const QString& name, const QPixmap& screenshot );
+
+  static QString RetrieveDropboxPath();
 
 private slots:
   void HandleMatchStart();
@@ -26,5 +34,4 @@ private slots:
 
 public:
   Battleboard( HearthstoneLogTracker *logTracker );
-
 };
