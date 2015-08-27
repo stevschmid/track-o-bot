@@ -34,8 +34,7 @@ bool JsonFromReply( QNetworkReply *reply, QJsonObject *object ) {
     return false;
   }
 
-  LOG( "Received %s", QString(jsonData).toStdString().c_str() );
-
+  DBG( "Received %s", QString(jsonData).toStdString().c_str() );
   return true;
 }
 
