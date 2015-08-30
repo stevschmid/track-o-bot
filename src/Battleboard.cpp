@@ -4,8 +4,18 @@
 #include <QDir>
 #include <QTimer>
 
+#define BATTLEBOARD_WIDTH   1280
+#define BATTLEBOARD_HEIGHT  720
+#define BATTLEBOARD_BITRATE 500
+#define BATTLEBOARD_FPS     1
+
 Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
-  : mSpectating( false ), mDropboxPath( RetrieveDropboxPath() )
+  : mSpectating( false ),
+    mDropboxPath( RetrieveDropboxPath() ),
+    mWriter(
+      BATTLEBOARD_WIDTH, BATTLEBOARD_HEIGHT,
+      BATTLEBOARD_BITRATE, BATTLEBOARD_FPS
+    )
 {
   connect( logTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( logTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
@@ -16,20 +26,34 @@ Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
   connect( Tracker::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 }
 
+Battleboard::~Battleboard() {
+  if( mWriter.IsOpen() ) {
+    mWriter.Close();
+  }
+}
+
 void Battleboard::HandleMatchStart() {
-  ClearScreenshots();
+  if( mWriter.IsOpen() ) {
+    mWriter.Close();
+  }
+
+  QString path = AppFile( "Temp.webm" );
+  if( !mWriter.Open( path ) ) {
+    ERR( "Couldn't open battleboard writer %s\n", qt2cstr( path ) );
+  }
 }
 
 void Battleboard::HandleTurn( int turnCounter ) {
+  UNUSED_ARG( turnCounter );
+
   if( !mSpectating ) {
     QTimer::singleShot( 3500, this, [=]() {
       QPixmap screen;
 
       if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
-        QString name = QString("%1.jpg").arg( turnCounter );
-        SaveScreenshot( name, screen );
-
-        DBG( "Battleboard Screen %s", name.toStdString().c_str() );
+        mWriter.AddFrame( screen.toImage() );
+      } else {
+        ERR( "Couldn't capture battleboard" );
       }
     });
   }
@@ -46,58 +70,22 @@ void Battleboard::UploadResultSucceeded( const QJsonObject& response ) {
     return;
   }
 
-  QString path = QString( "%1" ).arg( id );
-  MoveScreenshots( path );
-}
+  mWriter.Close();
 
-void Battleboard::SaveScreenshot( const QString& name, const QPixmap& screenshot ) {
-  QString path = AppDirectory( "Temp" );
-  if( path.isEmpty() )
-    return;
-
-  if( !EnsureDirectory( path ) )
-    return;
-
-  QString filePath = path + "/" + name;
-  DBG( "Save screenshot to %s", filePath.toStdString().c_str() );
-  screenshot.save( filePath );
-}
-
-void Battleboard::ClearScreenshots() {
-  QString path = AppDirectory( "Temp" );
-  if( path.isEmpty() )
-    return;
-
-  QDir dir( path );
-  if( !dir.exists() )
-    return;
-
-  dir.setFilter( QDir::NoDotAndDotDot | QDir::Files );
-  for( QString dirFile : dir.entryList() ) {
-    dir.remove( dirFile );
+  QString src = AppFile( "Temp.webm" );
+  QString dst = AppFile( QString( "%1.webm" ).arg( id ) );
+  if( !QFile::rename( src, dst ) ) {
+    ERR( "Couldn't move battleboards" );
   }
 }
 
-bool Battleboard::MoveScreenshots( const QString& destination ) {
-  QString src = AppDirectory( "Temp" );
-  if( src.isEmpty() ) {
-    return false;
-  }
-
-  QString dst = AppDirectory( destination );
-  return QDir().rename( src, dst );
-}
-
-QString Battleboard::AppDirectory( const QString& subFolder ) const {
-  return mDropboxPath + "/Apps/Track-o-Bot/" + subFolder;
-}
-
-bool Battleboard::EnsureDirectory( const QString& path ) {
+QString Battleboard::AppFile( const QString& fileName ) const {
+  QString path = mDropboxPath + "/Apps/Track-o-Bot/";
   if( !QDir( path ).exists() && !QDir().mkpath( path ) ) {
-    ERR( "Couldn't create path %s", path.toStdString().c_str() );
-    return false;
+    ERR( "Couldn't create path %s", qt2cstr( path ) );
   }
-  return true;
+
+  return path + fileName;
 }
 
 QString Battleboard::RetrieveDropboxPath() {

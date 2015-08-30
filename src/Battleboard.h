@@ -2,6 +2,7 @@
 
 #include "HearthstoneLogTracker.h"
 #include "Tracker.h"
+#include "WebMWriter.h"
 
 #include <QObject>
 #include <QMap>
@@ -14,14 +15,9 @@ class Battleboard : public QObject
 private:
   bool mSpectating;
   QString mDropboxPath;
+  WebMWriter mWriter;
 
-  void ClearScreenshots();
-  bool MoveScreenshots( const QString& destination );
-
-  bool EnsureDirectory( const QString& path );
-  QString AppDirectory( const QString& subFolder ) const;
-  void SaveScreenshot( const QString& name, const QPixmap& screenshot );
-
+  QString AppFile( const QString& subFolder ) const;
   static QString RetrieveDropboxPath();
 
 private slots:
@@ -34,4 +30,5 @@ private slots:
 
 public:
   Battleboard( HearthstoneLogTracker *logTracker );
+  ~Battleboard();
 };

@@ -9,6 +9,7 @@
 #include <mkvmuxerutil.hpp>
 #include <mkvwriter.hpp>
 
+#include <QString>
 #include <QImage>
 
 #define VP8_FOURCC 0x30385056
@@ -35,7 +36,8 @@ public:
   WebMWriter( int width, int height, int bitrate, int fps );
   ~WebMWriter();
 
-  bool Open( const char *path );
+  bool IsOpen() const;
+  bool Open( const QString& path );
   void Close();
 
   void AddFrame( const QImage& img );

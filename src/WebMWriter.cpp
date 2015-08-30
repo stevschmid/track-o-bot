@@ -40,15 +40,19 @@ WebMWriter::~WebMWriter() {
   vpx_img_free( &mImg );
 }
 
-bool WebMWriter::Open( const char *path ) {
-  if( mWriter || mSegment )
+bool WebMWriter::IsOpen() const {
+  return mWriter && mSegment;
+}
+
+bool WebMWriter::Open( const QString& path ) {
+  if( IsOpen() )
     return false;
 
   mFrameCounter = 0;
 
   // libvpx/webm.cc
   mWriter = new mkvmuxer::MkvWriter();
-  if( !mWriter->Open( path ) ) {
+  if( !mWriter->Open( qt2cstr( path ) ) ) {
     delete mWriter;
     mWriter = NULL;
     return false;
@@ -78,11 +82,14 @@ bool WebMWriter::Open( const char *path ) {
 }
 
 void WebMWriter::Close() {
-  // libvpx/webm.cc
-  mSegment->Finalize();
-  mWriter->Close();
-  delete mSegment;
-  delete mWriter;
+  if( IsOpen() ) {
+    // libvpx/webm.cc
+    mSegment->Finalize();
+    mWriter->Close();
+    delete mSegment;
+    delete mWriter;
+  }
+
   mWriter = NULL;
   mSegment = NULL;
 }
@@ -103,11 +110,15 @@ void WebMWriter::WriteBlock( const vpx_codec_cx_pkt_t *pkt ) {
 }
 
 void WebMWriter::AddFrame( const QImage& raw ) {
-  assert( mWriter && mSegment );
+  if( !IsOpen() ) {
+    DBG( "[WebM] AddFrame called but writer not open" );
+    return;
+  }
 
   QImage img = Rescale( raw, mCfg.g_w, mCfg.g_h );
 
-  DBG( "[WebM] Adding frame nr: %d size: %d %d", mFrameCounter, img.width(), img.height() );
+  DBG( "[WebM] Adding frame nr: %d size: %d %d",
+      mFrameCounter, img.width(), img.height() );
   QImageToYV12( img, &mImg );
 
   mFrameCounter++;
@@ -120,7 +131,6 @@ void WebMWriter::AddFrame( const QImage& raw ) {
 
   vpx_codec_err_t err = vpx_codec_encode( &mCodec, &mImg,
       frameStart, duration, 0, VPX_DL_REALTIME );
-  DBG( "[WebM] encode %d", err );
   assert( !err );
 
   const vpx_codec_cx_pkt_t *pkt;
@@ -173,7 +183,8 @@ QImage WebMWriter::Rescale( const QImage& img, int width, int height ) {
   QImage dst( width, height, img.format() );
   dst.fill( Qt::black );
 
-  QImage src = img.scaled( width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+  QImage src = img.scaled( width, height,
+      Qt::KeepAspectRatio, Qt::SmoothTransformation );
   QPainter painter( &dst );
 
   int x = ( dst.width() - src.width() ) >> 1;
