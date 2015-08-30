@@ -93,7 +93,7 @@ void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode )
 }
 
 void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
-  UNUSED( response );
+  UNUSED_ARG( response );
 
   LOG( "Upload successful" );
 

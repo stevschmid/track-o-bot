@@ -72,7 +72,7 @@ bool Hearthstone::CaptureWholeScreen( QPixmap *screen ) {
 
 QPixmap Hearthstone::Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch )
 {
-  UNUSED( canvasWidth );
+  UNUSED_ARG( canvasWidth );
 
   int x, y, w, h;
 

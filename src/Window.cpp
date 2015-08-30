@@ -243,7 +243,7 @@ void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
     Tracker::Instance()->OpenProfile();
   }
 #else
-  UNUSED( reason );
+  UNUSED_ARG( reason );
 #endif
 }
 
