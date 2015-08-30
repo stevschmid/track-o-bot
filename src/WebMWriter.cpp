@@ -31,6 +31,10 @@ WebMWriter::WebMWriter( int width, int height, int bitrate, int fps )
 }
 
 WebMWriter::~WebMWriter() {
+  if( IsOpen() ) {
+    Close();
+  }
+
   if( mWriter )
     delete mWriter;
   if( mSegment )
@@ -83,6 +87,7 @@ bool WebMWriter::Open( const QString& path ) {
 
 void WebMWriter::Close() {
   if( IsOpen() ) {
+    DBG( "Close WebM" );
     // libvpx/webm.cc
     mSegment->Finalize();
     mWriter->Close();
@@ -147,9 +152,9 @@ void WebMWriter::AddFrame( const QImage& raw ) {
 }
 
 #define CONVERT(ptr, rx, gx, bx, offset) ( ( \
-      ( rx * qRed(*ptr) +  \
-        gx * qGreen(*ptr) + \
-        bx * qBlue(*ptr) \
+      ( rx * ( ( *ptr >> 16 ) & 0xFF )  +  \
+        gx * ( ( *ptr >> 8 ) & 0xFF ) + \
+        bx * ( *ptr & 0xFF ) \
       ) >> 8 ) + offset )
 
 void WebMWriter::QImageToYV12( const QImage& src, vpx_image_t *dst )
