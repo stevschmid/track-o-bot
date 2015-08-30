@@ -30,11 +30,11 @@ bool JsonFromReply( QNetworkReply *reply, QJsonObject *object ) {
   *object = QJsonDocument::fromJson( jsonData, &error ).object();
 
   if( error.error != QJsonParseError::NoError ) {
-    ERR( "Couldn't parse response %s", error.errorString().toStdString().c_str() );
+    ERR( "Couldn't parse response %s", qt2cstr( error.errorString() ) );
     return false;
   }
 
-  DBG( "Received %s", QString(jsonData).toStdString().c_str() );
+  DBG( "Received %s", qt2cstr( QString( jsonData ) ) );
   return true;
 }
 
@@ -43,7 +43,7 @@ void Tracker::EnsureAccountIsSetUp() {
     LOG( "No account setup. Creating one for you." );
     CreateAndStoreAccount();
   } else {
-    LOG( "Account %s found", Username().toStdString().c_str() );
+    LOG( "Account %s found", qt2cstr( Username() ) );
   }
 }
 
@@ -105,7 +105,7 @@ void Tracker::CreateAndStoreAccountHandleReply() {
 
     QJsonObject user;
     if( JsonFromReply( reply, &user ) ) {
-      LOG( "Welcome %s", user[ "username" ].toString().toStdString().c_str() );
+      LOG( "Welcome %s", qt2cstr( user[ "username" ].toString() ) );
 
       SetUsername( user["username"].toString() );
       SetPassword( user["password"].toString() );

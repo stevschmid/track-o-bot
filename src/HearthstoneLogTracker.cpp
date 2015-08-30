@@ -75,7 +75,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard, id );
+    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, id );
   }
 
   // Outcome

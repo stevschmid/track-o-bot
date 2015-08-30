@@ -39,7 +39,8 @@ SOURCES = src/Main.cpp \
           src/RankClassifier.cpp \
           src/ResultQueue.cpp \
           src/Battleboard.cpp \
-          src/WebMWriter.cpp
+          src/WebMWriter.cpp \
+          src/Local.cpp
 
 FORMS   = src/MainWindow.ui \
           src/SettingsWidget.ui \

@@ -66,7 +66,7 @@ int main( int argc, char **argv )
   Logger::Instance()->SetLogPath( logFilePath );
 
   // Start
-  LOG( "--> Launched v%s on %s", VERSION, QDate::currentDate().toString( Qt::ISODate ).toStdString().c_str() );
+  LOG( "--> Launched v%s on %s", VERSION, qt2cstr( QDate::currentDate().toString( Qt::ISODate ) ) );
 
 #if defined Q_OS_MAC
   CocoaInitializer cocoaInitializer;

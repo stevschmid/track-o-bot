@@ -43,7 +43,7 @@ QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
 
   QFile file( path );
   if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-    ERR( "Couldn't open %s (%d)", path.toStdString().c_str(), file.error() );
+    ERR( "Couldn't open %s (%d)", qt2cstr( path ), file.error() );
     return "";
   }
 
@@ -114,7 +114,7 @@ void Hearthstone::EnableLogging() {
   }
 
   if( !file.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text ) ) {
-    ERR( "Couldn't create file %s", path.toStdString().c_str() );
+    ERR( "Couldn't create file %s", qt2cstr( path ) );
   } else {
     QTextStream out( &file );
     for( int i = 0; i < NUM_INFO_MODULES; i++ ) {

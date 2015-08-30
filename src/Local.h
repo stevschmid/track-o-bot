@@ -47,3 +47,5 @@ private: \
 #endif
 
 #define UNUSED_ARG(x) (void)(x)
+
+const char *qt2cstr( const QString& str );
