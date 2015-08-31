@@ -131,6 +131,8 @@ private slots:
 
   void ActionTriggered( QAction *action );
 
+  void TabChanged( int index );
+
 public:
   explicit Window();
   ~Window();

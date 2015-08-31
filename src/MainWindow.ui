@@ -2,18 +2,10 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>400</width>
-    <height>300</height>
-   </rect>
-  </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>300</height>
+    <height>150</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,34 +17,28 @@
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="widget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="QStackedWidget" name="pageWidget">
-      <property name="currentIndex">
-       <number>1</number>
-      </property>
-      <widget class="SettingsTab" name="settingsPage"/>
-      <widget class="ReplaysTab" name="replaysPage"/>
-      <widget class="LogTab" name="logPage"/>
-      <widget class="AboutTab" name="aboutPage"/>
-     </widget>
-    </item>
-   </layout>
+  <widget class="QStackedWidget" name="pageWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="SettingsTab" name="settingsPage"/>
+   <widget class="ReplaysTab" name="replaysPage"/>
+   <widget class="LogTab" name="logPage"/>
+   <widget class="AboutTab" name="aboutPage"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="minimumSize">
+    <size>
+     <width>400</width>
+     <height>0</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>

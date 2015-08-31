@@ -217,6 +217,7 @@ Window::Window()
   mUI->actionSettings->setChecked( true );
 
   connect( group, SIGNAL( triggered(QAction*) ), this, SLOT( ActionTriggered(QAction*) ) );
+  connect( mUI->pageWidget, SIGNAL( currentChanged(int) ), this, SLOT( TabChanged( int ) ) );
 
   QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
 }
@@ -228,6 +229,12 @@ Window::~Window() {
 void Window::ActionTriggered( QAction *action ) {
   int page = action->property( "pageIndex" ).toInt();
   mUI->pageWidget->setCurrentIndex( page );
+}
+
+void Window::TabChanged( int index ) {
+  QWidget *widget = mUI->pageWidget->widget( index );
+  mUI->pageWidget->setFixedHeight( widget->minimumHeight() );
+  adjustSize();
 }
 
 void Window::ShowNotification( const char *title, const char *message ) {
