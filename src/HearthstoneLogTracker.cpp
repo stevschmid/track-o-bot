@@ -47,7 +47,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // CardPlayed / CardReturned / PlayerDied
-  static QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) -> (.*)" );
+  static QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) ->\\s?(.*)" );
   if( regex.indexIn(line) != -1 ) {
     QStringList captures = regex.capturedTexts();
     int id = captures[1].toInt();
