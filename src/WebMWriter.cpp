@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <cassert>
 
+#define VP8_FOURCC 0x30385056
+
 WebMWriter::WebMWriter( int width, int height, int bitrate, int fps )
   : mWriter( NULL ),
     mSegment( NULL ),
@@ -19,7 +21,11 @@ WebMWriter::WebMWriter( int width, int height, int bitrate, int fps )
 
   mCfg.g_w = width;
   mCfg.g_h = height;
+
   mCfg.rc_target_bitrate = bitrate;
+  mCfg.rc_end_usage = VPX_CBR;
+  mCfg.g_pass = VPX_RC_ONE_PASS;
+
   mCfg.g_timebase.den = 1000;
 
   // mCodec
@@ -135,7 +141,7 @@ void WebMWriter::AddFrame( const QImage& raw ) {
   unsigned long duration = ( unsigned long )( nextFrameStart - frameStart );
 
   vpx_codec_err_t err = vpx_codec_encode( &mCodec, &mImg,
-      frameStart, duration, 0, VPX_DL_REALTIME );
+      frameStart, duration, 0, VPX_DL_GOOD_QUALITY );
   assert( !err );
 
   const vpx_codec_cx_pkt_t *pkt;

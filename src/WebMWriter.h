@@ -12,8 +12,6 @@
 #include <QString>
 #include <QImage>
 
-#define VP8_FOURCC 0x30385056
-
 class WebMWriter {
 private:
   mkvmuxer::MkvWriter *mWriter;
