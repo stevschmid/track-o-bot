@@ -1,20 +1,20 @@
-#include "Battleboard.h"
+#include "ReplayManager.h"
 #include "Hearthstone.h"
 
 #include <QDir>
 #include <QTimer>
 
-#define BATTLEBOARD_WIDTH   1280
-#define BATTLEBOARD_HEIGHT  800
-#define BATTLEBOARD_BITRATE 500
-#define BATTLEBOARD_FPS     1
+#define REPLAY_WIDTH   1280
+#define REPLAY_HEIGHT  800
+#define REPLAY_BITRATE 500
+#define REPLAY_FPS     1
 
-Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
+ReplayManager::ReplayManager( HearthstoneLogTracker *logTracker )
   : mSpectating( false ),
     mDropboxPath( RetrieveDropboxPath() ),
     mWriter(
-      BATTLEBOARD_WIDTH, BATTLEBOARD_HEIGHT,
-      BATTLEBOARD_BITRATE, BATTLEBOARD_FPS
+      REPLAY_WIDTH, REPLAY_HEIGHT,
+      REPLAY_BITRATE, REPLAY_FPS
     )
 {
   connect( logTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
@@ -26,13 +26,13 @@ Battleboard::Battleboard( HearthstoneLogTracker *logTracker )
   connect( Tracker::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 }
 
-Battleboard::~Battleboard() {
+ReplayManager::~ReplayManager() {
   if( mWriter.IsOpen() ) {
     mWriter.Close();
   }
 }
 
-void Battleboard::HandleMatchStart() {
+void ReplayManager::HandleMatchStart() {
   if( mWriter.IsOpen() ) {
     mWriter.Close();
   }
@@ -43,7 +43,7 @@ void Battleboard::HandleMatchStart() {
   }
 }
 
-void Battleboard::HandleTurn( int turnCounter ) {
+void ReplayManager::HandleTurn( int turnCounter ) {
   UNUSED_ARG( turnCounter );
 
   if( !mSpectating ) {
@@ -59,11 +59,11 @@ void Battleboard::HandleTurn( int turnCounter ) {
   }
 }
 
-void Battleboard::HandleSpectating( bool nowSpectating ) {
+void ReplayManager::HandleSpectating( bool nowSpectating ) {
   mSpectating = nowSpectating;
 }
 
-void Battleboard::UploadResultSucceeded( const QJsonObject& response ) {
+void ReplayManager::UploadResultSucceeded( const QJsonObject& response ) {
   int id = response[ "result" ].toObject()[ "id" ].toInt();
   if( !id ) {
     ERR( "Invalid ID received. Cannot save battleboards" );
@@ -79,7 +79,7 @@ void Battleboard::UploadResultSucceeded( const QJsonObject& response ) {
   }
 }
 
-QString Battleboard::AppFile( const QString& fileName ) const {
+QString ReplayManager::AppFile( const QString& fileName ) const {
   QString path = mDropboxPath + "/Apps/Track-o-Bot/";
   if( !QDir( path ).exists() && !QDir().mkpath( path ) ) {
     ERR( "Couldn't create path %s", qt2cstr( path ) );
@@ -88,7 +88,7 @@ QString Battleboard::AppFile( const QString& fileName ) const {
   return path + fileName;
 }
 
-QString Battleboard::RetrieveDropboxPath() {
+QString ReplayManager::RetrieveDropboxPath() {
 #ifdef Q_OS_MAC
   QString path = QDir::homePath() + "/.dropbox/host.db";
 #else

@@ -5,7 +5,7 @@
 #include "HearthstoneLogTracker.h"
 #include "Result.h"
 #include "ResultQueue.h"
-#include "BattleBoard.h"
+#include "ReplayManager.h"
 
 #include "RankClassifier.h"
 
@@ -31,7 +31,7 @@ private:
 
   RankClassifier        mRankClassifier;
   ResultQueue           mResultsQueue;
-  Battleboard           mBattleboard;
+  ReplayManager         mReplayManager;
 
   void ResetResult();
   void UploadResult();

@@ -23,7 +23,7 @@ HEADERS = src/Local.h \
           src/MLP.h \
           src/RankClassifier.h \
           src/ResultQueue.h \
-          src/Battleboard.h \
+          src/ReplayManager.h \
           src/WebMWriter.h
 
 SOURCES = src/Main.cpp \
@@ -38,7 +38,7 @@ SOURCES = src/Main.cpp \
           src/MLP.cpp \
           src/RankClassifier.cpp \
           src/ResultQueue.cpp \
-          src/Battleboard.cpp \
+          src/ReplayManager.cpp \
           src/WebMWriter.cpp \
           src/Local.cpp
 

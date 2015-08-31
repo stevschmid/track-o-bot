@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QPixmap>
 
-class Battleboard : public QObject
+class ReplayManager : public QObject
 {
   Q_OBJECT
 
@@ -29,6 +29,6 @@ private slots:
   void UploadResultSucceeded( const QJsonObject& response );
 
 public:
-  Battleboard( HearthstoneLogTracker *logTracker );
-  ~Battleboard();
+  ReplayManager( HearthstoneLogTracker *logTracker );
+  ~ReplayManager();
 };

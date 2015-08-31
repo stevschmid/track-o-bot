@@ -6,7 +6,7 @@ Core::Core()
   :
     mGameRunning( false ),
     mSpectating( false ),
-    mBattleboard( &mLogTracker ),
+    mReplayManager( &mLogTracker ),
     mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );
