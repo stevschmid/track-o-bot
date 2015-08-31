@@ -108,7 +108,7 @@ void Core::HandleLegend( int legend ) {
 void Core::HandleTurn( int turnCounter ) {
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
-  DBG( "TurnCounter %d (my turn %d). Set Rank %d", turnCounter, rank );
+  DBG( "TurnCounter %d. Set Rank %d", turnCounter, rank );
 }
 
 void Core::HandleSpectating( bool nowSpectating ) {
