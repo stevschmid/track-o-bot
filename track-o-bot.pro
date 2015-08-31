@@ -45,7 +45,8 @@ SOURCES = src/Main.cpp \
 FORMS   = src/MainWindow.ui \
           src/SettingsWidget.ui \
           src/LogWidget.ui \
-          src/AboutWidget.ui
+          src/AboutWidget.ui \
+          src/ReplaysWidget.ui
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

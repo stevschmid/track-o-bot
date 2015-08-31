@@ -31,4 +31,6 @@ private slots:
 public:
   ReplayManager( HearthstoneLogTracker *logTracker );
   ~ReplayManager();
+
+  bool IsEnabled() const;
 };

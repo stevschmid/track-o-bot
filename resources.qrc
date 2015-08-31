@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/circle@2x.png</file>
+    <file>icons/circle.png</file>
+    <file>icons/record@2x.png</file>
+    <file>icons/record.png</file>
     <file>icons/gear.png</file>
     <file>icons/gear@2x.png</file>
     <file>icons/cloud.png</file>

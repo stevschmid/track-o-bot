@@ -2,6 +2,7 @@
 #include "Window.h"
 
 #include "ui_Window.h"
+#include "ui_ReplaysWidget.h"
 #include "ui_SettingsWidget.h"
 #include "ui_LogWidget.h"
 #include "ui_AboutWidget.h"
@@ -14,6 +15,16 @@ extern Updater *gUpdater;
 #if defined Q_OS_MAC
 #include "OSXLocal.h"
 #endif
+
+ReplaysTab::ReplaysTab( QWidget *parent )
+  : QWidget( parent ), mUI( new Ui::ReplaysWidget )
+{
+  mUI->setupUi( this );
+}
+
+ReplaysTab::~ReplaysTab() {
+  delete mUI;
+}
 
 SettingsTab::SettingsTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::SettingsWidget )
@@ -193,11 +204,14 @@ Window::Window()
   mUI->actionSettings->setActionGroup( group );
   mUI->actionSettings->setProperty( "pageIndex", 0 );
 
+  mUI->actionReplays->setActionGroup( group );
+  mUI->actionReplays->setProperty( "pageIndex", 1 );
+
   mUI->actionLog->setActionGroup( group );
-  mUI->actionLog->setProperty( "pageIndex", 1 );
+  mUI->actionLog->setProperty( "pageIndex", 2 );
 
   mUI->actionAbout->setActionGroup( group );
-  mUI->actionAbout->setProperty( "pageIndex", 2 );
+  mUI->actionAbout->setProperty( "pageIndex", 3 );
 
   mUI->pageWidget->setCurrentIndex( 0 );
   mUI->actionSettings->setChecked( true );
