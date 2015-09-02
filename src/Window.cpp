@@ -10,6 +10,7 @@
 
 #include "Tracker.h"
 #include "Updater.h"
+#include "ReplayManager.h"
 extern Updater *gUpdater;
 
 #if defined Q_OS_MAC
@@ -20,10 +21,24 @@ ReplaysTab::ReplaysTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::ReplaysWidget )
 {
   mUI->setupUi( this );
+  connect( mUI->recordReplays, SIGNAL( clicked() ), this, SLOT( Save() ) );
 }
 
 ReplaysTab::~ReplaysTab() {
   delete mUI;
+}
+
+void ReplaysTab::showEvent( QShowEvent *event ) {
+  QWidget::showEvent( event );
+
+  mUI->recordReplays->setEnabled( ReplayManager::CanRecordReplays() );
+
+  bool recordReplays = QSettings().value( "recordReplays", true ).toBool();
+  mUI->recordReplays->setChecked( recordReplays );
+}
+
+void ReplaysTab::Save() {
+  QSettings().setValue( "recordReplays", mUI->recordReplays->isChecked() );
 }
 
 SettingsTab::SettingsTab( QWidget *parent )
@@ -32,7 +47,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   mUI->setupUi( this );
   connect( mUI->exportAccountButton, SIGNAL( clicked() ), this, SLOT( ExportAccount() ) );
   connect( mUI->importAccountButton, SIGNAL( clicked() ), this, SLOT( ImportAccount() ) );
-  connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked()), this, SLOT( CheckForUpdatesNow() ) );
+  connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked() ), this, SLOT( CheckForUpdatesNow() ) );
   connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
   connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
   connect( Tracker::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
@@ -41,6 +56,11 @@ SettingsTab::SettingsTab( QWidget *parent )
 
 SettingsTab::~SettingsTab() {
   delete mUI;
+}
+
+void SettingsTab::showEvent( QShowEvent *event ) {
+  QWidget::showEvent( event );
+  LoadSettings();
 }
 
 void SettingsTab::ExportAccount() {
@@ -229,6 +249,8 @@ Window::~Window() {
 void Window::ActionTriggered( QAction *action ) {
   int page = action->property( "pageIndex" ).toInt();
   mUI->pageWidget->setCurrentIndex( page );
+
+
 }
 
 void Window::TabChanged( int index ) {
@@ -266,11 +288,6 @@ void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #else
   UNUSED_ARG( reason );
 #endif
-}
-
-void Window::showEvent( QShowEvent *event ) {
-  QWidget::showEvent( event );
-  mUI->settingsPage->LoadSettings();
 }
 
 void Window::closeEvent( QCloseEvent *event ) {

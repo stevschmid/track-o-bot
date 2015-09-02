@@ -11,7 +11,6 @@
 
 ReplayManager::ReplayManager( HearthstoneLogTracker *logTracker )
   : mSpectating( false ),
-    mDropboxPath( RetrieveDropboxPath() ),
     mWriter(
       REPLAY_WIDTH, REPLAY_HEIGHT,
       REPLAY_BITRATE, REPLAY_FPS
@@ -37,9 +36,9 @@ void ReplayManager::HandleMatchStart() {
     mWriter.Close();
   }
 
-  QString path = AppFile( "Temp.webm" );
+  QString path = AppFolder( "Temp.webm" );
   if( !mWriter.Open( path ) ) {
-    ERR( "Couldn't open battleboard writer %s\n", qt2cstr( path ) );
+    ERR( "Couldn't open replay writer %s\n", qt2cstr( path ) );
   }
 }
 
@@ -53,7 +52,7 @@ void ReplayManager::HandleTurn( int turnCounter ) {
       if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
         mWriter.AddFrame( screen.toImage() );
       } else {
-        ERR( "Couldn't capture battleboard" );
+        ERR( "Couldn't capture replay" );
       }
     });
   }
@@ -66,23 +65,27 @@ void ReplayManager::HandleSpectating( bool nowSpectating ) {
 void ReplayManager::UploadResultSucceeded( const QJsonObject& response ) {
   int id = response[ "result" ].toObject()[ "id" ].toInt();
   if( !id ) {
-    ERR( "Invalid ID received. Cannot save battleboards" );
+    ERR( "Invalid ID received. Cannot save replays" );
     return;
   }
 
   mWriter.Close();
 
-  QString src = AppFile( "Temp.webm" );
-  QString dst = AppFile( QString( "%1.webm" ).arg( id ) );
+  QString src = AppFolder( "Temp.webm" );
+  QString dst = AppFolder( QString( "%1.webm" ).arg( id ) );
   if( !QFile::rename( src, dst ) ) {
-    ERR( "Couldn't move battleboards" );
+    ERR( "Couldn't move replay" );
   }
 }
 
-QString ReplayManager::AppFile( const QString& fileName ) const {
-  QString path = mDropboxPath + "/Apps/Track-o-Bot/";
-  if( !QDir( path ).exists() && !QDir().mkpath( path ) ) {
-    ERR( "Couldn't create path %s", qt2cstr( path ) );
+QString ReplayManager::AppFolder() {
+  return AppFolder("");
+}
+
+QString ReplayManager::AppFolder( const QString& fileName ) {
+  QString path = RetrieveDropboxPath() + "/Apps/Track-o-Bot/";
+  if( !QDir( path ).exists() ) {
+    return QString();
   }
 
   return path + fileName;
@@ -115,4 +118,8 @@ QString ReplayManager::RetrieveDropboxPath() {
   QByteArray bytes;
   bytes.append( hostDbContents );
   return QByteArray::fromBase64( bytes );
+}
+
+bool ReplayManager::CanRecordReplays() {
+  return !AppFolder().isEmpty();
 }

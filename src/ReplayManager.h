@@ -14,10 +14,10 @@ class ReplayManager : public QObject
 
 private:
   bool mSpectating;
-  QString mDropboxPath;
   WebMWriter mWriter;
 
-  QString AppFile( const QString& subFolder ) const;
+  static QString AppFolder( const QString& subFolder );
+  static QString AppFolder();
   static QString RetrieveDropboxPath();
 
 private slots:
@@ -33,4 +33,6 @@ public:
   ~ReplayManager();
 
   bool IsEnabled() const;
+
+  static bool CanRecordReplays();
 };

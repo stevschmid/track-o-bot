@@ -33,6 +33,11 @@ class ReplaysTab : public QWidget
 private:
   Ui::ReplaysWidget *mUI;
 
+  void showEvent( QShowEvent *event );
+
+private slots:
+  void Save();
+
 public:
   explicit ReplaysTab( QWidget *parent = 0 );
   ~ReplaysTab();
@@ -47,6 +52,8 @@ class SettingsTab : public QWidget
 
 private:
   Ui::SettingsWidget *mUI;
+
+  void showEvent( QShowEvent *event );
 
 private slots:
   void ExportAccount();
@@ -102,7 +109,6 @@ class Window : public QMainWindow
 
 private:
   void closeEvent( QCloseEvent *event );
-  void showEvent( QShowEvent *event );
 
   void CreateActions();
   void CreateTrayIcon();

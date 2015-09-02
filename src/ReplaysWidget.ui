@@ -57,7 +57,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="replaysInfo">
        <property name="palette">
         <palette>
          <active>
@@ -109,15 +109,9 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label_5">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
+      <widget class="QCheckBox" name="recordReplays">
        <property name="text">
-        <string>Disabled</string>
+        <string>Record replays</string>
        </property>
       </widget>
      </item>
