@@ -5,6 +5,7 @@
 #include "ui_Window.h"
 #include "ui_ReplaysWidget.h"
 #include "ui_SettingsWidget.h"
+#include "ui_AccountWidget.h"
 #include "ui_LogWidget.h"
 #include "ui_AboutWidget.h"
 #include "ui_MainWindow.h"
@@ -43,12 +44,9 @@ SettingsTab::SettingsTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::SettingsWidget )
 {
   mUI->setupUi( this );
-  connect( mUI->exportAccountButton, SIGNAL( clicked() ), this, SLOT( ExportAccount() ) );
-  connect( mUI->importAccountButton, SIGNAL( clicked() ), this, SLOT( ImportAccount() ) );
   connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked() ), this, SLOT( CheckForUpdatesNow() ) );
   connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
   connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
-  connect( Settings::Instance(), SIGNAL( AccountChanged(const QString&, const QString&) ), this, SLOT( LoadSettings() ) );
   LoadSettings();
 }
 
@@ -56,12 +54,52 @@ SettingsTab::~SettingsTab() {
   delete mUI;
 }
 
-void SettingsTab::showEvent( QShowEvent *event ) {
-  QWidget::showEvent( event );
-  LoadSettings();
+void SettingsTab::CheckForUpdatesNow() {
+  Settings::Instance()->CheckForUpdates();
 }
 
-void SettingsTab::ExportAccount() {
+void SettingsTab::UpdateAutostart() {
+  Settings::Instance()->SetAutostart( mUI->startAtLogin->isChecked() );
+}
+
+void SettingsTab::UpdateUpdateCheck() {
+  Settings::Instance()->SetAutoUpdateCheck( mUI->checkForUpdates->isChecked() );
+}
+
+void SettingsTab::LoadSettings() {
+  Settings *settings = Settings::Instance();
+
+  mUI->startAtLogin->setChecked( settings->Autostart() );
+  mUI->checkForUpdates->setChecked( settings->AutoUpdateCheck() );
+}
+
+AccountTab::AccountTab( QWidget *parent )
+  : QWidget( parent ), mUI( new Ui::AccountWidget )
+{
+  mUI->setupUi( this );
+  connect( mUI->exportAccountButton, SIGNAL( clicked() ), this, SLOT( ExportAccount() ) );
+  connect( mUI->importAccountButton, SIGNAL( clicked() ), this, SLOT( ImportAccount() ) );
+  connect( Settings::Instance(), SIGNAL( AccountChanged(const QString&, const QString&) ), this, SLOT( LoadAccount() ) );
+  LoadAccount();
+}
+
+AccountTab::~AccountTab() {
+  delete mUI;
+}
+
+void AccountTab::LoadAccount() {
+  Settings *settings = Settings::Instance();
+
+  bool accountSetUp = settings->HasAccount();
+  if( accountSetUp ) {
+    mUI->account->setText( settings->AccountUsername() );
+  }
+
+  mUI->importAccountButton->setEnabled( accountSetUp );
+  mUI->exportAccountButton->setEnabled( accountSetUp );
+}
+
+void AccountTab::ExportAccount() {
   QString fileName = QFileDialog::getSaveFileName( this,
       tr( "Export Track-o-Bot Account Data" ), "",
       tr( "Account Data (*.track-o-bot);; All Files (*)" ) );
@@ -75,21 +113,19 @@ void SettingsTab::ExportAccount() {
       return;
     }
 
+    Settings *settings = Settings::Instance();
+
     QDataStream out( &file );
     out.setVersion( QDataStream::Qt_4_8 );
-    out << Settings::Instance()->AccountUsername();
-    out << Settings::Instance()->AccountPassword();
-    out << Settings::Instance()->WebserviceURL();
+    out << settings->AccountUsername();
+    out << settings->AccountPassword();
+    out << settings->WebserviceURL();
 
-    LOG( "Account %s exported in %s", qt2cstr( Settings::Instance()->AccountUsername() ), qt2cstr( fileName ) );
+    LOG( "Account %s exported in %s", qt2cstr( settings->AccountUsername() ), qt2cstr( fileName ) );
   }
 }
 
-void SettingsTab::CheckForUpdatesNow() {
-  Settings::Instance()->CheckForUpdates();
-}
-
-void SettingsTab::ImportAccount() {
+void AccountTab::ImportAccount() {
   QString fileName = QFileDialog::getOpenFileName( this,
       tr( "Import Track-o-Bot Account Data" ), "",
       tr( "Account Data (*.track-o-bot);; All Files (*)" ) );
@@ -115,34 +151,11 @@ void SettingsTab::ImportAccount() {
       Settings::Instance()->SetWebserviceURL( webserviceUrl );
 
       LOG( "Account %s imported from %s", qt2cstr( username ), qt2cstr( fileName ) );
-      LoadSettings();
+      LoadAccount();
     } else {
       ERR( "Import failed" );
     }
   }
-}
-
-void SettingsTab::UpdateAutostart() {
-  Settings::Instance()->SetAutostart( mUI->startAtLogin->isChecked() );
-}
-
-void SettingsTab::UpdateUpdateCheck() {
-  Settings::Instance()->SetAutoUpdateCheck( mUI->checkForUpdates->isChecked() );
-}
-
-void SettingsTab::LoadSettings() {
-  Settings *settings = Settings::Instance();
-
-  mUI->startAtLogin->setChecked( settings->Autostart() );
-  mUI->checkForUpdates->setChecked( settings->AutoUpdateCheck() );
-
-  bool accountSetUp = settings->HasAccount();
-  if( accountSetUp ) {
-    mUI->account->setText( settings->AccountUsername() );
-  }
-
-  mUI->importAccountButton->setEnabled( accountSetUp );
-  mUI->exportAccountButton->setEnabled( accountSetUp );
 }
 
 LogTab::LogTab( QWidget *parent )
@@ -155,6 +168,7 @@ LogTab::LogTab( QWidget *parent )
 
   connect( Logger::Instance(), SIGNAL( NewMessage(LogEventType, const string&) ), this, SLOT( AddLogEntry(LogEventType, const string&) ) );
 }
+
 
 LogTab::~LogTab() {
   delete mUI;
@@ -214,17 +228,21 @@ Window::Window()
   mUI->actionSettings->setActionGroup( group );
   mUI->actionSettings->setProperty( "pageIndex", 0 );
 
+  mUI->actionAccount->setActionGroup( group );
+  mUI->actionAccount->setProperty( "pageIndex", 1 );
+
   mUI->actionReplays->setActionGroup( group );
-  mUI->actionReplays->setProperty( "pageIndex", 1 );
+  mUI->actionReplays->setProperty( "pageIndex", 2 );
 
   mUI->actionLog->setActionGroup( group );
-  mUI->actionLog->setProperty( "pageIndex", 2 );
+  mUI->actionLog->setProperty( "pageIndex", 3 );
 
   mUI->actionAbout->setActionGroup( group );
-  mUI->actionAbout->setProperty( "pageIndex", 3 );
+  mUI->actionAbout->setProperty( "pageIndex", 4 );
 
   mUI->pageWidget->setCurrentIndex( 0 );
   mUI->actionSettings->setChecked( true );
+  TabChanged( 0 );
 
   connect( group, SIGNAL( triggered(QAction*) ), this, SLOT( ActionTriggered(QAction*) ) );
   connect( mUI->pageWidget, SIGNAL( currentChanged(int) ), this, SLOT( TabChanged( int ) ) );
@@ -239,8 +257,6 @@ Window::~Window() {
 void Window::ActionTriggered( QAction *action ) {
   int page = action->property( "pageIndex" ).toInt();
   mUI->pageWidget->setCurrentIndex( page );
-
-
 }
 
 void Window::TabChanged( int index ) {

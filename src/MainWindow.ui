@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>150</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
@@ -28,6 +36,7 @@
     <number>0</number>
    </property>
    <widget class="SettingsTab" name="settingsPage"/>
+   <widget class="AccountTab" name="accountsPage"/>
    <widget class="ReplaysTab" name="replaysPage"/>
    <widget class="LogTab" name="logPage"/>
    <widget class="AboutTab" name="aboutPage"/>
@@ -35,7 +44,7 @@
   <widget class="QToolBar" name="toolBar">
    <property name="minimumSize">
     <size>
-     <width>400</width>
+     <width>0</width>
      <height>0</height>
     </size>
    </property>
@@ -58,6 +67,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSettings"/>
+   <addaction name="actionAccount"/>
    <addaction name="actionReplays"/>
    <addaction name="actionLog"/>
    <addaction name="actionAbout"/>
@@ -95,7 +105,7 @@
    </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/info.png</normaloff>:/icons/info.png</iconset>
+     <normaloff>:/icons/info@2x.png</normaloff>:/icons/info@2x.png</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -117,6 +127,21 @@
    </property>
    <property name="toolTip">
     <string>Replays</string>
+   </property>
+  </action>
+  <action name="actionAccount">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/person@2x.png</normaloff>:/icons/person@2x.png</iconset>
+   </property>
+   <property name="text">
+    <string>Account</string>
+   </property>
+   <property name="toolTip">
+    <string>Account</string>
    </property>
   </action>
  </widget>
@@ -141,6 +166,12 @@
   </customwidget>
   <customwidget>
    <class>ReplaysTab</class>
+   <extends>QWidget</extends>
+   <header>src/window.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AccountTab</class>
    <extends>QWidget</extends>
    <header>src/window.h</header>
    <container>1</container>
