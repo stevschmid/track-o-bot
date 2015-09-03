@@ -4,9 +4,12 @@
 #define RESULT_QUEUE_CHECK_PERIOD (30 * 60 * 1000)
 #define RESULT_QUEUE_UPLOAD_PERIOD (5 * 60 * 1000)
 
-ResultQueue::ResultQueue() {
-  connect( WebProfile::Instance(), SIGNAL( UploadResultFailed(const QJsonObject&, int) ), this, SLOT( UploadResultFailed(const QJsonObject&, int) ) );
-  connect( WebProfile::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
+ResultQueue::ResultQueue()
+{
+  connect( WebProfile::Instance(), SIGNAL( UploadResultFailed(const QJsonObject&, int) ),
+      this, SLOT( UploadResultFailed(const QJsonObject&, int) ) );
+  connect( WebProfile::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ),
+      this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 
   mCheckTimer = new QTimer( this );
   connect( mCheckTimer, SIGNAL( timeout() ), this, SLOT( Check() ) );
@@ -25,7 +28,8 @@ ResultQueue::~ResultQueue() {
 void ResultQueue::Load() {
   QSettings settings;
   if( settings.contains( "resultsQueue" ) ) {
-    QJsonDocument doc = QJsonDocument::fromJson( settings.value( "resultsQueue" ).toByteArray() );
+    QJsonDocument doc = QJsonDocument::fromJson(
+        settings.value( "resultsQueue" ).toByteArray() );
     mQueue = doc.array();
     LOG( "%d unsaved results found", mQueue.size() );
 
@@ -110,6 +114,7 @@ void ResultQueue::Upload() {
       LOG( "Found an old result. Uploading that first..." );
     }
     QJsonObject result = mQueue.takeAt( 0 ).toObject();
+
     WebProfile::Instance()->UploadResult( result );
   }
 }
