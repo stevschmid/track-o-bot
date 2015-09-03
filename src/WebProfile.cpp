@@ -1,4 +1,4 @@
-#include "Uploader.h"
+#include "WebProfile.h"
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -16,19 +16,19 @@
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
-DEFINE_SINGLETON_SCOPE( Uploader );
+DEFINE_SINGLETON_SCOPE( WebProfile );
 
-Uploader::Uploader() {
+WebProfile::WebProfile() {
   connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
       this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
   connect( Settings::Instance(), SIGNAL( OpenProfileRequested() ),
       this, SLOT( OpenProfile() ) );
 }
 
-Uploader::~Uploader() {
+WebProfile::~WebProfile() {
 }
 
-void Uploader::EnsureAccountIsSetUp() {
+void WebProfile::EnsureAccountIsSetUp() {
   if( !Settings::Instance()->HasAccount() ) {
     LOG( "No account setup. Creating one for you." );
     CreateAndStoreAccount();
@@ -37,7 +37,7 @@ void Uploader::EnsureAccountIsSetUp() {
   }
 }
 
-void Uploader::UploadResult( const QJsonObject& result )
+void WebProfile::UploadResult( const QJsonObject& result )
 {
   QJsonObject params;
   params[ "result" ] = result;
@@ -63,33 +63,33 @@ void Uploader::UploadResult( const QJsonObject& result )
   });
 }
 
-QNetworkReply* Uploader::AuthPostJson( const QString& path, const QByteArray& data ) {
+QNetworkReply* WebProfile::AuthPostJson( const QString& path, const QByteArray& data ) {
   QString credentials = "Basic " +
     ( Settings::Instance()->AccountUsername() +
       ":" +
       Settings::Instance()->AccountPassword()
     ).toLatin1().toBase64();
 
-  QNetworkRequest request = CreateUploaderRequest( path );
+  QNetworkRequest request = CreateWebProfileRequest( path );
   request.setRawHeader( "Authorization", credentials.toLatin1() );
   request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
   return mNetworkManager.post( request, data );
 }
 
-QNetworkRequest Uploader::CreateUploaderRequest( const QString& path ) {
+QNetworkRequest WebProfile::CreateWebProfileRequest( const QString& path ) {
   QUrl url( WebserviceURL( path ) );
   QNetworkRequest request( url );
   request.setRawHeader( "User-Agent", "Track-o-Bot/" VERSION PLATFORM );
   return request;
 }
 
-void Uploader::CreateAndStoreAccount() {
-  QNetworkRequest request = CreateUploaderRequest( "/users.json" );
+void WebProfile::CreateAndStoreAccount() {
+  QNetworkRequest request = CreateWebProfileRequest( "/users.json" );
   QNetworkReply *reply = mNetworkManager.post( request, "" );
   connect( reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()) );
 }
 
-void Uploader::CreateAndStoreAccountHandleReply() {
+void WebProfile::CreateAndStoreAccountHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
     LOG( "Account creation was successful!" );
@@ -114,12 +114,12 @@ void Uploader::CreateAndStoreAccountHandleReply() {
   }
 }
 
-void Uploader::OpenProfile() {
+void WebProfile::OpenProfile() {
   QNetworkReply *reply = AuthPostJson( "/one_time_auth.json", "" );
   connect( reply, SIGNAL( finished() ), this, SLOT( OpenProfileHandleReply() ) );
 }
 
-void Uploader::OpenProfileHandleReply() {
+void WebProfile::OpenProfileHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
     QByteArray jsonData = reply->readAll();
@@ -139,7 +139,7 @@ void Uploader::OpenProfileHandleReply() {
   }
 }
 
-QString Uploader::WebserviceURL( const QString& path ) {
+QString WebProfile::WebserviceURL( const QString& path ) {
   if( Settings::Instance()->WebserviceURL().isEmpty() ) {
     Settings::Instance()->SetWebserviceURL( DEFAULT_WEBSERVICE_URL );
   }
@@ -151,7 +151,7 @@ QString Uploader::WebserviceURL( const QString& path ) {
 // "There root certificate of the certificate chain is self-signed, and untrusted"
 // The root cert might not be trusted yet (only after we browse to the website)
 // So allow allow self-signed certificates, just in case
-void Uploader::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
+void WebProfile::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
   QList<QSslError> errorsToIgnore;
 
   for( const QSslError& err : errors ) {

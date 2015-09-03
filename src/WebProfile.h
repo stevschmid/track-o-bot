@@ -6,11 +6,11 @@
 #include <QSslError>
 #include <QJsonObject>
 
-class Uploader : public QObject
+class WebProfile : public QObject
 {
   Q_OBJECT
 
-DEFINE_SINGLETON( Uploader )
+DEFINE_SINGLETON( WebProfile )
 
 private:
   QNetworkAccessManager mNetworkManager;
@@ -24,7 +24,7 @@ private slots:
 
   void SSLErrors( QNetworkReply *reply, const QList<QSslError>& errors );
 
-  QNetworkRequest CreateUploaderRequest( const QString& path );
+  QNetworkRequest CreateWebProfileRequest( const QString& path );
 
 public:
   bool IsAccountSetUp() const;
