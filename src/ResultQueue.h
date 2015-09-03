@@ -28,6 +28,9 @@ private slots:
   void Check();
   void Upload();
 
+signals:
+  void ResultUploaded( int id );
+
 public:
   ResultQueue();
   ~ResultQueue();

@@ -4,7 +4,9 @@
 #include <map>
 
 ResultTracker::ResultTracker()
-  : mReplayRecorder( &mLogTracker )
+  :
+    mSpectating( false ),
+    mReplayRecorder( &mLogTracker )
 {
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
   connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
@@ -12,10 +14,13 @@ ResultTracker::ResultTracker()
   connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
   connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
   connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
-  connect( &mLogTracker, SIGNAL( HandleTurn(int, bool) ), this, SLOT( HandleTurn(int, bool) ) );
+  connect( &mLogTracker, SIGNAL( HandleTurn(int) ), this, SLOT( HandleTurn(int) ) );
 
+  connect( &mLogTracker, SIGNAL( HandleSpectating(bool) ), this, SLOT( HandleSpectating(bool) ) );
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
-  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&, bool) ) );
+  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+
+  connect( &mResultsQueue, SIGNAL( ResultUploaded( int ) ), &mReplayRecorder, SLOT( SaveReplay( int ) ) );
 
   ResetResult();
 }
@@ -26,6 +31,7 @@ ResultTracker::~ResultTracker() {
 void ResultTracker::ResetResult() {
   mResult.Reset();
   mRanks.clear();
+  mSpectating = false;
 }
 
 void ResultTracker::HandleOrder( GoingOrder order ) {
@@ -53,8 +59,13 @@ void ResultTracker::HandleMatchStart() {
   mDurationTimer.start();
 }
 
-void ResultTracker::HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating ) {
-  if( wasSpectating ) {
+void ResultTracker::HandleSpectating( bool nowSpectating ) {
+  DBG( "HandleSpectating" );
+  mSpectating = nowSpectating;
+}
+
+void ResultTracker::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
+  if( mSpectating ) {
     LOG( "Ignore spectated match" );
     ResetResult();
     return;

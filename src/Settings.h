@@ -13,6 +13,8 @@ signals:
   void WebserviceURLChanged( const QString& webserviceUrl );
   void AutostartChanged( bool enabled );
   void AutoUpdateCheckChanged( bool enabled );
+  void ReplaysEnabledChanged( bool enabled );
+
   void OpenProfileRequested();
 
 public:
@@ -33,4 +35,7 @@ public:
   void SetAutoUpdateCheck( bool enabled );
   void CheckForUpdates();
 
+  bool ReplayRequirementsFulfilled() const;
+  bool ReplaysEnabled() const;
+  void SetReplaysEnabled( bool enabled );
 };

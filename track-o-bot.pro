@@ -26,7 +26,8 @@ HEADERS = src/Local.h \
           src/ResultTracker.h \
           src/ResultQueue.h \
           src/ReplayRecorder.h \
-          src/WebMWriter.h
+          src/WebMWriter.h \
+          src/Dropbox.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -44,7 +45,8 @@ SOURCES = src/Main.cpp \
           src/ResultQueue.cpp \
           src/ReplayRecorder.cpp \
           src/WebMWriter.cpp \
-          src/Local.cpp
+          src/Local.cpp \
+          src/Dropbox.cpp
 
 FORMS   = src/MainWindow.ui \
           src/SettingsWidget.ui \

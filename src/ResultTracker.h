@@ -17,6 +17,7 @@ class ResultTracker : public QObject
 
 private:
   QTime                 mDurationTimer;
+  bool                  mSpectating;
 
   HearthstoneLogTracker mLogTracker;
   Result                mResult;
@@ -34,7 +35,8 @@ private:
 
 private slots:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating );
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
+  void HandleSpectating( bool nowSpectating );
 
   void HandleOutcome( Outcome outcome );
   void HandleOwnClass( Class ownClass );

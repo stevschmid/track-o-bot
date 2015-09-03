@@ -1,12 +1,10 @@
 #pragma once
 
 #include "HearthstoneLogTracker.h"
-#include "WebProfile.h"
 #include "WebMWriter.h"
 
 #include <QObject>
-#include <QMap>
-#include <QPixmap>
+#include <QString>
 
 class ReplayRecorder : public QObject
 {
@@ -15,24 +13,27 @@ class ReplayRecorder : public QObject
 private:
   bool mSpectating;
   WebMWriter mWriter;
+  QString mTempReplayPath;
 
-  static QString AppFolder( const QString& subFolder );
-  static QString AppFolder();
-  static QString RetrieveDropboxPath();
+  void StartRecording();
+  void StopRecording();
+  void RecordScreen();
+
+  bool IsRecording() const;
 
 private slots:
   void HandleMatchStart();
+  void HandleMatchEnd();
 
   void HandleTurn( int turnCounter );
   void HandleSpectating( bool nowSpectating );
 
-  void UploadResultSucceeded( const QJsonObject& response );
+public slots:
+  void SaveReplay( int replayId );
 
 public:
   ReplayRecorder( HearthstoneLogTracker *logTracker );
   ~ReplayRecorder();
 
-  bool IsEnabled() const;
-
-  static bool CanRecordReplays();
+  bool CanRecord() const;
 };

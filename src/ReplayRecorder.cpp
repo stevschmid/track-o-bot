@@ -1,8 +1,12 @@
 #include "ReplayRecorder.h"
 #include "Hearthstone.h"
+#include "Dropbox.h"
+#include "Settings.h"
 
 #include <QDir>
 #include <QTimer>
+#include <QPixmap>
+#include <QTemporaryFile>
 
 #define REPLAY_WIDTH   1280
 #define REPLAY_HEIGHT  800
@@ -17,109 +21,105 @@ ReplayRecorder::ReplayRecorder( HearthstoneLogTracker *logTracker )
     )
 {
   connect( logTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
-  connect( logTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+  connect( logTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&, bool) ), this, SLOT( HandleMatchEnd() ) );
 
   connect( logTracker, SIGNAL( HandleTurn(int) ), this, SLOT( HandleTurn(int) ) );
   connect( logTracker, SIGNAL( HandleSpectating(bool) ), this, SLOT( HandleSpectating(bool) ) );
-
-  connect( WebProfile::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 }
 
 ReplayRecorder::~ReplayRecorder() {
-  if( mWriter.IsOpen() ) {
-    mWriter.Close();
-  }
+  StopRecording();
 }
 
-void ReplayRecorder::HandleMatchStart() {
-  if( mWriter.IsOpen() ) {
-    mWriter.Close();
-  }
-
-  QString path = AppFolder( "Temp.webm" );
-  if( !mWriter.Open( path ) ) {
-    ERR( "Couldn't open replay writer %s\n", qt2cstr( path ) );
-  }
-}
-
-void ReplayRecorder::HandleTurn( int turnCounter ) {
-  UNUSED_ARG( turnCounter );
-
-  if( !mSpectating ) {
-    QTimer::singleShot( 3500, this, [=]() {
-      QPixmap screen;
-
-      if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
-        mWriter.AddFrame( screen.toImage() );
-      } else {
-        ERR( "Couldn't capture replay" );
-      }
-    });
-  }
+bool ReplayRecorder::CanRecord() const {
+  return Settings::Instance()->ReplayRequirementsFulfilled() &&
+    Settings::Instance()->ReplaysEnabled();
 }
 
 void ReplayRecorder::HandleSpectating( bool nowSpectating ) {
   mSpectating = nowSpectating;
 }
 
-void ReplayRecorder::UploadResultSucceeded( const QJsonObject& response ) {
-  int id = response[ "result" ].toObject()[ "id" ].toInt();
-  if( !id ) {
-    ERR( "Invalid ID received. Cannot save replays" );
+void ReplayRecorder::StartRecording() {
+  StopRecording();
+
+  if( CanRecord() ) {
+    if( mWriter.IsOpen() ) {
+      mWriter.Close();
+    }
+
+    // Create a unique path using tmpFile
+    QTemporaryFile tmpFile;
+    if( tmpFile.open() ) {
+      tmpFile.setAutoRemove( false );
+      mTempReplayPath = tmpFile.fileName();
+      tmpFile.close();
+
+      if( !mWriter.Open( mTempReplayPath ) ) {
+        ERR( "Couldn't open replay writer %s\n", qt2cstr( mTempReplayPath ) );
+      } else {
+        DBG( "Opened temp. replay file %s", qt2cstr( mTempReplayPath ) );
+      }
+    } else {
+      ERR( "Couldn't create a temp. replay file" );
+    }
+  }
+}
+
+void ReplayRecorder::StopRecording() {
+  if( mWriter.IsOpen() ) {
+    mWriter.Close();
+  }
+}
+
+bool ReplayRecorder::IsRecording() const {
+  return mWriter.IsOpen();
+}
+
+void ReplayRecorder::RecordScreen() {
+  QPixmap screen;
+
+  if( Hearthstone::Instance()->CaptureWholeScreen( &screen ) ) {
+    mWriter.AddFrame( screen.toImage() );
+  } else {
+    ERR( "Couldn't capture screen" );
+  }
+}
+
+void ReplayRecorder::HandleMatchStart() {
+  StartRecording();
+}
+
+void ReplayRecorder::HandleMatchEnd() {
+  StopRecording();
+}
+
+void ReplayRecorder::HandleTurn( int turnCounter ) {
+  UNUSED_ARG( turnCounter );
+
+  if( IsRecording() ) {
+    QTimer::singleShot( 3500, this, [=]() {
+      RecordScreen();
+    });
+  }
+}
+
+void ReplayRecorder::SaveReplay( int resultId ) {
+  StopRecording();
+
+  if( mTempReplayPath.isEmpty() || !QFile::exists( mTempReplayPath )  ) {
+    // In case we did not record anything
     return;
   }
 
-  mWriter.Close();
-
-  QString src = AppFolder( "Temp.webm" );
-  QString dst = AppFolder( QString( "%1.webm" ).arg( id ) );
+  QString src = mTempReplayPath;
+  QString dst = Dropbox().AppFolder( QString( "%1.webm" ).arg( resultId ) );
   if( !QFile::rename( src, dst ) ) {
     ERR( "Couldn't move replay" );
-  }
-}
-
-QString ReplayRecorder::AppFolder() {
-  return AppFolder("");
-}
-
-QString ReplayRecorder::AppFolder( const QString& fileName ) {
-  QString path = RetrieveDropboxPath() + "/Apps/Track-o-Bot/";
-  if( !QDir( path ).exists() ) {
-    return QString();
+  } else {
+    DBG( "Replay saved to %s", qt2cstr( dst ) );
   }
 
-  return path + fileName;
+  mTempReplayPath = "";
 }
 
-QString ReplayRecorder::RetrieveDropboxPath() {
-#ifdef Q_OS_MAC
-  QString path = QDir::homePath() + "/.dropbox/host.db";
-#else
-  QString path = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).first() + "/Dropbox/host.db";
-#endif
-
-  QFile file( path );
-  if( !file.open( QFile::ReadOnly | QFile::Text ) )
-    return QString();
-
-  QString hostDbContents;
-
-  QTextStream in( &file );
-  while( !in.atEnd() ) {
-    QString line = in.readLine();
-    if( !line.isEmpty() ) {
-      hostDbContents = line;
-    }
-  }
-
-  if( hostDbContents.isEmpty() )
-    return QString();
-
-  QByteArray bytes;
-  bytes.append( hostDbContents );
-  return QByteArray::fromBase64( bytes );
-}
-
-bool ReplayRecorder::CanRecordReplays() {
-  return !AppFolder().isEmpty();
-}

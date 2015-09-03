@@ -98,9 +98,12 @@ void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode )
 }
 
 void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
-  UNUSED_ARG( response );
-
-  LOG( "Upload successful" );
+  int id = response[ "result" ].toObject()[ "id" ].toInt();
+  if( id ) {
+    emit ResultUploaded( id );
+  } else {
+    ERR( "Response without id received" );
+  }
 
   // If we have items in the queue, it's time to slowly roll them out
   mUploadTimer->start( RESULT_QUEUE_UPLOAD_PERIOD );
