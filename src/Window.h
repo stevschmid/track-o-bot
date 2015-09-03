@@ -8,7 +8,6 @@
 #include <QMainWindow>
 
 #include "Core.h"
-#include "Autostart.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;

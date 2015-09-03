@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Tracker.h"
 #include "Result.h"
 
 #include <QTimer>
@@ -15,9 +14,9 @@ class ResultQueue : public QObject
   Q_OBJECT
 
 private:
-  QTimer*    mCheckTimer;
-  QTimer*    mUploadTimer;
-  QJsonArray mQueue;
+  QTimer*     mCheckTimer;
+  QTimer*     mUploadTimer;
+  QJsonArray  mQueue;
 
   void Load();
   void Save();

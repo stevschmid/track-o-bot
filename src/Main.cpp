@@ -9,8 +9,6 @@
 #include <QLocalSocket>
 
 #include "Window.h"
-#include "Tracker.h"
-
 #include "Updater.h"
 
 #if defined Q_OS_MAC
@@ -21,6 +19,7 @@
 #endif
 
 #include "Hearthstone.h"
+#include "WebProfile.h"
 
 Updater *gUpdater = NULL;
 
@@ -70,16 +69,16 @@ int main( int argc, char **argv )
 
 #if defined Q_OS_MAC
   CocoaInitializer cocoaInitializer;
-  gUpdater = new SparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast.xml" ) );
+  gUpdater = new SparkleUpdater( WebProfile::Instance()->WebserviceURL( "/appcast.xml" ) );
 #elif defined Q_OS_WIN
-  gUpdater = new WinSparkleUpdater( Tracker::Instance()->WebserviceURL( "/appcast_win.xml" ) );
+  gUpdater = new WinSparkleUpdater( WebProfile::Instance()->WebserviceURL( "/appcast_win.xml" ) );
 #endif
 
   // Initalize Windows n stuff
   Window window;
 
   // Make sure Account exists or create one
-  Tracker::Instance()->EnsureAccountIsSetUp();
+  WebProfile::Instance()->EnsureAccountIsSetUp();
 
   // Enable HS Logging
   Hearthstone::Instance()->EnableLogging();

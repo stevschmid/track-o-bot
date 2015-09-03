@@ -17,18 +17,20 @@ HEADERS = src/Local.h \
           src/Window.h \
           src/Core.h \
           src/Logger.h \
-          src/Tracker.h \
+          src/WebProfile.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
           src/MLP.h \
           src/RankClassifier.h \
+          src/Settings.h \
+          src/ResultTracker.h \
           src/ResultQueue.h \
           src/ReplayManager.h \
           src/WebMWriter.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
-          src/Tracker.cpp \
+          src/WebProfile.cpp \
           src/Window.cpp \
           src/Core.cpp \
           src/Logger.cpp \
@@ -37,6 +39,8 @@ SOURCES = src/Main.cpp \
           src/HearthstoneLogTracker.cpp \
           src/MLP.cpp \
           src/RankClassifier.cpp \
+          src/Settings.cpp \
+          src/ResultTracker.cpp \
           src/ResultQueue.cpp \
           src/ReplayManager.cpp \
           src/WebMWriter.cpp \

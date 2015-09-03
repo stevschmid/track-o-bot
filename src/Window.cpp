@@ -1,5 +1,6 @@
-#include <QtGui>
 #include "Window.h"
+
+#include <QtGui>
 
 #include "ui_Window.h"
 #include "ui_ReplaysWidget.h"
@@ -8,14 +9,11 @@
 #include "ui_AboutWidget.h"
 #include "ui_MainWindow.h"
 
-#include "Tracker.h"
-#include "Updater.h"
-#include "ReplayManager.h"
-extern Updater *gUpdater;
-
 #if defined Q_OS_MAC
 #include "OSXLocal.h"
 #endif
+
+#include "Settings.h"
 
 ReplaysTab::ReplaysTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::ReplaysWidget )
@@ -31,14 +29,14 @@ ReplaysTab::~ReplaysTab() {
 void ReplaysTab::showEvent( QShowEvent *event ) {
   QWidget::showEvent( event );
 
-  mUI->recordReplays->setEnabled( ReplayManager::CanRecordReplays() );
+  /* mUI->recordReplays->setEnabled( ReplayManager::CanRecordReplays() ); */
 
-  bool recordReplays = QSettings().value( "recordReplays", true ).toBool();
-  mUI->recordReplays->setChecked( recordReplays );
+  /* bool recordReplays = QSettings().value( "recordReplays", true ).toBool(); */
+  /* mUI->recordReplays->setChecked( recordReplays ); */
 }
 
 void ReplaysTab::Save() {
-  QSettings().setValue( "recordReplays", mUI->recordReplays->isChecked() );
+  /* QSettings().setValue( "recordReplays", mUI->recordReplays->isChecked() ); */
 }
 
 SettingsTab::SettingsTab( QWidget *parent )
@@ -50,7 +48,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked() ), this, SLOT( CheckForUpdatesNow() ) );
   connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
   connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
-  connect( Tracker::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
+  connect( Settings::Instance(), SIGNAL( AccountChanged(const QString&, const QString&) ), this, SLOT( LoadSettings() ) );
   LoadSettings();
 }
 
@@ -79,18 +77,16 @@ void SettingsTab::ExportAccount() {
 
     QDataStream out( &file );
     out.setVersion( QDataStream::Qt_4_8 );
-    out << Tracker::Instance()->Username();
-    out << Tracker::Instance()->Password();
-    out << Tracker::Instance()->WebserviceURL();
+    out << Settings::Instance()->AccountUsername();
+    out << Settings::Instance()->AccountPassword();
+    out << Settings::Instance()->WebserviceURL();
 
-    LOG( "Account %s exported in %s", qt2cstr( Tracker::Instance()->Username() ), qt2cstr( fileName ) );
+    LOG( "Account %s exported in %s", qt2cstr( Settings::Instance()->AccountUsername() ), qt2cstr( fileName ) );
   }
 }
 
 void SettingsTab::CheckForUpdatesNow() {
-  if( gUpdater ) {
-    gUpdater->CheckForUpdatesNow();
-  }
+  Settings::Instance()->CheckForUpdates();
 }
 
 void SettingsTab::ImportAccount() {
@@ -115,9 +111,8 @@ void SettingsTab::ImportAccount() {
     in >> webserviceUrl;
 
     if( !username.isEmpty() && !password.isEmpty() && !webserviceUrl.isEmpty() ) {
-      Tracker::Instance()->SetUsername( username );
-      Tracker::Instance()->SetPassword( password );
-      Tracker::Instance()->SetWebserviceURL( webserviceUrl );
+      Settings::Instance()->SetAccount( username, password );
+      Settings::Instance()->SetWebserviceURL( webserviceUrl );
 
       LOG( "Account %s imported from %s", qt2cstr( username ), qt2cstr( fileName ) );
       LoadSettings();
@@ -128,27 +123,22 @@ void SettingsTab::ImportAccount() {
 }
 
 void SettingsTab::UpdateAutostart() {
-  Autostart autostart;
-  autostart.SetActive( mUI->startAtLogin->isChecked() );
+  Settings::Instance()->SetAutostart( mUI->startAtLogin->isChecked() );
 }
 
 void SettingsTab::UpdateUpdateCheck() {
-  if( gUpdater ) {
-    gUpdater->SetAutomaticallyChecksForUpdates( mUI->checkForUpdates->isChecked() );
-  }
+  Settings::Instance()->SetAutoUpdateCheck( mUI->checkForUpdates->isChecked() );
 }
 
 void SettingsTab::LoadSettings() {
-  Autostart autostart;
-  mUI->startAtLogin->setChecked( autostart.Active() );
+  Settings *settings = Settings::Instance();
 
-  if( gUpdater ) {
-    mUI->checkForUpdates->setChecked( gUpdater->AutomaticallyChecksForUpdates() );
-  }
+  mUI->startAtLogin->setChecked( settings->Autostart() );
+  mUI->checkForUpdates->setChecked( settings->AutoUpdateCheck() );
 
-  bool accountSetUp = Tracker::Instance()->IsAccountSetUp();
+  bool accountSetUp = settings->HasAccount();
   if( accountSetUp ) {
-    mUI->account->setText( Tracker::Instance()->Username() );
+    mUI->account->setText( settings->AccountUsername() );
   }
 
   mUI->importAccountButton->setEnabled( accountSetUp );
@@ -283,7 +273,7 @@ void Window::HandleFirstStartCheck() {
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #ifdef Q_OS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
-    Tracker::Instance()->OpenProfile();
+    OpenProfile();
   }
 #else
   UNUSED_ARG( reason );
@@ -349,7 +339,7 @@ void Window::RiseAndShine() {
 }
 
 void Window::OpenProfile() {
-  Tracker::Instance()->OpenProfile();
+  Settings::Instance()->OpenProfile();
 }
 
 void Window::HandleGameClientRestartRequired( bool restartRequired ) {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "HearthstoneLogTracker.h"
-#include "Tracker.h"
+#include "WebProfile.h"
 #include "WebMWriter.h"
 
 #include <QObject>
