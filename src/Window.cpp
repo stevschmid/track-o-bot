@@ -7,10 +7,7 @@
 #include "ui_AboutWidget.h"
 #include "ui_MainWindow.h"
 
-#include "Updater.h"
-extern Updater *gUpdater;
-
-#include "Uploader.h"
+#include "Settings.h"
 
 #if defined Q_OS_MAC
 #include "OSXLocal.h"
@@ -25,7 +22,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked()), this, SLOT( CheckForUpdatesNow() ) );
   connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
   connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
-  connect( Uploader::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
+  connect( Settings::Instance(), SIGNAL( AccountChanged(const QString&, const QString&) ), this, SLOT( LoadSettings() ) );
   LoadSettings();
 }
 
@@ -49,18 +46,16 @@ void SettingsTab::ExportAccount() {
 
     QDataStream out( &file );
     out.setVersion( QDataStream::Qt_4_8 );
-    out << Uploader::Instance()->Username();
-    out << Uploader::Instance()->Password();
-    out << Uploader::Instance()->WebserviceURL();
+    out << Settings::Instance()->AccountUsername();
+    out << Settings::Instance()->AccountPassword();
+    out << Settings::Instance()->WebserviceURL();
 
-    LOG( "Account %s exported in %s", Uploader::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
+    LOG( "Account %s exported in %s", Settings::Instance()->AccountUsername().toStdString().c_str(), fileName.toStdString().c_str() );
   }
 }
 
 void SettingsTab::CheckForUpdatesNow() {
-  if( gUpdater ) {
-    gUpdater->CheckForUpdatesNow();
-  }
+  Settings::Instance()->CheckForUpdates();
 }
 
 void SettingsTab::ImportAccount() {
@@ -85,9 +80,8 @@ void SettingsTab::ImportAccount() {
     in >> webserviceUrl;
 
     if( !username.isEmpty() && !password.isEmpty() && !webserviceUrl.isEmpty() ) {
-      Uploader::Instance()->SetUsername( username );
-      Uploader::Instance()->SetPassword( password );
-      Uploader::Instance()->SetWebserviceURL( webserviceUrl );
+      Settings::Instance()->SetAccount( username, password );
+      Settings::Instance()->SetWebserviceURL( webserviceUrl );
 
       LOG( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
       LoadSettings();
@@ -98,27 +92,22 @@ void SettingsTab::ImportAccount() {
 }
 
 void SettingsTab::UpdateAutostart() {
-  Autostart autostart;
-  autostart.SetActive( mUI->startAtLogin->isChecked() );
+  Settings::Instance()->SetAutostart( mUI->startAtLogin->isChecked() );
 }
 
 void SettingsTab::UpdateUpdateCheck() {
-  if( gUpdater ) {
-    gUpdater->SetAutomaticallyChecksForUpdates( mUI->checkForUpdates->isChecked() );
-  }
+  Settings::Instance()->SetAutoUpdateCheck( mUI->checkForUpdates->isChecked() );
 }
 
 void SettingsTab::LoadSettings() {
-  Autostart autostart;
-  mUI->startAtLogin->setChecked( autostart.Active() );
+  Settings *settings = Settings::Instance();
 
-  if( gUpdater ) {
-    mUI->checkForUpdates->setChecked( gUpdater->AutomaticallyChecksForUpdates() );
-  }
+  mUI->startAtLogin->setChecked( settings->Autostart() );
+  mUI->checkForUpdates->setChecked( settings->AutoUpdateCheck() );
 
-  bool accountSetUp = Uploader::Instance()->IsAccountSetUp();
+  bool accountSetUp = settings->HasAccount();
   if( accountSetUp ) {
-    mUI->account->setText( Uploader::Instance()->Username() );
+    mUI->account->setText( settings->AccountUsername() );
   }
 
   mUI->importAccountButton->setEnabled( accountSetUp );
@@ -241,7 +230,7 @@ void Window::HandleFirstStartCheck() {
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #ifdef Q_OS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
-    Uploader::Instance()->OpenProfile();
+    OpenProfile();
   }
 #else
   UNUSED( reason );
@@ -312,7 +301,7 @@ void Window::RiseAndShine() {
 }
 
 void Window::OpenProfile() {
-  Uploader::Instance()->OpenProfile();
+  Settings::Instance()->OpenProfile();
 }
 
 void Window::HandleGameClientRestartRequired( bool restartRequired ) {

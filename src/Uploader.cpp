@@ -12,6 +12,8 @@
 
 #include "Hearthstone.h"
 
+#include "Settings.h"
+
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
 DEFINE_SINGLETON_SCOPE( Uploader );
@@ -19,17 +21,19 @@ DEFINE_SINGLETON_SCOPE( Uploader );
 Uploader::Uploader() {
   connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
       this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
+  connect( Settings::Instance(), SIGNAL( OpenProfileRequested() ),
+      this, SLOT( OpenProfile() ) );
 }
 
 Uploader::~Uploader() {
 }
 
 void Uploader::EnsureAccountIsSetUp() {
-  if( !IsAccountSetUp() ) {
+  if( !Settings::Instance()->HasAccount() ) {
     LOG( "No account setup. Creating one for you." );
     CreateAndStoreAccount();
   } else {
-    LOG( "Account %s found", Username().toStdString().c_str() );
+    LOG( "Account %s found", Settings::Instance()->AccountUsername().toStdString().c_str() );
   }
 }
 
@@ -60,7 +64,11 @@ void Uploader::UploadResult( const QJsonObject& result )
 }
 
 QNetworkReply* Uploader::AuthPostJson( const QString& path, const QByteArray& data ) {
-  QString credentials = "Basic " + ( Username() + ":" + Password() ).toLatin1().toBase64();
+  QString credentials = "Basic " +
+    ( Settings::Instance()->AccountUsername() +
+      ":" +
+      Settings::Instance()->AccountPassword()
+    ).toLatin1().toBase64();
 
   QNetworkRequest request = CreateUploaderRequest( path );
   request.setRawHeader( "Authorization", credentials.toLatin1() );
@@ -96,10 +104,9 @@ void Uploader::CreateAndStoreAccountHandleReply() {
     } else {
       LOG( "Welcome %s", user[ "username" ].toString().toStdString().c_str() );
 
-      SetUsername( user["username"].toString() );
-      SetPassword( user["password"].toString() );
-
-      emit AccountCreated();
+      Settings::Instance()->SetAccount(
+          user["username"].toString(),
+          user["password"].toString() );
     }
   } else {
     int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
@@ -132,41 +139,12 @@ void Uploader::OpenProfileHandleReply() {
   }
 }
 
-QString Uploader::Username() const {
-  return mSettings.value( "username" ).toString();
-}
-
-QString Uploader::Password() const {
-  return mSettings.value( "password" ).toString();
-}
-
 QString Uploader::WebserviceURL( const QString& path ) {
-  return WebserviceURL() + path;
-}
-
-QString Uploader::WebserviceURL() {
-  if( !mSettings.contains( "webserviceUrl" ) || mSettings.value( "webserviceUrl" ).toString().isEmpty() ) {
-    SetWebserviceURL( DEFAULT_WEBSERVICE_URL );
+  if( Settings::Instance()->WebserviceURL().isEmpty() ) {
+    Settings::Instance()->SetWebserviceURL( DEFAULT_WEBSERVICE_URL );
   }
 
-  return mSettings.value( "webserviceUrl" ).toString();
-}
-
-void Uploader::SetUsername( const QString& username ) {
-  mSettings.setValue( "username", username );
-}
-
-void Uploader::SetPassword( const QString& password ) {
-  mSettings.setValue( "password", password );
-}
-
-void Uploader::SetWebserviceURL( const QString& webserviceUrl ) {
-  mSettings.setValue( "webserviceUrl", webserviceUrl );
-}
-
-bool Uploader::IsAccountSetUp() const {
-  return mSettings.contains( "username" ) && mSettings.contains( "password" ) &&
-    !mSettings.value( "username" ).toString().isEmpty() && !mSettings.value( "password" ).toString().isEmpty();
+  return Settings::Instance()->WebserviceURL() + path;
 }
 
 // Allow self-signed certificates because Qt might report
