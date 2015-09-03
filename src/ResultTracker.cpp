@@ -4,7 +4,7 @@
 #include <map>
 
 ResultTracker::ResultTracker()
-  : mReplayManager( &mLogTracker )
+  : mReplayRecorder( &mLogTracker )
 {
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
   connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );

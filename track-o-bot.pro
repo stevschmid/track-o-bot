@@ -25,7 +25,7 @@ HEADERS = src/Local.h \
           src/Settings.h \
           src/ResultTracker.h \
           src/ResultQueue.h \
-          src/ReplayManager.h \
+          src/ReplayRecorder.h \
           src/WebMWriter.h
 
 SOURCES = src/Main.cpp \
@@ -42,7 +42,7 @@ SOURCES = src/Main.cpp \
           src/Settings.cpp \
           src/ResultTracker.cpp \
           src/ResultQueue.cpp \
-          src/ReplayManager.cpp \
+          src/ReplayRecorder.cpp \
           src/WebMWriter.cpp \
           src/Local.cpp
 

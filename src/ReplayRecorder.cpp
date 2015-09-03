@@ -1,4 +1,4 @@
-#include "ReplayManager.h"
+#include "ReplayRecorder.h"
 #include "Hearthstone.h"
 
 #include <QDir>
@@ -9,7 +9,7 @@
 #define REPLAY_BITRATE 500
 #define REPLAY_FPS     1
 
-ReplayManager::ReplayManager( HearthstoneLogTracker *logTracker )
+ReplayRecorder::ReplayRecorder( HearthstoneLogTracker *logTracker )
   : mSpectating( false ),
     mWriter(
       REPLAY_WIDTH, REPLAY_HEIGHT,
@@ -25,13 +25,13 @@ ReplayManager::ReplayManager( HearthstoneLogTracker *logTracker )
   connect( WebProfile::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ), this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 }
 
-ReplayManager::~ReplayManager() {
+ReplayRecorder::~ReplayRecorder() {
   if( mWriter.IsOpen() ) {
     mWriter.Close();
   }
 }
 
-void ReplayManager::HandleMatchStart() {
+void ReplayRecorder::HandleMatchStart() {
   if( mWriter.IsOpen() ) {
     mWriter.Close();
   }
@@ -42,7 +42,7 @@ void ReplayManager::HandleMatchStart() {
   }
 }
 
-void ReplayManager::HandleTurn( int turnCounter ) {
+void ReplayRecorder::HandleTurn( int turnCounter ) {
   UNUSED_ARG( turnCounter );
 
   if( !mSpectating ) {
@@ -58,11 +58,11 @@ void ReplayManager::HandleTurn( int turnCounter ) {
   }
 }
 
-void ReplayManager::HandleSpectating( bool nowSpectating ) {
+void ReplayRecorder::HandleSpectating( bool nowSpectating ) {
   mSpectating = nowSpectating;
 }
 
-void ReplayManager::UploadResultSucceeded( const QJsonObject& response ) {
+void ReplayRecorder::UploadResultSucceeded( const QJsonObject& response ) {
   int id = response[ "result" ].toObject()[ "id" ].toInt();
   if( !id ) {
     ERR( "Invalid ID received. Cannot save replays" );
@@ -78,11 +78,11 @@ void ReplayManager::UploadResultSucceeded( const QJsonObject& response ) {
   }
 }
 
-QString ReplayManager::AppFolder() {
+QString ReplayRecorder::AppFolder() {
   return AppFolder("");
 }
 
-QString ReplayManager::AppFolder( const QString& fileName ) {
+QString ReplayRecorder::AppFolder( const QString& fileName ) {
   QString path = RetrieveDropboxPath() + "/Apps/Track-o-Bot/";
   if( !QDir( path ).exists() ) {
     return QString();
@@ -91,7 +91,7 @@ QString ReplayManager::AppFolder( const QString& fileName ) {
   return path + fileName;
 }
 
-QString ReplayManager::RetrieveDropboxPath() {
+QString ReplayRecorder::RetrieveDropboxPath() {
 #ifdef Q_OS_MAC
   QString path = QDir::homePath() + "/.dropbox/host.db";
 #else
@@ -120,6 +120,6 @@ QString ReplayManager::RetrieveDropboxPath() {
   return QByteArray::fromBase64( bytes );
 }
 
-bool ReplayManager::CanRecordReplays() {
+bool ReplayRecorder::CanRecordReplays() {
   return !AppFolder().isEmpty();
 }
