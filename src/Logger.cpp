@@ -1,17 +1,31 @@
 #include "Logger.h"
 #include <ctime>
 
+#include <QTextStream>
+
 DEFINE_SINGLETON_SCOPE( Logger );
 
-Logger::Logger() {
+Logger::Logger()
+  : mFile( NULL )
+{
 }
 
 Logger::~Logger() {
+  if( mFile ) {
+    delete mFile;
+    mFile = NULL;
+  }
 }
 
 
-void Logger::SetLogPath( const string& path ) {
-  mOf.open( path.c_str(), std::ios_base::app );
+void Logger::SetLogPath( const QString& path ) {
+  if( mFile )
+    delete mFile;
+
+  mFile = new QFile( path );
+  if( mFile )  {
+    mFile->open( QIODevice::WriteOnly | QIODevice::Text );
+  }
 }
 
 void Logger::Add( LogEventType type, const char *fmt, ... ) {
@@ -32,12 +46,12 @@ void Logger::Add( LogEventType type, const char *fmt, ... ) {
   // Decorate
   char decorated[ 4096 ];
   sprintf( decorated, "[%s] %s: %s\n", timestamp, LOG_EVENT_TYPE_NAMES[ type ], buffer );
-  string line = string( decorated );
+  QString line( decorated );
 
-  // Add to file
-  if( mOf.is_open() ) {
-    mOf << line;
-    mOf.flush();
+  if( mFile && mFile->isOpen() ) {
+    QTextStream out( mFile );
+    out << line;
+    mFile->flush();
   }
 
   emit NewMessage( type, line );

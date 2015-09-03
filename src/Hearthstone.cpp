@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDesktopServices>
 #include <QSettings>
+#include <QTextStream>
 
 #include <QJsonDocument>
 #include <QJsonObject>

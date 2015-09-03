@@ -151,7 +151,7 @@ LogTab::LogTab( QWidget *parent )
   QFont fixedFont = QFontDatabase::systemFont( QFontDatabase::FixedFont );
   mUI->logText->setFont( fixedFont );
 
-  connect( Logger::Instance(), SIGNAL( NewMessage(LogEventType, const string&) ), this, SLOT( AddLogEntry(LogEventType, const string&) ) );
+  connect( Logger::Instance(), SIGNAL( NewMessage(LogEventType, const QString&) ), this, SLOT( AddLogEntry(LogEventType, const QString&) ) );
 }
 
 
@@ -159,7 +159,7 @@ LogTab::~LogTab() {
   delete mUI;
 }
 
-void LogTab::AddLogEntry( LogEventType type, const string& msg ) {
+void LogTab::AddLogEntry( LogEventType type, const QString& msg ) {
   mUI->logText->moveCursor( QTextCursor::End );
 
   switch( type ) {
@@ -175,7 +175,7 @@ void LogTab::AddLogEntry( LogEventType type, const string& msg ) {
       mUI->logText->setTextColor( QApplication::palette().text().color() );
   }
 
-  mUI->logText->insertPlainText( msg.c_str() );
+  mUI->logText->insertPlainText( msg );
   mUI->logText->moveCursor( QTextCursor::End );
 }
 

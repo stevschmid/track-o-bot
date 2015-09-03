@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDir>
 #include <QStandardPaths>
+#include <QTextStream>
 
 Dropbox::Dropbox()
   : mDropboxPath( RetrieveDropboxPath() )

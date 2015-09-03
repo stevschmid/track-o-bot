@@ -2,12 +2,8 @@
 
 #include <time.h>
 
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-
-#include <QDebug>
+#include <QFile>
+#include <QString>
 
 typedef enum {
   LOG_DEBUG = 0,
@@ -22,19 +18,18 @@ const char LOG_EVENT_TYPE_NAMES[][128] = {
 };
 
 class Logger : public QObject {
-  Q_OBJECT;
+  Q_OBJECT
 
 DEFINE_SINGLETON( Logger )
 
 private:
-  std::ofstream mOf;
-
+  QFile *mFile;
 
 public:
-  void SetLogPath( const string& path );
+  void SetLogPath( const QString& path );
   void Add( LogEventType type, const char *fmt, ... );
 
 signals:
-  void NewMessage( LogEventType type, const string& message );
+  void NewMessage( LogEventType type, const QString& message );
 };
 

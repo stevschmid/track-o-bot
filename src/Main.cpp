@@ -61,7 +61,7 @@ int main( int argc, char **argv )
     QDir dir;
     dir.mkpath( dataLocation );
   }
-  string logFilePath = ( dataLocation + QDir::separator() + app.applicationName() + ".log" ).toStdString();
+  QString logFilePath = dataLocation + QDir::separator() + app.applicationName() + ".log";
   Logger::Instance()->SetLogPath( logFilePath );
 
   // Start

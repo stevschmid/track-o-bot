@@ -77,7 +77,7 @@ private:
   Ui::LogWidget *mUI;
 
 private slots:
-  void AddLogEntry( LogEventType type, const string& message );
+  void AddLogEntry( LogEventType type, const QString& message );
 
 public:
   explicit LogTab( QWidget *parent = 0 );
