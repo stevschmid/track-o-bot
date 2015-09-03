@@ -4,6 +4,7 @@
 #include "Result.h"
 #include "ResultQueue.h"
 #include "RankClassifier.h"
+#include "ReplayManager.h"
 
 #include <QTimer>
 #include <QTime>
@@ -24,6 +25,7 @@ private:
   RankClassifier        mRankClassifier;
 
   ResultQueue           mResultsQueue;
+  ReplayManager         mReplayManager;
 
   void ResetResult();
   void UploadResult();
