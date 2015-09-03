@@ -6,11 +6,11 @@
 #include <QSslError>
 #include <QJsonObject>
 
-class Tracker : public QObject
+class Uploader : public QObject
 {
   Q_OBJECT
 
-DEFINE_SINGLETON( Tracker )
+DEFINE_SINGLETON( Uploader )
 
 private:
   QNetworkAccessManager mNetworkManager;
@@ -24,7 +24,7 @@ private slots:
 
   void SSLErrors( QNetworkReply *reply, const QList<QSslError>& errors );
 
-  QNetworkRequest CreateTrackerRequest( const QString& path );
+  QNetworkRequest CreateUploaderRequest( const QString& path );
 
 public:
   bool IsAccountSetUp() const;

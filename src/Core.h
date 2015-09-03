@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Hearthstone.h"
-#include "Tracker.h"
 #include "HearthstoneLogTracker.h"
 #include "Result.h"
 #include "ResultQueue.h"

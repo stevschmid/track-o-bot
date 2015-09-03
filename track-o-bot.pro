@@ -15,7 +15,7 @@ HEADERS = src/Local.h \
           src/Window.h \
           src/Core.h \
           src/Logger.h \
-          src/Tracker.h \
+          src/Uploader.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
           src/MLP.h \
@@ -24,7 +24,7 @@ HEADERS = src/Local.h \
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
-          src/Tracker.cpp \
+          src/Uploader.cpp \
           src/Window.cpp \
           src/Core.cpp \
           src/Logger.cpp \

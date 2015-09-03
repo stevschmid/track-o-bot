@@ -7,9 +7,10 @@
 #include "ui_AboutWidget.h"
 #include "ui_MainWindow.h"
 
-#include "Tracker.h"
 #include "Updater.h"
 extern Updater *gUpdater;
+
+#include "Uploader.h"
 
 #if defined Q_OS_MAC
 #include "OSXLocal.h"
@@ -24,7 +25,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked()), this, SLOT( CheckForUpdatesNow() ) );
   connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
   connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateUpdateCheck() ) );
-  connect( Tracker::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
+  connect( Uploader::Instance(), SIGNAL( AccountCreated() ), this, SLOT( LoadSettings() ) );
   LoadSettings();
 }
 
@@ -48,11 +49,11 @@ void SettingsTab::ExportAccount() {
 
     QDataStream out( &file );
     out.setVersion( QDataStream::Qt_4_8 );
-    out << Tracker::Instance()->Username();
-    out << Tracker::Instance()->Password();
-    out << Tracker::Instance()->WebserviceURL();
+    out << Uploader::Instance()->Username();
+    out << Uploader::Instance()->Password();
+    out << Uploader::Instance()->WebserviceURL();
 
-    LOG( "Account %s exported in %s", Tracker::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
+    LOG( "Account %s exported in %s", Uploader::Instance()->Username().toStdString().c_str(), fileName.toStdString().c_str() );
   }
 }
 
@@ -84,9 +85,9 @@ void SettingsTab::ImportAccount() {
     in >> webserviceUrl;
 
     if( !username.isEmpty() && !password.isEmpty() && !webserviceUrl.isEmpty() ) {
-      Tracker::Instance()->SetUsername( username );
-      Tracker::Instance()->SetPassword( password );
-      Tracker::Instance()->SetWebserviceURL( webserviceUrl );
+      Uploader::Instance()->SetUsername( username );
+      Uploader::Instance()->SetPassword( password );
+      Uploader::Instance()->SetWebserviceURL( webserviceUrl );
 
       LOG( "Account %s imported from %s", username.toStdString().c_str(), fileName.toStdString().c_str() );
       LoadSettings();
@@ -115,9 +116,9 @@ void SettingsTab::LoadSettings() {
     mUI->checkForUpdates->setChecked( gUpdater->AutomaticallyChecksForUpdates() );
   }
 
-  bool accountSetUp = Tracker::Instance()->IsAccountSetUp();
+  bool accountSetUp = Uploader::Instance()->IsAccountSetUp();
   if( accountSetUp ) {
-    mUI->account->setText( Tracker::Instance()->Username() );
+    mUI->account->setText( Uploader::Instance()->Username() );
   }
 
   mUI->importAccountButton->setEnabled( accountSetUp );
@@ -240,7 +241,7 @@ void Window::HandleFirstStartCheck() {
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #ifdef Q_OS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
-    Tracker::Instance()->OpenProfile();
+    Uploader::Instance()->OpenProfile();
   }
 #else
   UNUSED( reason );
@@ -311,7 +312,7 @@ void Window::RiseAndShine() {
 }
 
 void Window::OpenProfile() {
-  Tracker::Instance()->OpenProfile();
+  Uploader::Instance()->OpenProfile();
 }
 
 void Window::HandleGameClientRestartRequired( bool restartRequired ) {

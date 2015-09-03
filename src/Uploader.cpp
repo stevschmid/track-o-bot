@@ -1,4 +1,4 @@
-#include "Tracker.h"
+#include "Uploader.h"
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -14,17 +14,17 @@
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
-DEFINE_SINGLETON_SCOPE( Tracker );
+DEFINE_SINGLETON_SCOPE( Uploader );
 
-Tracker::Tracker() {
+Uploader::Uploader() {
   connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
       this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
 }
 
-Tracker::~Tracker() {
+Uploader::~Uploader() {
 }
 
-void Tracker::EnsureAccountIsSetUp() {
+void Uploader::EnsureAccountIsSetUp() {
   if( !IsAccountSetUp() ) {
     LOG( "No account setup. Creating one for you." );
     CreateAndStoreAccount();
@@ -33,7 +33,7 @@ void Tracker::EnsureAccountIsSetUp() {
   }
 }
 
-void Tracker::UploadResult( const QJsonObject& result )
+void Uploader::UploadResult( const QJsonObject& result )
 {
   QJsonObject params;
   params[ "result" ] = result;
@@ -59,29 +59,29 @@ void Tracker::UploadResult( const QJsonObject& result )
   });
 }
 
-QNetworkReply* Tracker::AuthPostJson( const QString& path, const QByteArray& data ) {
+QNetworkReply* Uploader::AuthPostJson( const QString& path, const QByteArray& data ) {
   QString credentials = "Basic " + ( Username() + ":" + Password() ).toLatin1().toBase64();
 
-  QNetworkRequest request = CreateTrackerRequest( path );
+  QNetworkRequest request = CreateUploaderRequest( path );
   request.setRawHeader( "Authorization", credentials.toLatin1() );
   request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
   return mNetworkManager.post( request, data );
 }
 
-QNetworkRequest Tracker::CreateTrackerRequest( const QString& path ) {
+QNetworkRequest Uploader::CreateUploaderRequest( const QString& path ) {
   QUrl url( WebserviceURL( path ) );
   QNetworkRequest request( url );
   request.setRawHeader( "User-Agent", "Track-o-Bot/" VERSION PLATFORM );
   return request;
 }
 
-void Tracker::CreateAndStoreAccount() {
-  QNetworkRequest request = CreateTrackerRequest( "/users.json" );
+void Uploader::CreateAndStoreAccount() {
+  QNetworkRequest request = CreateUploaderRequest( "/users.json" );
   QNetworkReply *reply = mNetworkManager.post( request, "" );
   connect( reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()) );
 }
 
-void Tracker::CreateAndStoreAccountHandleReply() {
+void Uploader::CreateAndStoreAccountHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
     LOG( "Account creation was successful!" );
@@ -107,12 +107,12 @@ void Tracker::CreateAndStoreAccountHandleReply() {
   }
 }
 
-void Tracker::OpenProfile() {
+void Uploader::OpenProfile() {
   QNetworkReply *reply = AuthPostJson( "/one_time_auth.json", "" );
   connect( reply, SIGNAL( finished() ), this, SLOT( OpenProfileHandleReply() ) );
 }
 
-void Tracker::OpenProfileHandleReply() {
+void Uploader::OpenProfileHandleReply() {
   QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
   if( reply->error() == QNetworkReply::NoError ) {
     QByteArray jsonData = reply->readAll();
@@ -132,19 +132,19 @@ void Tracker::OpenProfileHandleReply() {
   }
 }
 
-QString Tracker::Username() const {
+QString Uploader::Username() const {
   return mSettings.value( "username" ).toString();
 }
 
-QString Tracker::Password() const {
+QString Uploader::Password() const {
   return mSettings.value( "password" ).toString();
 }
 
-QString Tracker::WebserviceURL( const QString& path ) {
+QString Uploader::WebserviceURL( const QString& path ) {
   return WebserviceURL() + path;
 }
 
-QString Tracker::WebserviceURL() {
+QString Uploader::WebserviceURL() {
   if( !mSettings.contains( "webserviceUrl" ) || mSettings.value( "webserviceUrl" ).toString().isEmpty() ) {
     SetWebserviceURL( DEFAULT_WEBSERVICE_URL );
   }
@@ -152,19 +152,19 @@ QString Tracker::WebserviceURL() {
   return mSettings.value( "webserviceUrl" ).toString();
 }
 
-void Tracker::SetUsername( const QString& username ) {
+void Uploader::SetUsername( const QString& username ) {
   mSettings.setValue( "username", username );
 }
 
-void Tracker::SetPassword( const QString& password ) {
+void Uploader::SetPassword( const QString& password ) {
   mSettings.setValue( "password", password );
 }
 
-void Tracker::SetWebserviceURL( const QString& webserviceUrl ) {
+void Uploader::SetWebserviceURL( const QString& webserviceUrl ) {
   mSettings.setValue( "webserviceUrl", webserviceUrl );
 }
 
-bool Tracker::IsAccountSetUp() const {
+bool Uploader::IsAccountSetUp() const {
   return mSettings.contains( "username" ) && mSettings.contains( "password" ) &&
     !mSettings.value( "username" ).toString().isEmpty() && !mSettings.value( "password" ).toString().isEmpty();
 }
@@ -173,7 +173,7 @@ bool Tracker::IsAccountSetUp() const {
 // "There root certificate of the certificate chain is self-signed, and untrusted"
 // The root cert might not be trusted yet (only after we browse to the website)
 // So allow allow self-signed certificates, just in case
-void Tracker::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
+void Uploader::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors) {
   QList<QSslError> errorsToIgnore;
 
   for( const QSslError& err : errors ) {

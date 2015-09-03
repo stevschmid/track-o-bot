@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Tracker.h"
 #include "Result.h"
 
 #include <QTimer>
