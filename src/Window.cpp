@@ -3,7 +3,6 @@
 #include <QtGui>
 
 #include "ui_Window.h"
-#include "ui_ReplaysWidget.h"
 #include "ui_SettingsWidget.h"
 #include "ui_AccountWidget.h"
 #include "ui_LogWidget.h"
@@ -15,30 +14,6 @@
 #endif
 
 #include "Settings.h"
-
-ReplaysTab::ReplaysTab( QWidget *parent )
-  : QWidget( parent ), mUI( new Ui::ReplaysWidget )
-{
-  mUI->setupUi( this );
-  connect( mUI->recordReplays, SIGNAL( clicked() ), this, SLOT( Save() ) );
-}
-
-ReplaysTab::~ReplaysTab() {
-  delete mUI;
-}
-
-void ReplaysTab::showEvent( QShowEvent *event ) {
-  QWidget::showEvent( event );
-
-  /* mUI->recordReplays->setEnabled( ReplayManager::CanRecordReplays() ); */
-
-  /* bool recordReplays = QSettings().value( "recordReplays", true ).toBool(); */
-  /* mUI->recordReplays->setChecked( recordReplays ); */
-}
-
-void ReplaysTab::Save() {
-  /* QSettings().setValue( "recordReplays", mUI->recordReplays->isChecked() ); */
-}
 
 SettingsTab::SettingsTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::SettingsWidget )
@@ -231,14 +206,11 @@ Window::Window()
   mUI->actionAccount->setActionGroup( group );
   mUI->actionAccount->setProperty( "pageIndex", 1 );
 
-  mUI->actionReplays->setActionGroup( group );
-  mUI->actionReplays->setProperty( "pageIndex", 2 );
-
   mUI->actionLog->setActionGroup( group );
-  mUI->actionLog->setProperty( "pageIndex", 3 );
+  mUI->actionLog->setProperty( "pageIndex", 2 );
 
   mUI->actionAbout->setActionGroup( group );
-  mUI->actionAbout->setProperty( "pageIndex", 4 );
+  mUI->actionAbout->setProperty( "pageIndex", 3 );
 
   mUI->pageWidget->setCurrentIndex( 0 );
   mUI->actionSettings->setChecked( true );

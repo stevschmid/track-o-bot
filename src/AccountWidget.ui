@@ -20,9 +20,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QLabel#importExportDescription,
-QLabel#startDescription,
-QLabel#updateDescription {
+   <string notr="true">QLabel#importExportDescription {
 	font-size: 11px;
 	color: #898989;
 }</string>

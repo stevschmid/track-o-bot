@@ -23,26 +23,6 @@ QT_END_NAMESPACE
 
 #include "logger.h"
 
-namespace Ui { class ReplaysWidget; }
-
-class ReplaysTab : public QWidget
-{
-  Q_OBJECT
-
-private:
-  Ui::ReplaysWidget *mUI;
-
-  void showEvent( QShowEvent *event );
-
-private slots:
-  void Save();
-
-public:
-  explicit ReplaysTab( QWidget *parent = 0 );
-  ~ReplaysTab();
-};
-
-
 namespace Ui { class SettingsWidget; }
 
 class SettingsTab : public QWidget

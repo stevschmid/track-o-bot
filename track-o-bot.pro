@@ -50,8 +50,7 @@ FORMS   = src/MainWindow.ui \
           src/SettingsWidget.ui \
           src/AccountWidget.ui \
           src/LogWidget.ui \
-          src/AboutWidget.ui \
-          src/ReplaysWidget.ui
+          src/AboutWidget.ui 
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

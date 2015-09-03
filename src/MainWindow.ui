@@ -37,7 +37,6 @@
    </property>
    <widget class="SettingsTab" name="settingsPage"/>
    <widget class="AccountTab" name="accountsPage"/>
-   <widget class="ReplaysTab" name="replaysPage"/>
    <widget class="LogTab" name="logPage"/>
    <widget class="AboutTab" name="aboutPage"/>
   </widget>
@@ -68,7 +67,6 @@
    </attribute>
    <addaction name="actionSettings"/>
    <addaction name="actionAccount"/>
-   <addaction name="actionReplays"/>
    <addaction name="actionLog"/>
    <addaction name="actionAbout"/>
   </widget>
@@ -114,21 +112,6 @@
     <string>About</string>
    </property>
   </action>
-  <action name="actionReplays">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/circle.png</normaloff>:/icons/circle.png</iconset>
-   </property>
-   <property name="text">
-    <string>Replays</string>
-   </property>
-   <property name="toolTip">
-    <string>Replays</string>
-   </property>
-  </action>
   <action name="actionAccount">
    <property name="checkable">
     <bool>true</bool>
@@ -160,12 +143,6 @@
   </customwidget>
   <customwidget>
    <class>AboutTab</class>
-   <extends>QWidget</extends>
-   <header>src/window.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ReplaysTab</class>
    <extends>QWidget</extends>
    <header>src/window.h</header>
    <container>1</container>
