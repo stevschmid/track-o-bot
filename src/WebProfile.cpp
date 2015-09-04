@@ -70,6 +70,8 @@ void WebProfile::UploadResult( const QJsonObject& result )
       int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
       emit UploadResultFailed( result, statusCode );
     }
+
+    reply->deleteLater();
   });
 }
 
@@ -116,6 +118,8 @@ void WebProfile::CreateAndStoreAccountHandleReply() {
     int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
     ERR( "There was a problem creating an account. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
   }
+
+  reply->deleteLater();
 }
 
 void WebProfile::OpenProfile() {
@@ -135,6 +139,8 @@ void WebProfile::OpenProfileHandleReply() {
     int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
     ERR( "There was a problem creating an auth token. Error: %i HTTP Status Code: %i", reply->error(), statusCode );
   }
+
+  reply->deleteLater();
 }
 
 QString WebProfile::WebserviceURL( const QString& path ) {
