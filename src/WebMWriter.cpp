@@ -8,13 +8,13 @@
 WebMWriter::WebMWriter( int width, int height, int bitrate, int fps )
   : mWriter( NULL ),
     mSegment( NULL ),
-    mLastPtsNs( 0 ),
+    mLastPtsNs( -1 ),
     mFrameCounter( 0 )
 {
   mFramerate.num = fps;
   mFramerate.den = 1;
 
-  // mCfg
+  // Init config
   vpx_codec_err_t err;
   err = vpx_codec_enc_config_default( &vpx_codec_vp8_cx_algo, &mCfg, 0 );
   assert( !err );
@@ -28,11 +28,7 @@ WebMWriter::WebMWriter( int width, int height, int bitrate, int fps )
 
   mCfg.g_timebase.den = 1000;
 
-  // mCodec
-  err = vpx_codec_enc_init( &mCodec, &vpx_codec_vp8_cx_algo, &mCfg, 0 );
-  assert( !err );
-
-  // mImg
+  // Allocate image
 	vpx_img_alloc( &mImg, VPX_IMG_FMT_YV12, width, height, 1 );
 }
 
@@ -46,7 +42,6 @@ WebMWriter::~WebMWriter() {
   if( mSegment )
     delete mSegment;
 
-  vpx_codec_destroy( &mCodec );
   vpx_img_free( &mImg );
 }
 
@@ -58,7 +53,9 @@ bool WebMWriter::Open( const QString& path ) {
   if( IsOpen() )
     return false;
 
+  // Reset
   mFrameCounter = 0;
+  mLastPtsNs = -1;
 
   // libvpx/webm.cc
   mWriter = new mkvmuxer::MkvWriter();
@@ -67,6 +64,10 @@ bool WebMWriter::Open( const QString& path ) {
     mWriter = NULL;
     return false;
   }
+
+  // Create codec
+  vpx_codec_err_t err = vpx_codec_enc_init( &mCodec, &vpx_codec_vp8_cx_algo, &mCfg, 0 );
+  assert( !err );
 
   mSegment = new mkvmuxer::Segment();
   mSegment->Init( mWriter );
@@ -93,6 +94,9 @@ bool WebMWriter::Open( const QString& path ) {
 
 void WebMWriter::Close() {
   if( IsOpen() ) {
+    // Remove codec
+    vpx_codec_destroy( &mCodec );
+
     DBG( "Close WebM" );
     // libvpx/webm.cc
     mSegment->Finalize();
