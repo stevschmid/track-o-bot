@@ -24,8 +24,7 @@
 Updater *gUpdater = NULL;
 
 Trackobot::Trackobot( int argc, char **argv )
-  :
-    mApp( argc, argv ),
+  : mApp( argc, argv ),
     mCore( NULL ),
     mWindow( NULL )
 {

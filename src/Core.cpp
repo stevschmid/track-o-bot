@@ -3,8 +3,7 @@
 #include "Hearthstone.h"
 
 Core::Core()
-  :
-    mGameRunning( false ),
+  : mGameRunning( false ),
     mGameClientRestartRequired( false )
 {
   mTimer = new QTimer( this );

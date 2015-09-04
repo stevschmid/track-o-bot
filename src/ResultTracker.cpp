@@ -4,8 +4,7 @@
 #include <map>
 
 ResultTracker::ResultTracker()
-  :
-    mSpectating( false ),
+  : mSpectating( false ),
     mReplayRecorder( &mLogTracker )
 {
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
