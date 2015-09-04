@@ -15,6 +15,10 @@ UI_DIR = tmp
 PRECOMPILED_HEADER = src/Local.h
 HEADERS = src/Local.h \
           src/ui/Window.h \
+          src/ui/SettingsTab.h \
+          src/ui/AccountTab.h \
+          src/ui/LogTab.h \
+          src/ui/AboutTab.h \
           src/Core.h \
           src/Logger.h \
           src/WebProfile.h \
@@ -33,6 +37,10 @@ SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
           src/WebProfile.cpp \
           src/ui/Window.cpp \
+          src/ui/SettingsTab.cpp \
+          src/ui/AccountTab.cpp \
+          src/ui/LogTab.cpp \
+          src/ui/AboutTab.cpp \
           src/Core.cpp \
           src/Logger.cpp \
           src/Autostart.cpp \

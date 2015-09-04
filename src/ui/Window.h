@@ -1,101 +1,12 @@
 #pragma once
 
+#include <QAction>
 #include <QDialog>
 #include <QSystemTrayIcon>
-#include <QFileDialog>
-#include <QMessageBox>
 #include <QMenu>
 #include <QMainWindow>
 
-QT_BEGIN_NAMESPACE
-class QAction;
-class QMenu;
-class QMessageBox;
-class QSystemTrayIcon;
-class QTextEdit;
-class QTabWidget;
-class QLineEdit;
-class QCheckBox;
-class QLabel;
-QT_END_NAMESPACE
-
 #include "../Core.h"
-#include "../Logger.h"
-
-namespace Ui { class SettingsWidget; }
-
-class SettingsTab : public QWidget
-{
-  Q_OBJECT
-
-private:
-  Ui::SettingsWidget *mUI;
-
-private slots:
-  void CheckForUpdatesNow();
-
-public:
-  explicit SettingsTab( QWidget *parent = 0 );
-  ~SettingsTab();
-
-public slots:
-  void UpdateAutostart();
-  void UpdateAutoUpdateCheck();
-  void UpdateReplaysEnabled();
-  void LoadSettings();
-};
-
-namespace Ui { class AccountWidget; }
-
-class AccountTab : public QWidget
-{
-  Q_OBJECT
-
-private:
-  Ui::AccountWidget *mUI;
-
-private slots:
-  void ExportAccount();
-  void ImportAccount();
-
-public:
-  explicit AccountTab( QWidget *parent = 0 );
-  ~AccountTab();
-
-public slots:
-  void LoadAccount();
-};
-
-namespace Ui { class LogWidget; }
-
-class LogTab : public QWidget
-{
-  Q_OBJECT
-
-private:
-  Ui::LogWidget *mUI;
-
-private slots:
-  void AddLogEntry( LogEventType type, const QString& message );
-
-public:
-  explicit LogTab( QWidget *parent = 0 );
-  ~LogTab();
-};
-
-namespace Ui { class AboutWidget; }
-
-class AboutTab : public QWidget
-{
-  Q_OBJECT
-
-private:
-  Ui::AboutWidget *mUI;
-
-public:
-  explicit AboutTab( QWidget *parent = 0 );
-  ~AboutTab();
-};
 
 namespace Ui { class MainWindow; }
 

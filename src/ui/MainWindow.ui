@@ -132,25 +132,25 @@
   <customwidget>
    <class>SettingsTab</class>
    <extends>QWidget</extends>
-   <header>src/ui/window.h</header>
+   <header>src/ui/SettingsTab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LogTab</class>
    <extends>QWidget</extends>
-   <header>src/ui/window.h</header>
+   <header>src/ui/LogTab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AboutTab</class>
    <extends>QWidget</extends>
-   <header>src/ui/window.h</header>
+   <header>src/ui/AboutTab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AccountTab</class>
    <extends>QWidget</extends>
-   <header>src/ui/window.h</header>
+   <header>src/ui/AccountTab.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
