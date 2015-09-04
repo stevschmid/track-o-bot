@@ -183,10 +183,7 @@ AboutTab::AboutTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::AboutWidget )
 {
   mUI->setupUi( this );
-
-  QPixmap logoImage( ":/icons/logo.png" );
-  mUI->logo->setPixmap( logoImage.scaled( 64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
-  mUI->version->setText( VERSION );
+  mUI->aboutText->setHtml( mUI->aboutText->toHtml().replace( "VERSION", VERSION ) );
 }
 
 AboutTab::~AboutTab() {
