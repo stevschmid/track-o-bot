@@ -14,6 +14,8 @@ private:
   Core *mCore;
   Window *mWindow;
 
+  WebProfile mWebProfile;
+
   bool IsAlreadyRunning() const;
 
   void SetupApplication();

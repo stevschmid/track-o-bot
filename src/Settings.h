@@ -15,15 +15,12 @@ signals:
   void AutoUpdateCheckChanged( bool enabled );
   void ReplaysEnabledChanged( bool enabled );
 
-  void OpenProfileRequested();
-
 public:
 
   QString AccountUsername() const;
   QString AccountPassword() const;
   bool HasAccount() const;
   void SetAccount( const QString& username, const QString& password );
-  void OpenProfile();
 
   QString WebserviceURL() const;
   void SetWebserviceURL( const QString& webserviceUrl );

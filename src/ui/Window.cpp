@@ -87,7 +87,7 @@ void Window::HandleFirstStartCheck() {
 void Window::TrayIconActivated( QSystemTrayIcon::ActivationReason reason ) {
 #ifdef Q_OS_WIN
   if( reason == QSystemTrayIcon::ActivationReason::DoubleClick ) {
-    OpenProfile();
+    OpenProfileRequested();
   }
 #else
   UNUSED_ARG( reason );
@@ -103,7 +103,7 @@ void Window::closeEvent( QCloseEvent *event ) {
 
 void Window::CreateActions() {
   mOpenProfileAction = new QAction( tr( "Open Profile..." ), this );
-  connect( mOpenProfileAction, SIGNAL( triggered() ), this, SLOT( OpenProfile() ) );
+  connect( mOpenProfileAction, SIGNAL( triggered() ), this, SLOT( OpenProfileRequested() ) );
 
   mShowAction = new QAction( tr( "Settings..." ), this );
   connect( mShowAction, SIGNAL( triggered() ), this, SLOT( RiseAndShine() ) );
@@ -152,8 +152,8 @@ void Window::RiseAndShine() {
   raise();
 }
 
-void Window::OpenProfile() {
-  Settings::Instance()->OpenProfile();
+void Window::OpenProfileRequested() {
+  emit OpenProfile();
 }
 
 void Window::HandleGameClientRestartRequired( bool restartRequired ) {

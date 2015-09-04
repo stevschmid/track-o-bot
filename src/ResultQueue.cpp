@@ -1,14 +1,13 @@
 #include "ResultQueue.h"
-#include "WebProfile.h"
 
 #define RESULT_QUEUE_CHECK_PERIOD (30 * 60 * 1000)
 #define RESULT_QUEUE_UPLOAD_PERIOD (5 * 60 * 1000)
 
 ResultQueue::ResultQueue()
 {
-  connect( WebProfile::Instance(), SIGNAL( UploadResultFailed(const QJsonObject&, int) ),
+  connect( &mWebProfile, SIGNAL( UploadResultFailed(const QJsonObject&, int) ),
       this, SLOT( UploadResultFailed(const QJsonObject&, int) ) );
-  connect( WebProfile::Instance(), SIGNAL( UploadResultSucceeded(const QJsonObject&) ),
+  connect( &mWebProfile, SIGNAL( UploadResultSucceeded(const QJsonObject&) ),
       this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
 
   mCheckTimer = new QTimer( this );
@@ -118,7 +117,7 @@ void ResultQueue::Upload() {
     }
     QJsonObject result = mQueue.takeAt( 0 ).toObject();
 
-    WebProfile::Instance()->UploadResult( result );
+    mWebProfile.UploadResult( result );
   }
 }
 

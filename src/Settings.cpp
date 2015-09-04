@@ -42,10 +42,6 @@ void Settings::SetAccount( const QString& username, const QString& password ) {
   emit AccountChanged( username, password );
 }
 
-void Settings::OpenProfile() {
-  emit OpenProfileRequested();
-}
-
 QString Settings::WebserviceURL() const {
   return QSettings().value( KEY_WEBSERVICE_URL ).toString();
 }

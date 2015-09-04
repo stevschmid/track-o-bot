@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Result.h"
+#include "WebProfile.h"
 
 #include <QTimer>
 #include <QSettings>
@@ -17,6 +18,7 @@ private:
   QTimer*     mCheckTimer;
   QTimer*     mUploadTimer;
   QJsonArray  mQueue;
+  WebProfile  mWebProfile;
 
   void Load();
   void Save();

@@ -10,10 +10,8 @@ class WebProfile : public QObject
 {
   Q_OBJECT
 
-DEFINE_SINGLETON( WebProfile )
-
 private:
-  QNetworkAccessManager *mNetworkManager;
+  QNetworkAccessManager mNetworkManager;
 
   QNetworkReply* AuthPostJson( const QString& path, const QByteArray& data );
 
@@ -26,18 +24,20 @@ private slots:
 
   QNetworkRequest CreateWebProfileRequest( const QString& path );
 
-public:
-  bool IsAccountSetUp() const;
+signals:
+  void UploadResultFailed( const QJsonObject& result, int errorCode );
+  void UploadResultSucceeded( const QJsonObject& response );
 
+public:
+  WebProfile();
+
+  bool IsAccountSetUp() const;
   void UploadResult( const QJsonObject& result );
   void CreateAndStoreAccount();
   void EnsureAccountIsSetUp();
 
   QString WebserviceURL( const QString& path );
 
-signals:
-  void UploadResultFailed( const QJsonObject& result, int errorCode );
-  void UploadResultSucceeded( const QJsonObject& response );
 
 };
 

@@ -7,6 +7,7 @@
 #include <QLocalSocket>
 
 #include "Updater.h"
+#include "Settings.h"
 
 #if defined Q_OS_MAC
 #include "CocoaInitializer.h"
@@ -113,9 +114,9 @@ void Trackobot::SetupLogging() {
 void Trackobot::SetupUpdater() {
 #if defined Q_OS_MAC
 CocoaInitializer cocoaInitializer;
-gUpdater = new SparkleUpdater( WebProfile::Instance()->WebserviceURL( "/appcast.xml" ) );
+gUpdater = new SparkleUpdater( mWebProfile.WebserviceURL( "/appcast.xml" ) );
 #elif defined Q_OS_WIN
-gUpdater = new WinSparkleUpdater( WebProfile::Instance()->WebserviceURL( "/appcast_win.xml" ) );
+gUpdater = new WinSparkleUpdater( mWebProfile.WebserviceURL( "/appcast_win.xml" ) );
 #endif
 }
 
@@ -139,8 +140,11 @@ void Trackobot::Initialize() {
   connect( mCore, SIGNAL( HandleGameClientRestartRequired(bool) ),
       mWindow, SLOT( HandleGameClientRestartRequired(bool) ) );
 
+  connect( mWindow, SIGNAL( OpenProfile() ),
+      &mWebProfile, SLOT( OpenProfile() ) );
+
   // Make sure Account exists or create one
-  WebProfile::Instance()->EnsureAccountIsSetUp();
+  mWebProfile.EnsureAccountIsSetUp();
 
   // Enable HS Logging
   Hearthstone::Instance()->EnableLogging();

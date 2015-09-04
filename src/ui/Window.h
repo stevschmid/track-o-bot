@@ -32,7 +32,7 @@ private:
 
 private slots:
   void RiseAndShine();
-  void OpenProfile();
+  void OpenProfileRequested();
   void TrayIconActivated( QSystemTrayIcon::ActivationReason reason );
 
   void HandleFirstStartCheck();
@@ -42,6 +42,9 @@ private slots:
 
 public slots:
   void HandleGameClientRestartRequired( bool restartRequired );
+
+signals:
+  void OpenProfile();
 
 public:
   explicit Window();
