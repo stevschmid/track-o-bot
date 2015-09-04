@@ -75,7 +75,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources.qrc">
+    <iconset resource="../../resources.qrc">
      <normaloff>:/icons/switch.png</normaloff>:/icons/switch.png</iconset>
    </property>
    <property name="text">
@@ -90,8 +90,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/icons/log.png</normaloff>:/icons/log.png</iconset>
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/log@2x.png</normaloff>:/icons/log@2x.png</iconset>
    </property>
    <property name="text">
     <string>Log</string>
@@ -102,7 +102,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources.qrc">
+    <iconset resource="../../resources.qrc">
      <normaloff>:/icons/info@2x.png</normaloff>:/icons/info@2x.png</iconset>
    </property>
    <property name="text">
@@ -117,7 +117,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources.qrc">
+    <iconset resource="../../resources.qrc">
      <normaloff>:/icons/person@2x.png</normaloff>:/icons/person@2x.png</iconset>
    </property>
    <property name="text">
@@ -155,7 +155,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-   <include location="../../resources.qrc"/>
+  <include location="../../resources.qrc"/>
  </resources>
  <connections/>
 </ui>
