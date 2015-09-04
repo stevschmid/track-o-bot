@@ -31,7 +31,8 @@ HEADERS = src/Local.h \
           src/ResultQueue.h \
           src/ReplayRecorder.h \
           src/WebMWriter.h \
-          src/Dropbox.h
+          src/Dropbox.h \
+          src/Trackobot.h
 
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
@@ -54,7 +55,8 @@ SOURCES = src/Main.cpp \
           src/ReplayRecorder.cpp \
           src/WebMWriter.cpp \
           src/Local.cpp \
-          src/Dropbox.cpp
+          src/Dropbox.cpp \
+          src/Trackobot.cpp
 
 FORMS   = src/ui/MainWindow.ui \
           src/ui/SettingsWidget.ui \

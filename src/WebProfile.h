@@ -13,7 +13,7 @@ class WebProfile : public QObject
 DEFINE_SINGLETON( WebProfile )
 
 private:
-  QNetworkAccessManager mNetworkManager;
+  QNetworkAccessManager *mNetworkManager;
 
   QNetworkReply* AuthPostJson( const QString& path, const QByteArray& data );
 

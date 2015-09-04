@@ -6,8 +6,6 @@
 #include <QMenu>
 #include <QMainWindow>
 
-#include "../Core.h"
-
 namespace Ui { class MainWindow; }
 
 class Window : public QMainWindow
@@ -32,19 +30,18 @@ private:
   QSystemTrayIcon   *mTrayIcon;
   QMenu             *mTrayIconMenu;
 
-  Core              mCore;
-
 private slots:
   void RiseAndShine();
   void OpenProfile();
   void TrayIconActivated( QSystemTrayIcon::ActivationReason reason );
 
-  void HandleGameClientRestartRequired( bool restartRequired );
   void HandleFirstStartCheck();
 
   void ActionTriggered( QAction *action );
-
   void TabChanged( int index );
+
+public slots:
+  void HandleGameClientRestartRequired( bool restartRequired );
 
 public:
   explicit Window();

@@ -22,7 +22,6 @@ Window::Window()
   CreateTrayIcon();
 
   connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
-  connect( &mCore, SIGNAL( HandleGameClientRestartRequired(bool) ), this, SLOT( HandleGameClientRestartRequired(bool) ) );
 
   QActionGroup *group = new QActionGroup( this );
   group->setExclusive( true );

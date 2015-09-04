@@ -18,8 +18,12 @@
 
 DEFINE_SINGLETON_SCOPE( WebProfile );
 
-WebProfile::WebProfile() {
-  connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
+WebProfile::WebProfile()
+  : mNetworkManager( NULL )
+{
+  mNetworkManager = new QNetworkAccessManager( this );
+
+  connect( mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
       this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
   connect( Settings::Instance(), SIGNAL( OpenProfileRequested() ),
       this, SLOT( OpenProfile() ) );
@@ -90,7 +94,7 @@ QNetworkReply* WebProfile::AuthPostJson( const QString& path, const QByteArray& 
   QNetworkRequest request = CreateWebProfileRequest( path );
   request.setRawHeader( "Authorization", credentials.toLatin1() );
   request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
-  return mNetworkManager.post( request, data );
+  return mNetworkManager->post( request, data );
 }
 
 QNetworkRequest WebProfile::CreateWebProfileRequest( const QString& path ) {
@@ -102,7 +106,7 @@ QNetworkRequest WebProfile::CreateWebProfileRequest( const QString& path ) {
 
 void WebProfile::CreateAndStoreAccount() {
   QNetworkRequest request = CreateWebProfileRequest( "/users.json" );
-  QNetworkReply *reply = mNetworkManager.post( request, "" );
+  QNetworkReply *reply = mNetworkManager->post( request, "" );
   connect( reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()) );
 }
 
