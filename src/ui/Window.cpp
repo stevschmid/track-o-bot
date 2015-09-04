@@ -2,7 +2,6 @@
 
 #include <QtGui>
 
-#include "ui_Window.h"
 #include "ui_SettingsWidget.h"
 #include "ui_AccountWidget.h"
 #include "ui_LogWidget.h"
@@ -10,10 +9,10 @@
 #include "ui_MainWindow.h"
 
 #if defined Q_OS_MAC
-#include "OSXLocal.h"
+#include "../OSXLocal.h"
 #endif
 
-#include "Settings.h"
+#include "../Settings.h"
 
 SettingsTab::SettingsTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::SettingsWidget )

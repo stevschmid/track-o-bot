@@ -8,7 +8,7 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 
-#include "Window.h"
+#include "ui/Window.h"
 #include "Updater.h"
 
 #if defined Q_OS_MAC

@@ -14,7 +14,7 @@ UI_DIR = tmp
 
 PRECOMPILED_HEADER = src/Local.h
 HEADERS = src/Local.h \
-          src/Window.h \
+          src/ui/Window.h \
           src/Core.h \
           src/Logger.h \
           src/WebProfile.h \
@@ -32,7 +32,7 @@ HEADERS = src/Local.h \
 SOURCES = src/Main.cpp \
           src/Hearthstone.cpp \
           src/WebProfile.cpp \
-          src/Window.cpp \
+          src/ui/Window.cpp \
           src/Core.cpp \
           src/Logger.cpp \
           src/Autostart.cpp \
@@ -48,11 +48,11 @@ SOURCES = src/Main.cpp \
           src/Local.cpp \
           src/Dropbox.cpp
 
-FORMS   = src/MainWindow.ui \
-          src/SettingsWidget.ui \
-          src/AccountWidget.ui \
-          src/LogWidget.ui \
-          src/AboutWidget.ui 
+FORMS   = src/ui/MainWindow.ui \
+          src/ui/SettingsWidget.ui \
+          src/ui/AccountWidget.ui \
+          src/ui/LogWidget.ui \
+          src/ui/AboutWidget.ui 
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

@@ -7,8 +7,6 @@
 #include <QMenu>
 #include <QMainWindow>
 
-#include "Core.h"
-
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
@@ -21,7 +19,8 @@ class QCheckBox;
 class QLabel;
 QT_END_NAMESPACE
 
-#include "logger.h"
+#include "../Core.h"
+#include "../Logger.h"
 
 namespace Ui { class SettingsWidget; }
 
