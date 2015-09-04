@@ -26,7 +26,7 @@ const char HERO_IDS[NUM_HEROES][32] = {
 Q_DECLARE_METATYPE( ::CardHistoryList );
 
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurnCounter( 0 ), mHeroPowerUsed( false ), mHeroPlayerId( 0 )
+  : mTurnCounter( 0 ), mHeroPowerUsed( false ), mHeroPlayerId( 0 ), mLegendTracked( false )
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
@@ -38,6 +38,8 @@ void HearthstoneLogTracker::Reset() {
   mTurnCounter = 0;
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
+  mLegendTracked = false;
+  mSpectating = false;
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -45,12 +47,13 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     return;
 
   // CardPlayed / CardReturned / PlayerDied
-  QRegExp regex( "ProcessChanges.*cardId=(\\w+).*zone from (.*) -> (.*)" );
+  QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) -> (.*)" );
   if( regex.indexIn(line) != -1 ) {
     QStringList captures = regex.capturedTexts();
-    QString cardId = captures[1];
-    QString from = captures[2];
-    QString to = captures[3];
+    int id = captures[1].toInt();
+    QString cardId = captures[2];
+    QString from = captures[3];
+    QString to = captures[4];
 
     bool draw = from.contains( "DECK" ) && to.contains( "HAND" );
     bool mulligan = from.contains( "HAND" ) && to.contains( "DECK" );
@@ -60,9 +63,11 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
     if( !draw && !mulligan && !discard ) {
       if( from.contains( "FRIENDLY HAND" ) ) {
-        CardPlayed( PLAYER_SELF, cardId.toStdString() );
+        CardPlayed( PLAYER_SELF, cardId.toStdString(), id );
       } else if( from.contains( "OPPOSING HAND" ) ) {
-        CardPlayed( PLAYER_OPPONENT, cardId.toStdString() );
+        CardPlayed( PLAYER_OPPONENT, cardId.toStdString(), id );
+      } else if( from.contains( "OPPOSING SECRET" ) && to.contains( "OPPOSING GRAVEYARD" ) ) {
+        SecretResolved( PLAYER_OPPONENT, cardId.toStdString(), id );
       }
     }
 
@@ -70,7 +75,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d)", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard );
+    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard, id );
   }
 
   // Outcome
@@ -84,7 +89,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     } else if( outcome == "defeat" ) {
       emit HandleOutcome( OUTCOME_DEFEAT );
     }
-    emit HandleMatchEnd( mCardHistoryList );
+    emit HandleMatchEnd( mCardHistoryList, mSpectating );
     Reset();
   }
 
@@ -106,10 +111,16 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   // Turn Info
   QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
   if( regexTurn.indexIn(line) != -1 ) {
+    int oldTurn = CurrentTurn();
+
     mTurnCounter++;
 
     // reset hero power usage on turn change
     mHeroPowerUsed = false;
+
+    if( oldTurn != CurrentTurn() ) {
+      emit HandleTurn( CurrentTurn() );
+    }
   }
 
   // Hero Power
@@ -122,7 +133,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     DEBUG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
   }
 
-  QRegExp regexHeroPower( "\\[Power\\].*cardId=(\\w+).*player=(\\d+)" );
+  QRegExp regexHeroPower( "\\[Power\\] PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
   if( regexHeroPower.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPower.capturedTexts();
     QString cardId = captures[1];
@@ -137,7 +148,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    // Power log line is emitted twice
+    // Power log line is emitted multiple times
     // Make sure we only account for first occurrence
     // Plus line is emitted when match starts, so ignore turn 0
     if( isHeroPower && !mHeroPowerUsed && CurrentTurn() > 0 ) {
@@ -157,14 +168,17 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     // So make sure we only account for the "initial" playable heroes
     Class hero = CLASS_UNKNOWN;
     for( int i = 0; i < NUM_HEROES; i++ ) {
-      if( cardId == HERO_IDS[ i ] ) {
+      // startsWith instead of exact match to support
+      // the new reasonably priced hero skins
+      // (e.g. HERO_01a instead of HERO_01)
+      if( cardId.startsWith( HERO_IDS[ i ] ) ) {
         hero = ( Class )i;
       }
     }
 
-    // Set solo mode when encountering naxxramas heros
+    // Set solo mode when encountering naxxramas/blackrock mountain heroes
     if( hero == CLASS_UNKNOWN ) {
-      if( cardId.startsWith("NAX") ) {
+      if( cardId.startsWith("NAX") || cardId.startsWith("BRM") ) {
         HandleGameMode( MODE_SOLO_ADVENTURES );
       }
     }
@@ -197,16 +211,51 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     }
   }
 
+  // Tavern Brawl
+  QRegExp regexTavernBrawl( "SAVE --> NetCacheTavernBrawlRecord" );
+  if( regexTavernBrawl.indexIn(line) != -1 ) {
+    HandleGameMode( MODE_TAVERN_BRAWL );
+  }
+
+  // Rank
+  // Rank events via log are unreliable
+
+  // Legend
+  // Emitted at the end of the game twice, make sure we capture only the first time
+  QRegExp regexLegend( "legend rank (\\d+)" );
+  if( !mLegendTracked && regexLegend.indexIn(line) != -1 ) {
+    QStringList captures = regexLegend.capturedTexts();
+    int legend = captures[1].toInt();
+    if( legend > 0 ) {
+      mLegendTracked = true;
+      HandleLegend( legend );
+    }
+  }
+
   // Casual/Ranked distinction
   QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {
     HandleGameMode( MODE_RANKED );
   }
+
+  // flag current GAME as spectated
+  QRegExp regexBeginSpectating( "\\[Power\\].*Start Spectator Game" );
+  if( regexBeginSpectating.indexIn(line) != -1 ) {
+    DEBUG( "Begin spectator game" );
+    mSpectating = true;
+  }
+
+  // disable spectating flag if we leave the spectator MODE
+  QRegExp regexEndSpectating( "\\[Power\\].*End Spectator Mode" );
+  if( regexEndSpectating.indexIn(line) != -1 ) {
+    DEBUG( "End spectator mode" );
+    mSpectating = false;
+  }
 }
 
-void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId ) {
+void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId, int internalId ) {
   DEBUG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
-  mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId ) );
+  mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
 }
 
 void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
@@ -219,6 +268,17 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
       mCardHistoryList.back().cardId == cardId )
   {
     mCardHistoryList.pop_back();
+  }
+}
+
+void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId, int internalId ) {
+  DEBUG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
+  std::vector< CardHistoryItem >::iterator it;
+  for( it = mCardHistoryList.begin(); it != mCardHistoryList.end(); ++it ) {
+    CardHistoryItem& item = *it;
+    if( item.player == player && item.internalId == internalId ) {
+      item.cardId = cardId;
+    }
   }
 }
 

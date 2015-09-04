@@ -22,14 +22,25 @@
 
 #include "Hearthstone.h"
 
+#include "RankClassifier.h"
+#include <cassert>
+
 Updater *gUpdater = NULL;
 
 int main( int argc, char **argv )
 {
+#ifdef Q_OS_MACX
+  if( QSysInfo::MacintoshVersion > QSysInfo::MV_10_8 ) {
+    QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue"); // Fix yosemite text in buttons etc.
+  }
+#endif
+
   // Basic setup
   QApplication app( argc, argv );
 #if defined Q_WS_MAC
-  QIcon icon = QIcon( ":/icons/mac.png" );
+  app.setAttribute( Qt::AA_UseHighDpiPixmaps );
+  QIcon icon = QIcon( ":/icons/mac_black.png" );
+  icon.addFile( ":/icons/mac_black@2x.png" );
 #elif defined Q_WS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
