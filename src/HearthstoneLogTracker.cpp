@@ -1,4 +1,5 @@
 #include "HearthstoneLogTracker.h"
+#include "Hearthstone.h"
 
 #include <QRegExp>
 #include <QStringList>
@@ -30,7 +31,15 @@ HearthstoneLogTracker::HearthstoneLogTracker()
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
-  connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+  for( int i = 0; i < NUM_LOG_MODULES; i++ ) {
+    const char *moduleName = LOG_MODULE_NAMES[ i ];
+    QString logPath = Hearthstone::Instance()->LogPath( QString( "%1.log" ).arg( moduleName ) );
+
+    HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, logPath );
+    connect( logWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+    mLogWatchers.push_back( logWatcher );
+  }
+
   Reset();
 }
 
@@ -79,7 +88,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Outcome
-  static QRegExp regexOutcome( "\\[Asset\\].*name=(victory|defeat)_screen_start" );
+  static QRegExp regexOutcome( "name=(victory|defeat)_screen_start" );
   if( regexOutcome.indexIn(line) != -1 ) {
     QStringList captures = regexOutcome.capturedTexts();
     QString outcome = captures[1];
@@ -120,7 +129,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Hero Power
-  static QRegExp regexHeroPowerEquip( "\\[Zone\\].*player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
+  static QRegExp regexHeroPowerEquip( "player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
   if( regexHeroPowerEquip.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPowerEquip.capturedTexts();
     QString playerId = captures[1];
@@ -129,7 +138,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     DBG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
   }
 
-  static QRegExp regexHeroPower( "\\[Power\\] PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
+  static QRegExp regexHeroPower( "PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
   if( regexHeroPower.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPower.capturedTexts();
     QString cardId = captures[1];
@@ -154,7 +163,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Hero Equip
-  static QRegExp regexHeroEquip( "\\[Zone\\].*cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
+  static QRegExp regexHeroEquip( "cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
   if( regexHeroEquip.indexIn(line) != -1 ) {
     QStringList captures = regexHeroEquip.capturedTexts();
     QString cardId = captures[1];
@@ -190,8 +199,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Game Mode
-  // Practice, Casual/Ranked, SreenForge
-  static QRegExp regexMode( "\\[Bob\\] ---(\\w+)---" );
+  // Practice, Casual/Ranked, ScreenForge
+  static QRegExp regexMode( "---(\\w+)---" );
   if( regexMode.indexIn(line) != -1 ) {
     QStringList captures = regexMode.capturedTexts();
     QString screen = captures[1];
@@ -235,14 +244,14 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // flag current GAME as spectated
-  static QRegExp regexBeginSpectating( "\\[Power\\].*Start Spectator Game" );
+  static QRegExp regexBeginSpectating( "Start Spectator Game" );
   if( regexBeginSpectating.indexIn(line) != -1 ) {
     DBG( "Begin spectator game" );
     emit HandleSpectating( true );
   }
 
   // disable spectating flag if we leave the spectator MODE
-  static QRegExp regexEndSpectating( "\\[Power\\].*End Spectator Mode" );
+  static QRegExp regexEndSpectating( "End Spectator Mode" );
   if( regexEndSpectating.indexIn(line) != -1 ) {
     DBG( "End spectator mode" );
     emit HandleSpectating( false );

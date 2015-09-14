@@ -4,10 +4,13 @@
 #include <QFile>
 #include <QTimer>
 
-#define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 500
+#define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 50
 
-HearthstoneLogWatcher::HearthstoneLogWatcher()
-  : mPath( Hearthstone::Instance()->LogPath() ), mLastSeekPos( 0 )
+#include <QTextStream>
+HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& path )
+  : QObject( parent ),
+    mPath( path ),
+    mLastSeekPos( 0 )
 {
   // We used QFileSystemWatcher before but it fails on windows
   // Windows File Notification seems to be very tricky with files
@@ -18,6 +21,8 @@ HearthstoneLogWatcher::HearthstoneLogWatcher()
   QTimer *timer = new QTimer( this );
   connect( timer, SIGNAL( timeout() ), this, SLOT( CheckForLogChanges() ) );
   timer->start( CHECK_FOR_LOG_CHANGES_INTERVAL_MS );
+
+  DBG( "Watch log %s",  qt2cstr( mPath ) );
 
   QFile file( mPath );
   if( file.exists() ) {
@@ -39,7 +44,7 @@ void HearthstoneLogWatcher::CheckForLogChanges() {
   qint64 size = file.size();
   if( size < mLastSeekPos ) {
     LOG( "Log truncation detected. This is OK if game was restarted." );
-    mLastSeekPos = size;
+    mLastSeekPos = 0;
   } else {
     // Use raw QFile instead of QTextStream
     // QTextStream uses buffering and seems to skip some lines (see also QTextStream#pos)

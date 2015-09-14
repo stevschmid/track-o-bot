@@ -97,13 +97,10 @@ void Hearthstone::SetWindowCapture( WindowCapture *windowCapture ) {
 }
 
 void Hearthstone::EnableLogging() {
-  const int   NUM_INFO_MODULES = 4;
-  const char  INFO_MODULES[ NUM_INFO_MODULES ][ 32 ] = { "Zone", "Asset", "Bob", "Power" };
-
   QString path = LogConfigPath();
   QFile file( path );
 
-  SetRestartRequired( false );
+  bool logModified = false;
 
   // Read file contents
   QString contents;
@@ -114,26 +111,44 @@ void Hearthstone::EnableLogging() {
     file.close();
   }
 
-  if( !file.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text ) ) {
-    ERR( "Couldn't create file %s", qt2cstr( path ) );
-  } else {
-    QTextStream out( &file );
-    for( int i = 0; i < NUM_INFO_MODULES; i++ ) {
-      const char *logModuleName = INFO_MODULES[ i ];
-      if( !contents.contains( QString( "[%1]" ).arg( logModuleName ) ) ) {
-        out << "\n";
-        out << "[" << INFO_MODULES[i] << "]\n";
-        out << "LogLevel=1\n";
-        out << "ConsolePrinting=true\n";
-        LOG( "Enable Log Module %s", logModuleName );
 
-        if( Running() ) {
-          SetRestartRequired( true );
-        }
-      }
+  // Check what modules we have to activate
+  QStringList modulesToActivate;
+  for( int i = 0; i < NUM_LOG_MODULES; i++ ) {
+    const char *moduleName = LOG_MODULE_NAMES[ i ];
+    QString moduleLine = QString( "[%1]" ).arg( moduleName ) ;
+    if( !contents.contains( moduleLine ) ) {
+      contents += "\n";
+      contents += moduleLine + "\n";
+      contents += "LogLevel=1\n";
+      contents += "FilePrinting=true\n";
+
+      DBG( "Activate module %s", moduleName );
+      logModified = true;
     }
-    file.close();
   }
+
+  if( contents.contains( "ConsolePrinting=true" ) ) {
+    contents.replace( "ConsolePrinting=true", "FilePrinting=true" );
+
+    DBG( "ConsolePrinting replaced by FilePrinting" );
+    logModified = true;
+  }
+
+  // Finally write updated log.config
+  if( logModified ) {
+    DBG( "Log modified. Write new version" );
+
+    if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) {
+      ERR( "Couldn't create file %s", qt2cstr( path ) );
+    } else {
+      QTextStream out( &file );
+      out << contents;
+    }
+  }
+
+  // Notify about restart if game is running
+  SetRestartRequired( Running() && logModified );
 }
 
 void Hearthstone::DisableLogging() {
@@ -152,33 +167,29 @@ QString Hearthstone::LogConfigPath() const {
   wchar_t buffer[ MAX_PATH ];
   SHGetSpecialFolderPathW( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
   QString localAppData = QString::fromWCharArray( buffer );
-  QString configPath = localAppData + "\\Blizzard\\Hearthstone\\log.config";
+  QString configPath = localAppData + "/Blizzard/Hearthstone/log.config";
 #endif
   return configPath;
 }
 
-QString Hearthstone::LogPath() const {
-#ifdef Q_OS_MAC
-  QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
-  QString logPath = homeLocation + "/Library/Logs/Unity/Player.log";
-#elif defined Q_OS_WIN
-
+QString Hearthstone::LogPath( const QString& fileName ) const {
   QString hsPath = ReadAgentAttribute( "install_dir" );
+
+#ifdef Q_OS_WIN
   if( hsPath.isEmpty() ) {
     LOG( "Registry fallback for path" );
 
     QSettings hsKey( "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Hearthstone", QSettings::NativeFormat );
     hsPath = hsKey.value( "InstallLocation" ).toString();
   }
+#endif
 
   if( hsPath.isEmpty() ) {
     ERR( "Hearthstone path not found" );
-    return "";
-  }
+    return QString();
+ }
 
-  QString logPath = hsPath + "\\Hearthstone_Data\\output_log.txt";
-#endif
-  return logPath;
+  return QString( "%1/Logs/%2" ).arg( hsPath ).arg( fileName );
 }
 
 QString Hearthstone::WindowName() const {

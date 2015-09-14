@@ -8,7 +8,7 @@ class HearthstoneLogTracker : public QObject
   Q_OBJECT
 
 private:
-  HearthstoneLogWatcher mLogWatcher;
+  QList< HearthstoneLogWatcher* > mLogWatchers;
 
   int mTurnCounter;
   bool mHeroPowerUsed;

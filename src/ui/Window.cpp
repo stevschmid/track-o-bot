@@ -163,7 +163,7 @@ void Window::HandleGameClientRestartRequired( bool restartRequired ) {
     separator = mTrayIconMenu->insertSeparator( mOpenProfileAction );
     mTrayIconMenu->insertAction( separator, mGameClientRestartRequiredAction );
 
-    ShowNotification( "Game log enabled", "Please restart Hearthstone for changes to take effect!" );
+    ShowNotification( "Game log updated", "Please restart Hearthstone for changes to take effect!" );
   } else {
     mTrayIconMenu->removeAction( mGameClientRestartRequiredAction );
     if( separator ) {

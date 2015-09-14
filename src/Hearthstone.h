@@ -4,6 +4,14 @@
 
 #include "WindowCapture.h"
 
+const int NUM_LOG_MODULES = 4;
+const char LOG_MODULE_NAMES[ NUM_LOG_MODULES ][ 32 ] = {
+  "Zone",
+  "Asset",
+  "Bob",
+  "Power"
+};
+
 class Hearthstone
 {
   DEFINE_SINGLETON( Hearthstone )
@@ -31,9 +39,8 @@ public:
   bool RestartRequired() const;
 
   QString LogConfigPath() const;
-  QString LogPath() const;
+  QString LogPath( const QString& fileName ) const;
 
   int Width() const;
   int Height() const;
-
 };

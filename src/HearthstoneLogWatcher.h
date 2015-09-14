@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QString>
+
 class HearthstoneLogWatcher : public QObject
 {
   Q_OBJECT
@@ -9,7 +11,7 @@ private:
   qint64 mLastSeekPos;
 
 public:
-  HearthstoneLogWatcher();
+  HearthstoneLogWatcher( QObject *parent, const QString& path );
 
 private slots:
   void CheckForLogChanges();
