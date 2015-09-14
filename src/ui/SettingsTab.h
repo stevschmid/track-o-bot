@@ -21,7 +21,6 @@ public:
 public slots:
   void UpdateAutostart();
   void UpdateAutoUpdateCheck();
-  void UpdateReplaysEnabled();
   void LoadSettings();
 };
 

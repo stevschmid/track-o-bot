@@ -3,7 +3,6 @@
 #include <QSettings>
 
 #include "Autostart.h"
-#include "Dropbox.h"
 
 #include "Updater.h"
 extern Updater *gUpdater;
@@ -82,17 +81,3 @@ void Settings::CheckForUpdates() {
   }
 }
 
-bool Settings::ReplayRequirementsFulfilled() const {
-  return Dropbox().AppFolderExists();
-}
-
-bool Settings::ReplaysEnabled() const {
-  // true as default value
-  return QSettings().value( KEY_REPLAYS_ENABLED, true ).toBool();
-}
-
-void Settings::SetReplaysEnabled( bool enabled ) {
-  QSettings().setValue( KEY_REPLAYS_ENABLED, enabled );
-
-  emit ReplaysEnabledChanged( enabled );
-}

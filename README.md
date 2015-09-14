@@ -7,7 +7,7 @@
 ## Mac OS X
 
 ```
-brew install qt5 libwebm libvpx
+brew install qt5
 brew link qt5 --force
 ```
 

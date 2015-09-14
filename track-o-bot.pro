@@ -4,8 +4,6 @@ VERSION = 0.5.0
 CONFIG += qt precompile_header debug_and_release c++11
 QT += core network widgets gui
 
-LIBS += -lvpx -lwebm
-
 DESTDIR = build
 OBJECTS_DIR = tmp
 MOC_DIR = tmp
@@ -29,9 +27,6 @@ HEADERS = src/Local.h \
           src/Settings.h \
           src/ResultTracker.h \
           src/ResultQueue.h \
-          src/ReplayRecorder.h \
-          src/WebMWriter.h \
-          src/Dropbox.h \
           src/Trackobot.h
 
 SOURCES = src/Main.cpp \
@@ -52,10 +47,7 @@ SOURCES = src/Main.cpp \
           src/Settings.cpp \
           src/ResultTracker.cpp \
           src/ResultQueue.cpp \
-          src/ReplayRecorder.cpp \
-          src/WebMWriter.cpp \
           src/Local.cpp \
-          src/Dropbox.cpp \
           src/Trackobot.cpp
 
 FORMS   = src/ui/MainWindow.ui \

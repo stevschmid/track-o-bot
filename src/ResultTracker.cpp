@@ -4,8 +4,7 @@
 #include <map>
 
 ResultTracker::ResultTracker()
-  : mSpectating( false ),
-    mReplayRecorder( &mLogTracker )
+  : mSpectating( false )
 {
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
   connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
@@ -18,8 +17,6 @@ ResultTracker::ResultTracker()
   connect( &mLogTracker, SIGNAL( HandleSpectating(bool) ), this, SLOT( HandleSpectating(bool) ) );
   connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
   connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
-
-  connect( &mResultsQueue, SIGNAL( ResultUploaded( int ) ), &mReplayRecorder, SLOT( SaveReplay( int ) ) );
 
   ResetResult();
 }
