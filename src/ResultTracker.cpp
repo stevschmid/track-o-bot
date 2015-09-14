@@ -83,7 +83,7 @@ void ResultTracker::HandleLegend( int legend ) {
   mResult.legend = legend;
 }
 
-void ResultTracker::HandleTurn( int turn, bool ownTurn ) {
+void ResultTracker::HandleTurn( int turn ) {
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
   DBG( "Turn %d (my turn %d). Set Rank %d", turn, ownTurn, rank );
