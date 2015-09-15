@@ -1,8 +1,8 @@
 TARGET = Track-o-Bot
-VERSION = 0.5.0
+VERSION = 0.6.0
 
 CONFIG += qt precompile_header debug_and_release c++11
-QT += core network widgets gui
+QT += core widgets network
 
 DESTDIR = build
 OBJECTS_DIR = tmp
