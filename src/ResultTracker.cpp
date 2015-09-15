@@ -84,6 +84,8 @@ void ResultTracker::HandleLegend( int legend ) {
 }
 
 void ResultTracker::HandleTurn( int turn ) {
+  UNUSED_ARG( turn );
+
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
   DBG( "Turn %d (my turn %d). Set Rank %d", turn, ownTurn, rank );
