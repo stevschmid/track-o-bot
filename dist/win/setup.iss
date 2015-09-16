@@ -16,6 +16,21 @@ DefaultGroupName=Track-o-Bot
 UninstallDisplayIcon={app}\Track-o-Bot.exe
 OutputBaseFilename=Track-o-Bot_{#Version}
 
+[InstallDelete]
+Type: Files; Name: "{app}/msvcp100.dll"
+Type: Files; Name: "{app}/msvcr100.dll"
+Type: Files; Name: "{app}/QtCore4.dll" 
+Type: Files; Name: "{app}/QtGui4.dll"
+Type: Files; Name: "{app}/QtNetwork4.dll"
+Type: Files; Name: "{app}/QtSvg4.dll"
+Type: Files; Name: "{app}/imageformats/qgif4.dll"
+Type: Files; Name: "{app}/imageformats/qico4.dll"
+Type: Files; Name: "{app}/imageformats/qjpeg4.dll"
+Type: Files; Name: "{app}/imageformats/qmng4.dll"
+Type: Files; Name: "{app}/imageformats/qsvg4.dll"
+Type: Files; Name: "{app}/imageformats/qtga4.dll"
+Type: Files; Name: "{app}/imageformats/qtiff4.dll"
+
 [Files]
 Source: "../../build/Track-o-Bot.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../../WinSparkle/Release/WinSparkle.dll"; DestDir: "{app}"; Flags: ignoreversion  
