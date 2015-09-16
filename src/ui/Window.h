@@ -5,6 +5,7 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QMainWindow>
+#include <QStatusBar>
 
 namespace Ui { class MainWindow; }
 

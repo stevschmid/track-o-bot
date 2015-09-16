@@ -26,7 +26,8 @@ Updater *gUpdater = NULL;
 Trackobot::Trackobot( int argc, char **argv )
   : mApp( argc, argv ),
     mCore( NULL ),
-    mWindow( NULL )
+    mWindow( NULL ),
+    mSingleInstanceServer( NULL )
 {
   SetupApplication();
 }
@@ -40,6 +41,11 @@ Trackobot::~Trackobot() {
   if( mCore ) {
     delete mCore;
     mCore = NULL;
+  }
+
+  if( mSingleInstanceServer ) {
+    delete mSingleInstanceServer;
+    mSingleInstanceServer = NULL;
   }
 }
 
@@ -66,7 +72,7 @@ int Trackobot::Run() {
   return exitCode;
 }
 
-bool Trackobot::IsAlreadyRunning() const {
+bool Trackobot::IsAlreadyRunning() {
   // Enforce single instance
   const char serverName[] = "trackobot";
 
@@ -77,8 +83,8 @@ bool Trackobot::IsAlreadyRunning() const {
   }
 
   QLocalServer::removeServer( serverName );
-  QLocalServer server( NULL );
-  if( !server.listen(serverName) ) {
+  mSingleInstanceServer = new QLocalServer( NULL );
+  if( !mSingleInstanceServer->listen(serverName) ) {
     return true;
   }
 

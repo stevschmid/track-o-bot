@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>220</height>
+    <width>400</width>
+    <height>150</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -35,6 +35,9 @@ QLabel#updateDescription {
      </property>
      <property name="verticalSpacing">
       <number>4</number>
+     </property>
+     <property name="margin">
+      <number>10</number>
      </property>
      <item row="1" column="0">
       <widget class="QLabel" name="label_4">

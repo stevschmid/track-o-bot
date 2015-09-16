@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>394</width>
-    <height>160</height>
+    <height>150</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -39,6 +39,9 @@
      </property>
      <property name="verticalSpacing">
       <number>4</number>
+     </property>
+     <property name="margin">
+      <number>10</number>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -79,7 +82,7 @@
      <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="spacing">
-        <number>-1</number>
+        <number>6</number>
        </property>
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>

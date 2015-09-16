@@ -88,7 +88,7 @@ void ResultTracker::HandleTurn( int turn ) {
 
   int rank = mRankClassifier.DetectCurrentRank();
   mRanks.push_back( rank );
-  DBG( "Turn %d (my turn %d). Set Rank %d", turn, ownTurn, rank );
+  DBG( "Turn %d. Set Rank %d", turn, rank );
 }
 
 // Screen capture can be tricky

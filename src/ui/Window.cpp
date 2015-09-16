@@ -14,7 +14,7 @@ Window::Window()
   : mUI( new Ui::MainWindow )
 {
   mUI->setupUi( this );
-  setWindowFlags( (Qt::Window | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint) );
+  setWindowFlags( (Qt::Window | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint) );
 
   setWindowTitle( qApp->applicationName() );
 

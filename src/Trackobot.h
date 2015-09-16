@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QApplication>
+#include <QLocalServer>
 
 #include "Core.h"
 #include "ui/Window.h"
@@ -13,10 +14,11 @@ private:
   QApplication mApp;
   Core *mCore;
   Window *mWindow;
+  QLocalServer *mSingleInstanceServer;
 
   WebProfile mWebProfile;
 
-  bool IsAlreadyRunning() const;
+  bool IsAlreadyRunning();
 
   void SetupApplication();
   void SetupLogging();
