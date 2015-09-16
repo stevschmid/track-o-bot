@@ -72,7 +72,6 @@ mac {
 
   # thanks qt for forcing me to do this stuff
   INCLUDEPATH += "\ -F/Library/Frameworks" 
-
   LIBS += -framework ApplicationServices -F/Library/Frameworks -framework Sparkle -framework AppKit
 
   OBJECTIVE_SOURCES += \
@@ -82,10 +81,11 @@ mac {
 
   ICON = icons/logo.icns
 
-  QMAKE_INFO_PLIST = Info.plist.app
-
-  QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $${VERSION}\" $${DESTDIR}/$${TARGET}.app/Contents/Info.plist;
-  QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $${VERSION}\" $${DESTDIR}/$${TARGET}.app/Contents/Info.plist;
+  CONFIG(release, debug|release) {
+    QMAKE_INFO_PLIST = Info.plist.app
+    QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $${VERSION}\" $${DESTDIR}/$${TARGET}.app/Contents/Info.plist;
+    QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $${VERSION}\" $${DESTDIR}/$${TARGET}.app/Contents/Info.plist;
+  }
 }
 
 win32 {
