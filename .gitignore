@@ -12,3 +12,5 @@ Makefile.*
 *.autosave
 *.o
 /scenes/*
+/debug/
+/release/

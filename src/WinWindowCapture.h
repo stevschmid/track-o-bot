@@ -8,13 +8,13 @@
 class WinWindowCapture : public WindowCapture
 {
 private:
-  string mWindowName;
+  QString mWindowName;
 
   RECT Rect();
   HWND FindHWND();
 
 public:
-  WinWindowCapture( const string& windowName );
+  WinWindowCapture( const QString& windowName );
 
   bool WindowFound();
 

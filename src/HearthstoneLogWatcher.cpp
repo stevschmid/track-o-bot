@@ -4,8 +4,13 @@
 #include <QFile>
 #include <QTimer>
 
-HearthstoneLogWatcher::HearthstoneLogWatcher()
-  : mPath( Hearthstone::Instance()->LogPath() ), mLastSeekPos( 0 )
+#define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 50
+
+#include <QTextStream>
+HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& path )
+  : QObject( parent ),
+    mPath( path ),
+    mLastSeekPos( 0 )
 {
   // We used QFileSystemWatcher before but it fails on windows
   // Windows File Notification seems to be very tricky with files
@@ -16,6 +21,8 @@ HearthstoneLogWatcher::HearthstoneLogWatcher()
   QTimer *timer = new QTimer( this );
   connect( timer, SIGNAL( timeout() ), this, SLOT( CheckForLogChanges() ) );
   timer->start( CHECK_FOR_LOG_CHANGES_INTERVAL_MS );
+
+  DBG( "Watch log %s",  qt2cstr( mPath ) );
 
   QFile file( mPath );
   if( file.exists() ) {
@@ -30,37 +37,28 @@ void HearthstoneLogWatcher::CheckForLogChanges() {
   }
 
   QFile file( mPath );
-  if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+  if( !file.open( QIODevice::ReadOnly ) ) {
     return;
   }
 
   qint64 size = file.size();
   if( size < mLastSeekPos ) {
-    mLastSeekPos = size;
+    LOG( "Log truncation detected. This is OK if game was restarted." );
+    mLastSeekPos = 0;
   } else {
     // Use raw QFile instead of QTextStream
     // QTextStream uses buffering and seems to skip some lines (see also QTextStream#pos)
     file.seek( mLastSeekPos );
 
-    char c;
-    while( !file.atEnd() ) {
-      QString line = file.readLine();
+    QByteArray buf = file.readAll();
+    QList< QByteArray > lines = buf.split('\n');
 
-      // We are not interested in the last line (in case it's not complete yet)
-      if( file.atEnd() )
-        break;
-
-      // Make absolutely sure this line has a newline at the end
-      file.seek( file.pos() - 1 );
-      file.getChar( &c );
-      if( c != 10 && c != 13 )
-        break;
-
-      emit LineAdded(line);
-      mLastSeekPos = file.pos();
+    QByteArray lastLine = lines.takeLast();
+    for( const QByteArray& line : lines ) {
+      emit LineAdded( QString::fromUtf8( line.trimmed() ) );
     }
+
+    mLastSeekPos = file.pos() - lastLine.size();
   }
 }
-
-
 

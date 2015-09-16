@@ -1,44 +1,58 @@
 #include "Logger.h"
 #include <ctime>
 
+#include <QTextStream>
+
 DEFINE_SINGLETON_SCOPE( Logger );
 
-Logger::Logger() {
+Logger::Logger()
+  : mFile( NULL )
+{
 }
 
 Logger::~Logger() {
+  if( mFile ) {
+    delete mFile;
+    mFile = NULL;
+  }
 }
 
 
-void Logger::SetLogPath( const string& path ) {
-  mOf.open( path.c_str(), std::ios_base::app );
+void Logger::SetLogPath( const QString& path ) {
+  if( mFile )
+    delete mFile;
+
+  mFile = new QFile( path );
+  if( mFile )  {
+    mFile->open( QIODevice::WriteOnly | QIODevice::Text );
+  }
 }
 
-void Logger::Add( const char *fmt, ... ) {
+void Logger::Add( LogEventType type, const char *fmt, ... ) {
   char buffer[ 4096 ];
 
+  // Parse vargs
   va_list args;
   va_start( args, fmt );
   vsnprintf( buffer, sizeof(buffer), fmt, args );
   va_end( args );
 
-  Add( string( buffer ) );
-}
-
-void Logger::Add( const string& message ) {
   // Timestamp
   char timestamp[ 256 ];
   time_t t = time( 0 );
   struct tm *now = localtime( &t );
-  strftime( timestamp, sizeof( timestamp ), "[%H:%M:%S] ", now );
+  strftime( timestamp, sizeof( timestamp ), "%H:%M:%S", now );
 
-  string line = string( timestamp ) + message + "\n";
+  // Decorate
+  char decorated[ 4096 ];
+  sprintf( decorated, "[%s] %s: %s\n", timestamp, LOG_EVENT_TYPE_NAMES[ type ], buffer );
+  QString line( decorated );
 
-  // Add to file
-  if( mOf.is_open() ) {
-    mOf << line;
-    mOf.flush();
+  if( mFile && mFile->isOpen() ) {
+    QTextStream out( mFile );
+    out << line;
+    mFile->flush();
   }
 
-  emit NewMessage( line );
+  emit NewMessage( type, line );
 }

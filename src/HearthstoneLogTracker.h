@@ -1,13 +1,14 @@
 #pragma once
 
 #include "HearthstoneLogWatcher.h"
+#include "Result.h"
 
 class HearthstoneLogTracker : public QObject
 {
   Q_OBJECT
 
 private:
-  HearthstoneLogWatcher mLogWatcher;
+  QList< HearthstoneLogWatcher* > mLogWatchers;
 
   int mTurnCounter;
   bool mHeroPowerUsed;
@@ -31,7 +32,7 @@ private slots:
 
 signals:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList, bool wasSpectating );
+  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
 
   void HandleOutcome( Outcome outcome );
   void HandleOrder( GoingOrder order );
@@ -39,7 +40,9 @@ signals:
   void HandleOpponentClass( Class opponentClass );
   void HandleOwnClass( Class ownClass );
   void HandleLegend( int legend );
-  void HandleTurn( int turn );
+  void HandleTurn( int turnCounter );
+
+  void HandleSpectating( bool nowSpectating );
 
 public:
   HearthstoneLogTracker();

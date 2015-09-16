@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 500
+#include <QString>
 
 class HearthstoneLogWatcher : public QObject
 {
@@ -11,7 +11,7 @@ private:
   qint64 mLastSeekPos;
 
 public:
-  HearthstoneLogWatcher();
+  HearthstoneLogWatcher( QObject *parent, const QString& path );
 
 private slots:
   void CheckForLogChanges();

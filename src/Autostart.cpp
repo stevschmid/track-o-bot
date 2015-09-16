@@ -40,7 +40,7 @@ LSSharedFileListItemRef FindLoginItemForCurrentBundle(CFArrayRef currentLoginIte
 
 bool Autostart::Active()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   const QString& applicationName = qApp->applicationName();
   QSettings tmpSettings( "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat );
   return !tmpSettings.value( applicationName ).toString().isEmpty();
@@ -67,7 +67,7 @@ bool Autostart::Active()
 
 void Autostart::SetActive( bool active )
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   const QString& applicationName = qApp->applicationName();
 
   QSettings tmpSettings( "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat );

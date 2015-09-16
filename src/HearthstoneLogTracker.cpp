@@ -1,4 +1,5 @@
 #include "HearthstoneLogTracker.h"
+#include "Hearthstone.h"
 
 #include <QRegExp>
 #include <QStringList>
@@ -30,7 +31,15 @@ HearthstoneLogTracker::HearthstoneLogTracker()
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
-  connect( &mLogWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+  for( int i = 0; i < NUM_LOG_MODULES; i++ ) {
+    const char *moduleName = LOG_MODULE_NAMES[ i ];
+    QString logPath = Hearthstone::Instance()->LogPath( QString( "%1.log" ).arg( moduleName ) );
+
+    HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, logPath );
+    connect( logWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+    mLogWatchers.push_back( logWatcher );
+  }
+
   Reset();
 }
 
@@ -39,15 +48,15 @@ void HearthstoneLogTracker::Reset() {
   mHeroPowerUsed = false;
   mCardHistoryList.clear();
   mLegendTracked = false;
-  mSpectating = false;
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
-  if( line.trimmed().isEmpty() )
+  if( line.trimmed().isEmpty() || line.startsWith( "(Filename:" )  ) {
     return;
+  }
 
   // CardPlayed / CardReturned / PlayerDied
-  QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) -> (.*)" );
+  static QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) ->\\s?(.*)" );
   if( regex.indexIn(line) != -1 ) {
     QStringList captures = regex.capturedTexts();
     int id = captures[1].toInt();
@@ -75,11 +84,11 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       CardReturned( PLAYER_SELF, cardId.toStdString() );
     }
 
-    DEBUG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", cardId.toStdString().c_str(), from.toStdString().c_str(), to.toStdString().c_str(), draw, mulligan, discard, id );
+    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, id );
   }
 
   // Outcome
-  QRegExp regexOutcome( "\\[Asset\\].*name=(victory|defeat)_screen_start" );
+  static QRegExp regexOutcome( "name=(victory|defeat)_screen_start" );
   if( regexOutcome.indexIn(line) != -1 ) {
     QStringList captures = regexOutcome.capturedTexts();
     QString outcome = captures[1];
@@ -89,12 +98,12 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     } else if( outcome == "defeat" ) {
       emit HandleOutcome( OUTCOME_DEFEAT );
     }
-    emit HandleMatchEnd( mCardHistoryList, mSpectating );
+    emit HandleMatchEnd( mCardHistoryList );
     Reset();
   }
 
   // Coin
-  QRegExp regexCoin( "ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
+  static QRegExp regexCoin( "ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
   if( regexCoin.indexIn(line) != -1 ) {
     QStringList captures = regexCoin.capturedTexts();
     QString to = captures[1];
@@ -109,31 +118,27 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Turn Info
-  QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
+  static QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
   if( regexTurn.indexIn(line) != -1 ) {
-    int oldTurn = CurrentTurn();
-
     mTurnCounter++;
+
+    emit HandleTurn( mTurnCounter );
 
     // reset hero power usage on turn change
     mHeroPowerUsed = false;
-
-    if( oldTurn != CurrentTurn() ) {
-      emit HandleTurn( CurrentTurn() );
-    }
   }
 
   // Hero Power
-  QRegExp regexHeroPowerEquip( "\\[Zone\\].*player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
+  static QRegExp regexHeroPowerEquip( "player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
   if( regexHeroPowerEquip.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPowerEquip.capturedTexts();
     QString playerId = captures[1];
 
     mHeroPlayerId = playerId.toInt();
-    DEBUG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
+    DBG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
   }
 
-  QRegExp regexHeroPower( "\\[Power\\] PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
+  static QRegExp regexHeroPower( "PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
   if( regexHeroPower.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPower.capturedTexts();
     QString cardId = captures[1];
@@ -158,7 +163,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Hero Equip
-  QRegExp regexHeroEquip( "\\[Zone\\].*cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
+  static QRegExp regexHeroEquip( "cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
   if( regexHeroEquip.indexIn(line) != -1 ) {
     QStringList captures = regexHeroEquip.capturedTexts();
     QString cardId = captures[1];
@@ -194,8 +199,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Game Mode
-  // Practice, Casual/Ranked, SreenForge
-  QRegExp regexMode( "\\[Bob\\] ---(\\w+)---" );
+  // Practice, Casual/Ranked, ScreenForge
+  static QRegExp regexMode( "---(\\w+)---" );
   if( regexMode.indexIn(line) != -1 ) {
     QStringList captures = regexMode.capturedTexts();
     QString screen = captures[1];
@@ -212,7 +217,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Tavern Brawl
-  QRegExp regexTavernBrawl( "SAVE --> NetCacheTavernBrawlRecord" );
+  static QRegExp regexTavernBrawl( "SAVE --> NetCacheTavernBrawlRecord" );
   if( regexTavernBrawl.indexIn(line) != -1 ) {
     HandleGameMode( MODE_TAVERN_BRAWL );
   }
@@ -222,7 +227,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
   // Legend
   // Emitted at the end of the game twice, make sure we capture only the first time
-  QRegExp regexLegend( "legend rank (\\d+)" );
+  static QRegExp regexLegend( "legend rank (\\d+)" );
   if( !mLegendTracked && regexLegend.indexIn(line) != -1 ) {
     QStringList captures = regexLegend.capturedTexts();
     int legend = captures[1].toInt();
@@ -233,33 +238,33 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Casual/Ranked distinction
-  QRegExp regexRanked( "name=rank_window" );
+  static QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {
     HandleGameMode( MODE_RANKED );
   }
 
   // flag current GAME as spectated
-  QRegExp regexBeginSpectating( "\\[Power\\].*Start Spectator Game" );
+  static QRegExp regexBeginSpectating( "Start Spectator Game" );
   if( regexBeginSpectating.indexIn(line) != -1 ) {
-    DEBUG( "Begin spectator game" );
-    mSpectating = true;
+    DBG( "Begin spectator game" );
+    emit HandleSpectating( true );
   }
 
   // disable spectating flag if we leave the spectator MODE
-  QRegExp regexEndSpectating( "\\[Power\\].*End Spectator Mode" );
+  static QRegExp regexEndSpectating( "End Spectator Mode" );
   if( regexEndSpectating.indexIn(line) != -1 ) {
-    DEBUG( "End spectator mode" );
-    mSpectating = false;
+    DBG( "End spectator mode" );
+    emit HandleSpectating( false );
   }
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId, int internalId ) {
-  DEBUG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
+  DBG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
   mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
 }
 
 void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
-  DEBUG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+  DBG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
   // Make sure we remove the "Choose One"-cards from the history
   // if we decide to withdraw them after a second of thought
   if( !mCardHistoryList.empty() &&
@@ -272,10 +277,8 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
 }
 
 void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId, int internalId ) {
-  DEBUG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
-  std::vector< CardHistoryItem >::iterator it;
-  for( it = mCardHistoryList.begin(); it != mCardHistoryList.end(); ++it ) {
-    CardHistoryItem& item = *it;
+  DBG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
+  for( CardHistoryItem& item : mCardHistoryList ) {
     if( item.player == player && item.internalId == internalId ) {
       item.cardId = cardId;
     }

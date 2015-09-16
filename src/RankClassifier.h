@@ -2,15 +2,16 @@
 
 #include <QImage>
 
-#include "NeuralNetwork.h"
+#include "MLP.h"
 
 class RankClassifier
 {
 private:
-  NN::NeuralNetwork mNeuralNetwork;
+  MLP::MultiLayerPerceptron mMLP;
 
-  static NN::NeuralNetwork BuildNN();
-  static NN::Vector BinarizeImage( const QImage& img, float threshold );
+  static MLP::Vector BinarizeImageSV( const QImage& img, float maxSaturation, float minValue );
+
+  void LoadMLP();
 
 public:
   RankClassifier();

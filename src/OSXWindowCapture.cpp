@@ -1,9 +1,11 @@
 #include "OSXWindowCapture.h"
 
+#include <QtMac>
+
 // remove the window title bar which we are not interested in
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
-OSXWindowCapture::OSXWindowCapture( const string& windowName )
+OSXWindowCapture::OSXWindowCapture( const QString& windowName )
   : mWindowName( windowName ), mWinId( 0 )
 {
   mTimer = new QTimer( this );
@@ -49,7 +51,7 @@ QPixmap OSXWindowCapture::Capture( int x, int y, int w, int h ) {
       mWinId,
       kCGWindowImageNominalResolution | kCGWindowImageBoundsIgnoreFraming );
 
-  QPixmap pixmap = QPixmap::fromMacCGImageRef( image );
+  QPixmap pixmap = QtMac::fromCGImageRef( image );
   CGImageRelease( image );
 
   return pixmap;
@@ -61,7 +63,7 @@ bool OSXWindowCapture::Fullscreen() {
     ( int( CGRectGetHeight( mRect ) ) & OSX_WINDOW_TITLE_BAR_HEIGHT ) != OSX_WINDOW_TITLE_BAR_HEIGHT;
 }
 
-int OSXWindowCapture::FindWindow( const string& name ) {
+int OSXWindowCapture::FindWindow( const QString& name ) {
   int winId = 0;
 
   CFArrayRef windowList = CGWindowListCopyWindowInfo(
@@ -69,7 +71,7 @@ int OSXWindowCapture::FindWindow( const string& name ) {
       kCGNullWindowID );
   CFIndex numWindows = CFArrayGetCount( windowList );
 
-  CFStringRef nameRef = CFStringCreateWithCString( kCFAllocatorDefault, name.c_str(), kCFStringEncodingMacRoman );
+  CFStringRef nameRef = name.toCFString();
 
   for( int i = 0; i < (int)numWindows; i++ ) {
     CFDictionaryRef info = ( CFDictionaryRef )CFArrayGetValueAtIndex( windowList, i);
