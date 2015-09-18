@@ -24,7 +24,7 @@ puts `python tmp/macdeployqtfix/macdeployqtfix.py -nl -v #{APP_DIR}/Contents/Mac
 `cp -R -H -f /Library/Frameworks/Sparkle.framework #{APP_DIR}/Contents/Frameworks`
 
 # Fix path
-`install_name_tool -change @rpath/Sparkle.framework/Versions/A/Sparkle @execute_path/../Frameworks/Sparkle.framework/Versions/A/Sparkle #{APP_DIR}/Contents/MacOS/Track-o-Bot`
+`install_name_tool -change @rpath/Sparkle.framework/Versions/A/Sparkle @executable_path/../Frameworks/Sparkle.framework/Versions/A/Sparkle #{APP_DIR}/Contents/MacOS/Track-o-Bot`
 
 # What a mess with the broken macdeployqt...
 # macdeployqtfix adds new dependencies which are not fixed (i.e.
