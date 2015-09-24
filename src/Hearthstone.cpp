@@ -4,6 +4,7 @@
 #include <QDesktopServices>
 #include <QSettings>
 #include <QTextStream>
+#include <QRegExp>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -128,10 +129,17 @@ void Hearthstone::EnableLogging() {
     }
   }
 
-  if( contents.contains( "ConsolePrinting=true" ) ) {
-    contents.replace( "ConsolePrinting=true", "FilePrinting=true" );
+  QRegExp regexEnabledConsolePrinting( "ConsolePrinting\\s*=\\s*true",
+      Qt::CaseInsensitive );
+  QRegExp regexDisabledFilePrinting( "FilePrinting\\s*=\\s*false",
+      Qt::CaseInsensitive );
+  if( contents.contains( regexEnabledConsolePrinting ) ||
+      contents.contains( regexDisabledFilePrinting ) )
+  {
+    contents.replace( regexEnabledConsolePrinting, "FilePrinting=true" );
+    contents.replace( regexDisabledFilePrinting, "FilePrinting=true" );
 
-    DBG( "ConsolePrinting replaced by FilePrinting" );
+    DBG( "FilePrinting enabled" );
     logModified = true;
   }
 
