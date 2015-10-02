@@ -11,7 +11,7 @@ private:
   QList< HearthstoneLogWatcher* > mLogWatchers;
 
   int mTurnCounter;
-  bool mHeroPowerUsed;
+  QString mLastHeroPowerUsed;
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
