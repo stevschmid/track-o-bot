@@ -57,3 +57,22 @@ Filename: "{app}\Track-o-Bot.exe"; Description: "Launch Track-o-Bot"; Flags: pos
 
 [Icons]
 Name: "{group}\Track-o-Bot"; Filename: "{app}\Track-o-Bot.exe"
+
+; This is temporary workaround for people upgrading from 0.6.0
+; 0.6.0 is affected by QTBUG-35986
+; This code can be removed once 0.6.0 is outdated
+[Code]
+function InitializeSetup(): Boolean;
+	var ErrorCode: Integer;
+begin
+	ShellExec('open', 'taskkill.exe', '/f /im Track-o-Bot.exe', '', SW_HIDE, ewNoWait, ErrorCode);
+	result := True;
+end;
+
+function InitializeUninstall(): Boolean;
+	var ErrorCode: Integer;
+begin
+	ShellExec('open', 'taskkill.exe', '/f /im Track-o-Bot.exe', '', SW_HIDE, ewNoWait, ErrorCode);
+	result := True;
+end;
+

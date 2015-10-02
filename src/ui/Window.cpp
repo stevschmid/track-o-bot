@@ -14,7 +14,7 @@ Window::Window()
   : mUI( new Ui::MainWindow )
 {
   mUI->setupUi( this );
-  setWindowFlags( (Qt::Window | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint) );
+  setWindowFlags( (Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint) );
 
   setWindowTitle( qApp->applicationName() );
 
@@ -46,6 +46,18 @@ Window::Window()
   connect( mUI->pageWidget, SIGNAL( currentChanged(int) ), this, SLOT( TabChanged( int ) ) );
 
   QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
+
+#ifdef Q_OS_WIN
+  // This is a fix for
+  // https://bugreports.qt.io/browse/QTBUG-35986
+  // If the window was never opened, the WM_ENDSESSION event will
+  // not be received by the app (tray icon will disappear
+  // but the app will not close)
+  // So show, then hide it at the beginning
+  // With Qt:Tool the Window is not actually shown
+  show();
+  hide();
+#endif
 }
 
 Window::~Window() {
