@@ -4,12 +4,13 @@
 
 #include "WindowCapture.h"
 
-const int NUM_LOG_MODULES = 4;
+const int NUM_LOG_MODULES = 5;
 const char LOG_MODULE_NAMES[ NUM_LOG_MODULES ][ 32 ] = {
   "Zone",
   "Asset",
   "Bob",
-  "Power"
+  "Power",
+  "LoadingScreen"
 };
 
 class Hearthstone

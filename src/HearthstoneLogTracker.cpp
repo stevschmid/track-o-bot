@@ -55,6 +55,29 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     return;
   }
 
+  // LoadingScreen
+  static QRegExp regexLoadingScreen( "LoadingScreen.OnSceneLoaded\\(\\) - prevMode=(\\w+) currMode=(\\w+)" );
+  if( regexLoadingScreen.indexIn(line) != -1 ) {
+    QStringList captures = regexLoadingScreen.capturedTexts();
+    QString prevMode = captures[1];
+    QString currMode = captures[2];
+
+    if( currMode == "ADVENTURE" ) {
+      HandleGameMode( MODE_SOLO_ADVENTURES );
+    } else if( currMode == "TAVERN_BRAWL" ) {
+      HandleGameMode( MODE_TAVERN_BRAWL );
+    } else if( currMode == "DRAFT" ) {
+      HandleGameMode( MODE_ARENA );
+    } else if( currMode == "FRIENDLY" ) {
+      HandleGameMode( MODE_FRIENDLY );
+    } else if( currMode == "TOURNAMENT" ) {
+      // casual or ranked
+      HandleGameMode( MODE_CASUAL );
+    }
+
+    DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
+  }
+
   // CardPlayed / CardReturned / PlayerDied
   static QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) ->\\s?(.*)" );
   if( regex.indexIn(line) != -1 ) {
@@ -181,13 +204,6 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    // Set solo mode when encountering naxxramas/blackrock mountain heroes
-    if( hero == CLASS_UNKNOWN ) {
-      if( cardId.startsWith("NAX") || cardId.startsWith("BRM") ) {
-        HandleGameMode( MODE_SOLO_ADVENTURES );
-      }
-    }
-
     if( hero != CLASS_UNKNOWN ) {
       if( type == "FRIENDLY" ) {
         emit HandleMatchStart();
@@ -196,30 +212,6 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
         emit HandleOpponentClass( hero );
       }
     }
-  }
-
-  // Game Mode
-  // Practice, Casual/Ranked, ScreenForge
-  static QRegExp regexMode( "---(\\w+)---" );
-  if( regexMode.indexIn(line) != -1 ) {
-    QStringList captures = regexMode.capturedTexts();
-    QString screen = captures[1];
-
-    if( screen == "RegisterScreenPractice" ) {
-      HandleGameMode( MODE_SOLO_ADVENTURES );
-    } else if( screen == "RegisterScreenTourneys") {
-      HandleGameMode( MODE_CASUAL ); // or ranked resp.
-    } else if( screen == "RegisterScreenForge" ) {
-      HandleGameMode( MODE_ARENA );
-    } else if( screen == "RegisterScreenFriendly" ) {
-      HandleGameMode( MODE_FRIENDLY );
-    }
-  }
-
-  // Tavern Brawl
-  static QRegExp regexTavernBrawl( "SAVE --> NetCacheTavernBrawlRecord" );
-  if( regexTavernBrawl.indexIn(line) != -1 ) {
-    HandleGameMode( MODE_TAVERN_BRAWL );
   }
 
   // Rank
