@@ -19,18 +19,41 @@
 DEFINE_SINGLETON_SCOPE( Hearthstone )
 
 Hearthstone::Hearthstone()
- : mRestartRequired( false )
+ : mRestartRequired( false ), mCapture( NULL ), mIsRunning( false )
 {
 #ifdef Q_OS_MAC
   mCapture = new OSXWindowCapture( WindowName() );
 #elif defined Q_OS_WIN
   mCapture = new WinWindowCapture( WindowName() );
 #endif
+
+  // On OS X, WindowFound is quite CPU intensive
+  // Starting time for HS is also long
+  // So just check only once in a while
+  mTimer = new QTimer( this );
+  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Update() ) );
+  mTimer->start( 5000 );
 }
 
 Hearthstone::~Hearthstone() {
   if( mCapture != NULL )
     delete mCapture;
+}
+
+void Hearthstone::Update() {
+  bool isRunning = mCapture->WindowFound();
+
+  if( mIsRunning != isRunning ) {
+    mIsRunning = isRunning;
+
+    if( isRunning ) {
+      DBG( "Game started" );
+      emit GameStarted();
+    } else {
+      DBG( "Game stopped" );
+      emit GameStopped();
+    }
+  }
 }
 
 QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
@@ -58,7 +81,7 @@ QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
 }
 
 bool Hearthstone::Running() const {
-  return mCapture->WindowFound();
+  return mIsRunning;
 }
 
 #ifdef Q_OS_WIN

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPixmap>
+#include <QTimer>
 
 #include "WindowCapture.h"
 
@@ -12,17 +13,22 @@ const char LOG_MODULE_NAMES[ NUM_LOG_MODULES ][ 32 ] = {
   "Power"
 };
 
-class Hearthstone
+class Hearthstone : public QObject
 {
+  Q_OBJECT
+
   DEFINE_SINGLETON( Hearthstone )
 
 private:
   WindowCapture *mCapture;
 
   bool mRestartRequired; // in case HS needs to be restarted for log changes to take effect
+  bool mIsRunning;
 
   QString ReadAgentAttribute( const char *attributeName ) const;
   QString WindowName() const;
+
+  QTimer *mTimer;
 
 public:
   // Allow to override window capture for test environment
@@ -43,4 +49,13 @@ public:
 
   int Width() const;
   int Height() const;
+
+signals:
+  void GameStarted();
+  void GameStopped();
+
+private slots:
+  void Update();
+
+
 };

@@ -22,6 +22,7 @@ HEADERS = src/Local.h \
           src/WebProfile.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
+          src/Hearthstone.h \
           src/MLP.h \
           src/RankClassifier.h \
           src/Settings.h \

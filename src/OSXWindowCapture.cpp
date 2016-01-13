@@ -6,28 +6,12 @@
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
 OSXWindowCapture::OSXWindowCapture( const QString& windowName )
-  : mWindowName( windowName ), mWinId( 0 )
+  : mWindowName( windowName )
 {
-  mTimer = new QTimer( this );
-  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Update() ) );
-  mTimer->start( OSX_UPDATE_WINDOW_DATA_INTERVAL );
-
-  Update();
-}
-
-void OSXWindowCapture::Update() {
-  if( mWinId == 0 ) {
-    mWinId = FindWindow( mWindowName );
-  }
-
-  if( mWinId && !WindowRect( mWinId, &mRect ) ) {
-    // Window became invalid
-    mWinId = 0;
-  }
 }
 
 bool OSXWindowCapture::WindowFound() {
-  return mWinId != 0;
+  return FindWindow( mWindowName );
 }
 
 int OSXWindowCapture::Width() {
