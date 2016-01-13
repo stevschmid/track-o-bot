@@ -110,13 +110,14 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // CardPlayed
-  static QRegExp regexCardPlayed( "ZoneChangeList.ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+).*\\].*zone from (.*) ->\\s?(.*)" );
+  static QRegExp regexCardPlayed( "ZoneChangeList.ProcessChanges.*\\[.*id=(\\d+).*zone=(\\w+).*cardId=(\\w+).*\\].*zone from (.*) ->\\s?(.*)" );
   if( regexCardPlayed.indexIn(line) != -1 ) {
     QStringList captures = regexCardPlayed.capturedTexts();
     int id = captures[1].toInt();
-    QString cardId = captures[2];
-    QString from = captures[3];
-    QString to = captures[4];
+    QString zone = captures[2];
+    QString cardId = captures[3];
+    QString from = captures[4];
+    QString to = captures[5];
 
     bool draw = from.contains( "DECK" ) && to.contains( "HAND" );
     bool mulligan = from.contains( "HAND" ) && to.contains( "DECK" );
@@ -124,7 +125,10 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     // Discarded cards by playing Soulfire, Doomguard etc.
     bool discard = from.contains( "HAND" ) && to.contains( "GRAVEYARD" );
 
-    if( !draw && !mulligan && !discard ) {
+    // Set aside cards, i.e. by playing Golden Monkey
+    bool setaside = zone.contains( "SETASIDE" );
+
+    if( !draw && !mulligan && !discard && !setaside ) {
       if( from.contains( "FRIENDLY HAND" ) ) {
         CardPlayed( PLAYER_SELF, cardId.toStdString(), id );
       } else if( from.contains( "OPPOSING HAND" ) ) {
@@ -134,7 +138,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, id );
+    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d, setaside %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, setaside, id );
   }
 
   // CardReturned
