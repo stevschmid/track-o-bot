@@ -3,6 +3,8 @@
 #include "HearthstoneLogWatcher.h"
 #include "Result.h"
 
+#include <QMap>
+
 class HearthstoneLogTracker : public QObject
 {
   Q_OBJECT
@@ -14,8 +16,10 @@ private:
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
+  bool mOutcomeDetermined;
 
   CardHistoryList mCardHistoryList;
+  QMap< QString, int > mEntityIdByName;
 
   void CardPlayed( Player player, const string& cardId, int internalId = 0 );
   void CardReturned( Player player, const string& cardId );

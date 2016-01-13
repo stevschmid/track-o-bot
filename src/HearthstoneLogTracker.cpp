@@ -3,6 +3,7 @@
 
 #include <QRegExp>
 #include <QStringList>
+#include <QTimer>
 
 // Hero Power Card Ids: Auto generated
 const int NUM_HERO_POWER_CARDS = 115;
@@ -27,7 +28,7 @@ const char HERO_IDS[NUM_HEROES][32] = {
 Q_DECLARE_METATYPE( ::CardHistoryList );
 
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false )
+  : mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false ), mOutcomeDetermined( false )
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
@@ -47,6 +48,8 @@ void HearthstoneLogTracker::Reset() {
   mTurn = 0;
   mCardHistoryList.clear();
   mLegendTracked = false;
+  mEntityIdByName.clear();
+  mOutcomeDetermined = false;
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -61,34 +64,46 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     QString prevMode = captures[1];
     QString currMode = captures[2];
 
-    if( currMode == "ADVENTURE" ) {
-      HandleGameMode( MODE_SOLO_ADVENTURES );
-    } else if( currMode == "TAVERN_BRAWL" ) {
-      HandleGameMode( MODE_TAVERN_BRAWL );
-    } else if( currMode == "DRAFT" ) {
-      HandleGameMode( MODE_ARENA );
-    } else if( currMode == "FRIENDLY" ) {
-      HandleGameMode( MODE_FRIENDLY );
-    } else if( currMode == "TOURNAMENT" ) {
-      // casual or ranked
-      HandleGameMode( MODE_CASUAL );
+    if( prevMode == "GAMEPLAY" && mOutcomeDetermined ) {
+      // We delay the match end event to allow some log events to catch up
+      // For example the rank mode distinction is only possible
+      // via asset unload function, which is triggered on the scene change
+      QTimer::singleShot( 1000, [&]() {
+        emit HandleMatchEnd( mCardHistoryList );
+        Reset();
+      });
+    } else {
+      if( currMode == "ADVENTURE" ) {
+        HandleGameMode( MODE_SOLO_ADVENTURES );
+      } else if( currMode == "TAVERN_BRAWL" ) {
+        HandleGameMode( MODE_TAVERN_BRAWL );
+      } else if( currMode == "DRAFT" ) {
+        HandleGameMode( MODE_ARENA );
+      } else if( currMode == "FRIENDLY" ) {
+        HandleGameMode( MODE_FRIENDLY );
+      } else if( currMode == "TOURNAMENT" ) {
+        // casual or ranked
+        HandleGameMode( MODE_CASUAL );
+      }
     }
 
     DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
   }
 
   // Coin
-  static QRegExp regexCoin( "ZoneChangeList.ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
+  static QRegExp regexCoin( "ZoneChangeList.ProcessChanges.*local=False.*zonePos=5.*zone from  -> (.*)" );
   if( regexCoin.indexIn(line) != -1 ) {
     QStringList captures = regexCoin.capturedTexts();
     QString to = captures[1];
 
-    if( to.contains( "FRIENDLY HAND" ) ) {
-      // I go second because I get the coin
-      emit HandleOrder( ORDER_SECOND );
-    } else if( to.contains( "OPPOSING HAND" ) ) {
-      // Opponent got coin, so I go first
-      emit HandleOrder( ORDER_FIRST );
+    if( CurrentTurn() == 0 ) {
+      if( to.contains( "FRIENDLY HAND" ) ) {
+        // I go second because I get the coin
+        emit HandleOrder( ORDER_SECOND );
+      } else if( to.contains( "OPPOSING HAND" ) ) {
+        // Opponent got coin, so I go first
+        emit HandleOrder( ORDER_FIRST );
+      }
     }
   }
 
@@ -120,6 +135,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, id );
   }
 
+  // CardReturned
   static QRegExp regexCardReturn( "ZoneChangeList.ProcessChanges.*local=True.*cardId=(\\w+).*zone from  -> FRIENDLY HAND" );
   if( regexCardReturn.indexIn(line) != -1 ) {
     QStringList captures = regexCardReturn.capturedTexts();
@@ -127,19 +143,48 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     CardReturned( PLAYER_SELF, cardId.toStdString() );
   }
 
-  // Outcome
-  static QRegExp regexOutcome( "name=(victory|defeat)_screen_start" );
-  if( regexOutcome.indexIn(line) != -1 ) {
-    QStringList captures = regexOutcome.capturedTexts();
-    QString outcome = captures[1];
+  // Entity
+  static QRegExp regexPlayerEntity( "PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=(.+) tag=PLAYER_ID value=(\\d+)" );
+  regexPlayerEntity.setMinimal( true ); // non-greedy for entity name
+  if( regexPlayerEntity.indexIn(line) != -1 ) {
+    QStringList captures = regexPlayerEntity.capturedTexts();
+    QString entityName = captures[1];
+    int entityId = captures[2].toInt();
 
-    if( outcome == "victory" ) {
-      emit HandleOutcome( OUTCOME_VICTORY );
-    } else if( outcome == "defeat" ) {
-      emit HandleOutcome( OUTCOME_DEFEAT );
+    mEntityIdByName[ entityName ] = entityId;
+    DBG( "Player Entity %s = %d", qt2cstr( entityName ), entityId );
+  }
+
+  // Start
+  static QRegExp regexStart( "PowerTaskList.DebugPrintPower.*CREATE_GAME");
+  if( regexStart.indexIn(line) != -1 ) {
+    DBG( "Create game" );
+    emit HandleMatchStart();
+  }
+
+  // End
+  static QRegExp regexEnd( "PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=(.+) tag=PLAYSTATE value=(WON|LOST|TIED)" );
+  regexEnd.setMinimal( true ); // non-greedy for entity name
+  if( regexEnd.indexIn(line) != -1 ) {
+    QStringList captures = regexEnd.capturedTexts();
+    QString entityName = captures[1];
+    QString outcome = captures[2];
+
+    int entityId = mEntityIdByName.value( entityName, -1 );
+    if( entityId == -1 ) {
+      LOG( "Could not resolve entity id %d to determine outcome", entityId );
+    } else {
+      if( entityId == mHeroPlayerId ) {
+        if( outcome == "LOST" ) {
+          HandleOutcome( OUTCOME_DEFEAT );
+        } else {
+          // WON and TIED
+          HandleOutcome( OUTCOME_VICTORY );
+        }
+
+        mOutcomeDetermined = true;
+      }
     }
-    emit HandleMatchEnd( mCardHistoryList );
-    Reset();
   }
 
   // Turn Info
@@ -200,7 +245,6 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
     if( hero != CLASS_UNKNOWN ) {
       if( type == "FRIENDLY" ) {
-        emit HandleMatchStart();
         emit HandleOwnClass( hero );
       } else {
         emit HandleOpponentClass( hero );
