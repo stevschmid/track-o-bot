@@ -12,6 +12,7 @@ Q_OBJECT
 private:
   QString  mWindowName;
   CGRect   mRect;
+  int mWinId;
 
   static int FindWindow( const QString& name );
   static bool WindowRect( int windowId, CGRect *rect );

@@ -17,7 +17,6 @@ HEADERS = src/Local.h \
           src/ui/AccountTab.h \
           src/ui/LogTab.h \
           src/ui/AboutTab.h \
-          src/Core.h \
           src/Logger.h \
           src/WebProfile.h \
           src/HearthstoneLogWatcher.h \
@@ -38,7 +37,6 @@ SOURCES = src/Main.cpp \
           src/ui/AccountTab.cpp \
           src/ui/LogTab.cpp \
           src/ui/AboutTab.cpp \
-          src/Core.cpp \
           src/Logger.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \

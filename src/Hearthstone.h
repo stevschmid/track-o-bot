@@ -23,7 +23,7 @@ private:
   WindowCapture *mCapture;
 
   bool mRestartRequired; // in case HS needs to be restarted for log changes to take effect
-  bool mIsRunning;
+  bool mGameRunning;
 
   QString ReadAgentAttribute( const char *attributeName ) const;
   QString WindowName() const;
@@ -34,15 +34,12 @@ public:
   // Allow to override window capture for test environment
   void SetWindowCapture( WindowCapture *windowCapture );
 
-  bool Running() const;
+  bool GameRunning() const;
   QPixmap Capture( int canvasWidth, int canvasHeight, int cx, int cy, int cw, int ch  );
   bool CaptureWholeScreen( QPixmap *screen );
 
   void EnableLogging();
   void DisableLogging();
-
-  void SetRestartRequired( bool restartRequired );
-  bool RestartRequired() const;
 
   QString LogConfigPath() const;
   QString LogPath( const QString& fileName ) const;
@@ -53,9 +50,8 @@ public:
 signals:
   void GameStarted();
   void GameStopped();
+  void GameRequiresRestart();
 
 private slots:
   void Update();
-
-
 };

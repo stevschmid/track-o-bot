@@ -9,6 +9,7 @@
 #endif
 
 #include "../Settings.h"
+#include "../Hearthstone.h"
 
 Window::Window()
   : mUI( new Ui::MainWindow )
@@ -44,6 +45,9 @@ Window::Window()
 
   connect( group, SIGNAL( triggered(QAction*) ), this, SLOT( ActionTriggered(QAction*) ) );
   connect( mUI->pageWidget, SIGNAL( currentChanged(int) ), this, SLOT( TabChanged( int ) ) );
+
+  connect( Hearthstone::Instance(), &Hearthstone::GameRequiresRestart, this, &Window::HandleGameClientRestartRequired );
+  connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Window::HandleGameClientStop );
 
   QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
 
@@ -168,18 +172,11 @@ void Window::OpenProfileRequested() {
   emit OpenProfile();
 }
 
-void Window::HandleGameClientRestartRequired( bool restartRequired ) {
-  static QAction *separator = NULL;
+void Window::HandleGameClientRestartRequired() {
+  mTrayIconMenu->insertAction( mOpenProfileAction, mGameClientRestartRequiredAction );
+  ShowNotification( "Game log updated", "Please restart Hearthstone for changes to take effect!" );
+}
 
-  if( restartRequired ) {
-    separator = mTrayIconMenu->insertSeparator( mOpenProfileAction );
-    mTrayIconMenu->insertAction( separator, mGameClientRestartRequiredAction );
-
-    ShowNotification( "Game log updated", "Please restart Hearthstone for changes to take effect!" );
-  } else {
-    mTrayIconMenu->removeAction( mGameClientRestartRequiredAction );
-    if( separator ) {
-      mTrayIconMenu->removeAction( separator );
-    }
-  }
+void Window::HandleGameClientStop() {
+  mTrayIconMenu->removeAction( mGameClientRestartRequiredAction );
 }

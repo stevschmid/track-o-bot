@@ -25,7 +25,6 @@ Updater *gUpdater = NULL;
 
 Trackobot::Trackobot( int argc, char **argv )
   : mApp( argc, argv ),
-    mCore( NULL ),
     mWindow( NULL ),
     mSingleInstanceServer( NULL )
 {
@@ -36,11 +35,6 @@ Trackobot::~Trackobot() {
   if( mWindow ) {
     delete mWindow;
     mWindow = NULL;
-  }
-
-  if( mCore ) {
-    delete mCore;
-    mCore = NULL;
   }
 
   if( mSingleInstanceServer ) {
@@ -59,7 +53,6 @@ int Trackobot::Run() {
 
   SetupUpdater();
 
-  CreateCore();
   CreateUI();
 
   Initialize();
@@ -125,26 +118,14 @@ gUpdater = new WinSparkleUpdater( mWebProfile.WebserviceURL( "/appcast_win.xml" 
 #endif
 }
 
-void Trackobot::CreateCore() {
-  // Lo' and behold... it is...
-  // the insurmountable...
-  // the invincible...
-  // the magnificent...
-  // COREEEEEEE
-  mCore = new Core();
-}
-
 void Trackobot::CreateUI() {
   mWindow = new Window();
 }
 
 void Trackobot::Initialize() {
-  assert( mCore && mWindow );
+  assert( mWindow );
 
   // Wire stuff
-  connect( mCore, SIGNAL( HandleGameClientRestartRequired(bool) ),
-      mWindow, SLOT( HandleGameClientRestartRequired(bool) ) );
-
   connect( mWindow, SIGNAL( OpenProfile() ),
       &mWebProfile, SLOT( OpenProfile() ) );
 

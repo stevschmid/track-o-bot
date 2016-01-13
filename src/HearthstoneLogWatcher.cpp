@@ -32,7 +32,7 @@ HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& pa
 
 void HearthstoneLogWatcher::CheckForLogChanges() {
   // Only access disk when HS is running
-  if( !Hearthstone::Instance()->Running() ) {
+  if( !Hearthstone::Instance()->GameRunning() ) {
     return;
   }
 

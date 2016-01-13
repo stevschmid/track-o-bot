@@ -19,7 +19,7 @@
 DEFINE_SINGLETON_SCOPE( Hearthstone )
 
 Hearthstone::Hearthstone()
- : mRestartRequired( false ), mCapture( NULL ), mIsRunning( false )
+ : mCapture( NULL ), mGameRunning( false )
 {
 #ifdef Q_OS_MAC
   mCapture = new OSXWindowCapture( WindowName() );
@@ -43,8 +43,8 @@ Hearthstone::~Hearthstone() {
 void Hearthstone::Update() {
   bool isRunning = mCapture->WindowFound();
 
-  if( mIsRunning != isRunning ) {
-    mIsRunning = isRunning;
+  if( mGameRunning != isRunning ) {
+    mGameRunning = isRunning;
 
     if( isRunning ) {
       DBG( "Game started" );
@@ -80,8 +80,8 @@ QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
   return hs[ QString( attributeName ) ].toString();
 }
 
-bool Hearthstone::Running() const {
-  return mIsRunning;
+bool Hearthstone::GameRunning() const {
+  return mGameRunning;
 }
 
 #ifdef Q_OS_WIN
@@ -179,7 +179,10 @@ void Hearthstone::EnableLogging() {
   }
 
   // Notify about restart if game is running
-  SetRestartRequired( Running() && logModified );
+  Update();
+  if( GameRunning() && logModified ) {
+    emit GameRequiresRestart();
+  }
 }
 
 void Hearthstone::DisableLogging() {
@@ -258,10 +261,3 @@ int Hearthstone::Height() const {
   return mCapture->Height();
 }
 
-void Hearthstone::SetRestartRequired( bool restartRequired ) {
-  mRestartRequired = restartRequired;
-}
-
-bool Hearthstone::RestartRequired() const {
-  return mRestartRequired;
-}

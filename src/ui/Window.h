@@ -42,7 +42,8 @@ private slots:
   void TabChanged( int index );
 
 public slots:
-  void HandleGameClientRestartRequired( bool restartRequired );
+  void HandleGameClientRestartRequired();
+  void HandleGameClientStop();
 
 signals:
   void OpenProfile();
