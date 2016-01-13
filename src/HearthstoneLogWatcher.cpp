@@ -2,7 +2,6 @@
 #include "Hearthstone.h"
 
 #include <QFile>
-#include <QTimer>
 
 #define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 50
 
@@ -10,7 +9,8 @@
 HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& path )
   : QObject( parent ),
     mPath( path ),
-    mLastSeekPos( 0 )
+    mLastSeekPos( 0 ),
+    mTimer( this )
 {
   // We used QFileSystemWatcher before but it fails on windows
   // Windows File Notification seems to be very tricky with files
@@ -18,9 +18,13 @@ HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& pa
   // QFileSystemWatcher fails, manual implemention with FindFirstChangeNotification
   // fails. So instead of putting too much work into a file-system depending solution
   // just use a low-overhead polling strategy
-  QTimer *timer = new QTimer( this );
-  connect( timer, SIGNAL( timeout() ), this, SLOT( CheckForLogChanges() ) );
-  timer->start( CHECK_FOR_LOG_CHANGES_INTERVAL_MS );
+  //
+  // Start/stop timer when hearthstone starts/stops
+  // Otherwise we produce a plethora of idle wake ups
+  connect( &mTimer, &QTimer::timeout, this, &HearthstoneLogWatcher::CheckForLogChanges );
+
+  connect( Hearthstone::Instance(), &Hearthstone::GameStarted, this, &HearthstoneLogWatcher::HandleGameStart );
+  connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &HearthstoneLogWatcher::HandleGameStop );
 
   DBG( "Watch log %s",  qt2cstr( mPath ) );
 
@@ -30,12 +34,15 @@ HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& pa
   }
 }
 
-void HearthstoneLogWatcher::CheckForLogChanges() {
-  // Only access disk when HS is running
-  if( !Hearthstone::Instance()->Running() ) {
-    return;
-  }
+void HearthstoneLogWatcher::HandleGameStart() {
+  mTimer.start( CHECK_FOR_LOG_CHANGES_INTERVAL_MS );
+}
 
+void HearthstoneLogWatcher::HandleGameStop() {
+  mTimer.stop();
+}
+
+void HearthstoneLogWatcher::CheckForLogChanges() {
   QFile file( mPath );
   if( !file.open( QIODevice::ReadOnly ) ) {
     return;

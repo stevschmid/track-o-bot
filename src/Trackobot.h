@@ -3,7 +3,8 @@
 #include <QApplication>
 #include <QLocalServer>
 
-#include "Core.h"
+#include "ResultTracker.h"
+#include "WebProfile.h"
 #include "ui/Window.h"
 
 class Trackobot : public QObject
@@ -12,10 +13,10 @@ class Trackobot : public QObject
 
 private:
   QApplication mApp;
-  Core *mCore;
   Window *mWindow;
   QLocalServer *mSingleInstanceServer;
 
+  ResultTracker mResultTracker;
   WebProfile mWebProfile;
 
   bool IsAlreadyRunning();
@@ -24,7 +25,6 @@ private:
   void SetupLogging();
   void SetupUpdater();
 
-  void CreateCore();
   void CreateUI();
   void Initialize();
 

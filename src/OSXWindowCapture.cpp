@@ -8,14 +8,9 @@
 OSXWindowCapture::OSXWindowCapture( const QString& windowName )
   : mWindowName( windowName ), mWinId( 0 )
 {
-  mTimer = new QTimer( this );
-  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Update() ) );
-  mTimer->start( OSX_UPDATE_WINDOW_DATA_INTERVAL );
-
-  Update();
 }
 
-void OSXWindowCapture::Update() {
+bool OSXWindowCapture::WindowFound() {
   if( mWinId == 0 ) {
     mWinId = FindWindow( mWindowName );
   }
@@ -24,9 +19,7 @@ void OSXWindowCapture::Update() {
     // Window became invalid
     mWinId = 0;
   }
-}
 
-bool OSXWindowCapture::WindowFound() {
   return mWinId != 0;
 }
 
