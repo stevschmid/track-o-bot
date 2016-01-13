@@ -4,7 +4,7 @@
 #include <map>
 
 ResultTracker::ResultTracker()
-  : mSpectating( false )
+  : mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN)
 {
   connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
   connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
@@ -70,12 +70,13 @@ void ResultTracker::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
   DBG( "HandleMatchEnd" );
   mResult.cardList = cardHistoryList;
   mResult.duration = mDurationTimer.elapsed() / 1000;
+  mResult.mode = mCurrentGameMode;
   UploadResult();
 }
 
 void ResultTracker::HandleGameMode( GameMode mode ) {
   DBG( "HandleGameMode %s", MODE_NAMES[ mode ] );
-  mResult.mode = mode;
+  mCurrentGameMode = mode;
 }
 
 void ResultTracker::HandleLegend( int legend ) {

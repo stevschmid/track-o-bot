@@ -20,6 +20,7 @@ private:
 
   HearthstoneLogTracker mLogTracker;
   Result                mResult;
+  GameMode              mCurrentGameMode;
 
   std::vector<int>      mRanks;
   RankClassifier        mRankClassifier;
