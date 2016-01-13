@@ -13,8 +13,7 @@ LogTab::LogTab( QWidget *parent )
   QFont fixedFont = QFontDatabase::systemFont( QFontDatabase::FixedFont );
   mUI->logText->setFont( fixedFont );
 
-  connect( Logger::Instance(), SIGNAL( NewMessage(LogEventType, const QString&) ),
-      this, SLOT( AddLogEntry(LogEventType, const QString&) ) );
+  connect( Logger::Instance(), &Logger::NewMessage, this, &LogTab::AddLogEntry );
 }
 
 

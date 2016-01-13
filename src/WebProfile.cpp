@@ -17,8 +17,7 @@
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
 WebProfile::WebProfile() {
-  connect( &mNetworkManager, SIGNAL( sslErrors(QNetworkReply*, const QList<QSslError>&) ),
-      this, SLOT( SSLErrors(QNetworkReply*, const QList<QSslError>&) ) );
+  connect( &mNetworkManager, &QNetworkAccessManager::sslErrors, this, &WebProfile::SSLErrors );
 }
 
 bool JsonFromReply( QNetworkReply *reply, QJsonObject *object ) {
@@ -109,7 +108,7 @@ QNetworkRequest WebProfile::CreateWebProfileRequest( const QString& path ) {
 void WebProfile::CreateAndStoreAccount() {
   QNetworkRequest request = CreateWebProfileRequest( "/users.json" );
   QNetworkReply *reply = mNetworkManager.post( request, "" );
-  connect( reply, SIGNAL(finished()), this, SLOT(CreateAndStoreAccountHandleReply()) );
+  connect( reply, &QNetworkReply::finished, this, &WebProfile::CreateAndStoreAccountHandleReply );
 }
 
 void WebProfile::CreateAndStoreAccountHandleReply() {
@@ -135,7 +134,7 @@ void WebProfile::CreateAndStoreAccountHandleReply() {
 
 void WebProfile::OpenProfile() {
   QNetworkReply *reply = AuthPostJson( "/one_time_auth.json", "" );
-  connect( reply, SIGNAL( finished() ), this, SLOT( OpenProfileHandleReply() ) );
+  connect( reply, &QNetworkReply::finished, this, &WebProfile::OpenProfileHandleReply );
 }
 
 void WebProfile::OpenProfileHandleReply() {

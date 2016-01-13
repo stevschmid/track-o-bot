@@ -127,8 +127,7 @@ void Trackobot::Initialize() {
   assert( mWindow );
 
   // Wire stuff
-  connect( mWindow, SIGNAL( OpenProfile() ),
-      &mWebProfile, SLOT( OpenProfile() ) );
+  connect( mWindow, &Window::OpenProfile, &mWebProfile, &WebProfile::OpenProfile );
 
   // Make sure Account exists or create one
   mWebProfile.EnsureAccountIsSetUp();

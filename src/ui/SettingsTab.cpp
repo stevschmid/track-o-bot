@@ -7,10 +7,10 @@ SettingsTab::SettingsTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::SettingsWidget )
 {
   mUI->setupUi( this );
-  connect( mUI->checkForUpdatesNowButton, SIGNAL( clicked() ), this, SLOT( CheckForUpdatesNow() ) );
-  connect( mUI->startAtLogin, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutostart() ) );
-  connect( mUI->checkForUpdates, SIGNAL( clicked(bool) ), this, SLOT( UpdateAutoUpdateCheck() ) );
-  connect( mUI->checkUploadMetadata, SIGNAL( clicked(bool) ), this, SLOT( UpdateMetadataUpload() ) );
+  connect( mUI->checkForUpdatesNowButton, &QAbstractButton::clicked, this, &SettingsTab::CheckForUpdatesNow );
+  connect( mUI->startAtLogin, &QAbstractButton::clicked, this, &SettingsTab::UpdateAutostart );
+  connect( mUI->checkForUpdates, &QAbstractButton::clicked, this, &SettingsTab::UpdateAutoUpdateCheck );
+  connect( mUI->checkUploadMetadata, &QAbstractButton::clicked, this, &SettingsTab::UpdateMetadataUpload );
   LoadSettings();
 }
 

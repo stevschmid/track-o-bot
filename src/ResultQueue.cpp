@@ -5,17 +5,15 @@
 
 ResultQueue::ResultQueue()
 {
-  connect( &mWebProfile, SIGNAL( UploadResultFailed(const QJsonObject&, int) ),
-      this, SLOT( UploadResultFailed(const QJsonObject&, int) ) );
-  connect( &mWebProfile, SIGNAL( UploadResultSucceeded(const QJsonObject&) ),
-      this, SLOT( UploadResultSucceeded(const QJsonObject&) ) );
+  connect( &mWebProfile, &WebProfile::UploadResultFailed, this, &ResultQueue::UploadResultFailed );
+  connect( &mWebProfile, &WebProfile::UploadResultSucceeded, this, &ResultQueue::UploadResultSucceeded );
 
   mCheckTimer = new QTimer( this );
-  connect( mCheckTimer, SIGNAL( timeout() ), this, SLOT( Check() ) );
+  connect( mCheckTimer, &QTimer::timeout, this, &ResultQueue::Check );
   mCheckTimer->start( RESULT_QUEUE_CHECK_PERIOD );
 
   mUploadTimer = new QTimer( this );
-  connect( mUploadTimer, SIGNAL( timeout() ), this, SLOT( Upload() ) );
+  connect( mUploadTimer, &QTimer::timeout, this, &ResultQueue::Upload );
 
   Load();
 }

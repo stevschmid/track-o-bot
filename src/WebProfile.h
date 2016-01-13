@@ -15,9 +15,11 @@ private:
 
   QNetworkReply* AuthPostJson( const QString& path, const QByteArray& data );
 
+public slots:
+  void OpenProfile();
+
 private slots:
   void CreateAndStoreAccountHandleReply();
-  void OpenProfile();
   void OpenProfileHandleReply();
 
   void SSLErrors( QNetworkReply *reply, const QList<QSslError>& errors );
@@ -37,7 +39,5 @@ public:
   void EnsureAccountIsSetUp();
 
   QString WebserviceURL( const QString& path );
-
-
 };
 

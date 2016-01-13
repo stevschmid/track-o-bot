@@ -31,7 +31,7 @@ Hearthstone::Hearthstone()
   // Starting time for HS is also long
   // So just check only once in a while
   mTimer = new QTimer( this );
-  connect( mTimer, SIGNAL( timeout() ), this, SLOT( Update() ) );
+  connect( mTimer, &QTimer::timeout, this, &Hearthstone::Update );
   mTimer->start( 5000 );
 }
 

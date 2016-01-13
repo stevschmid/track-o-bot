@@ -10,9 +10,9 @@ AccountTab::AccountTab( QWidget *parent )
   : QWidget( parent ), mUI( new Ui::AccountWidget )
 {
   mUI->setupUi( this );
-  connect( mUI->exportAccountButton, SIGNAL( clicked() ), this, SLOT( ExportAccount() ) );
-  connect( mUI->importAccountButton, SIGNAL( clicked() ), this, SLOT( ImportAccount() ) );
-  connect( Settings::Instance(), SIGNAL( AccountChanged(const QString&, const QString&) ), this, SLOT( LoadAccount() ) );
+  connect( mUI->exportAccountButton, &QAbstractButton::clicked, this, &AccountTab::ExportAccount );
+  connect( mUI->importAccountButton, &QAbstractButton::clicked, this, &AccountTab::ImportAccount );
+  connect( Settings::Instance(), &Settings::AccountChanged, this, &AccountTab::LoadAccount );
   LoadAccount();
 }
 

@@ -6,17 +6,17 @@
 ResultTracker::ResultTracker()
   : mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN)
 {
-  connect( &mLogTracker, SIGNAL( HandleOutcome(Outcome) ), this, SLOT( HandleOutcome(Outcome) ) );
-  connect( &mLogTracker, SIGNAL( HandleOrder(GoingOrder) ), this, SLOT( HandleOrder(GoingOrder) ) );
-  connect( &mLogTracker, SIGNAL( HandleOwnClass(Class) ), this, SLOT( HandleOwnClass(Class) ) ) ;
-  connect( &mLogTracker, SIGNAL( HandleOpponentClass(Class) ), this, SLOT( HandleOpponentClass(Class) ) );
-  connect( &mLogTracker, SIGNAL( HandleGameMode(GameMode) ), this, SLOT( HandleGameMode(GameMode) ) );
-  connect( &mLogTracker, SIGNAL( HandleLegend(int) ), this, SLOT( HandleLegend(int) ) );
-  connect( &mLogTracker, SIGNAL( HandleTurn(int) ), this, SLOT( HandleTurn(int) ) );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleOutcome, this, &ResultTracker::HandleOutcome );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleOrder, this, &ResultTracker::HandleOrder );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleOwnClass, this, &ResultTracker::HandleOwnClass ) ;
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleOpponentClass, this, &ResultTracker::HandleOpponentClass );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleGameMode, this, &ResultTracker::HandleGameMode );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleLegend, this, &ResultTracker::HandleLegend );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleTurn, this, &ResultTracker::HandleTurn );
 
-  connect( &mLogTracker, SIGNAL( HandleSpectating(bool) ), this, SLOT( HandleSpectating(bool) ) );
-  connect( &mLogTracker, SIGNAL( HandleMatchStart() ), this, SLOT( HandleMatchStart() ) );
-  connect( &mLogTracker, SIGNAL( HandleMatchEnd(const ::CardHistoryList&) ), this, SLOT( HandleMatchEnd(const ::CardHistoryList&) ) );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleSpectating, this, &ResultTracker::HandleSpectating );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleMatchStart, this, &ResultTracker::HandleMatchStart );
+  connect( &mLogTracker, &HearthstoneLogTracker::HandleMatchEnd, this, &ResultTracker::HandleMatchEnd );
 
   ResetResult();
 }

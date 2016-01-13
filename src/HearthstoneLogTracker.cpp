@@ -37,7 +37,7 @@ HearthstoneLogTracker::HearthstoneLogTracker()
     QString logPath = Hearthstone::Instance()->LogPath( QString( "%1.log" ).arg( moduleName ) );
 
     HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, logPath );
-    connect( logWatcher, SIGNAL( LineAdded(QString) ), this, SLOT( HandleLogLine(QString) ) );
+    connect( logWatcher, &HearthstoneLogWatcher::LineAdded, this, &HearthstoneLogTracker::HandleLogLine );
     mLogWatchers.push_back( logWatcher );
   }
 

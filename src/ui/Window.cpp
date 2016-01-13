@@ -22,7 +22,7 @@ Window::Window()
   CreateActions();
   CreateTrayIcon();
 
-  connect( mTrayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( TrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
+  connect( mTrayIcon, &QSystemTrayIcon::activated, this, &Window::TrayIconActivated );
 
   QActionGroup *group = new QActionGroup( this );
   group->setExclusive( true );
@@ -43,13 +43,13 @@ Window::Window()
   mUI->actionSettings->setChecked( true );
   TabChanged( 0 );
 
-  connect( group, SIGNAL( triggered(QAction*) ), this, SLOT( ActionTriggered(QAction*) ) );
-  connect( mUI->pageWidget, SIGNAL( currentChanged(int) ), this, SLOT( TabChanged( int ) ) );
+  connect( group, &QActionGroup::triggered, this, &Window::ActionTriggered );
+  connect( mUI->pageWidget, &QStackedWidget::currentChanged, this, &Window::TabChanged );
 
   connect( Hearthstone::Instance(), &Hearthstone::GameRequiresRestart, this, &Window::HandleGameClientRestartRequired );
   connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Window::HandleGameClientStop );
 
-  QTimer::singleShot( 1000, this, SLOT(HandleFirstStartCheck()) );
+  QTimer::singleShot( 1000, this, &Window::HandleFirstStartCheck );
 
 #ifdef Q_OS_WIN
   // This is a fix for
@@ -119,13 +119,13 @@ void Window::closeEvent( QCloseEvent *event ) {
 
 void Window::CreateActions() {
   mOpenProfileAction = new QAction( tr( "Open Profile..." ), this );
-  connect( mOpenProfileAction, SIGNAL( triggered() ), this, SLOT( OpenProfileRequested() ) );
+  connect( mOpenProfileAction, &QAction::triggered, this, &Window::OpenProfileRequested );
 
   mShowAction = new QAction( tr( "Settings..." ), this );
-  connect( mShowAction, SIGNAL( triggered() ), this, SLOT( RiseAndShine() ) );
+  connect( mShowAction, &QAction::triggered, this, &Window::RiseAndShine );
 
   mQuitAction = new QAction( tr("Quit"), this );
-  connect( mQuitAction, SIGNAL( triggered() ), qApp, SLOT( quit() ) );
+  connect( mQuitAction, &QAction::triggered, qApp, &QCoreApplication::quit );
 
   mGameClientRestartRequiredAction = new QAction( tr("Please restart Hearthstone!" ), this );
   mGameClientRestartRequiredAction->setEnabled( false );
