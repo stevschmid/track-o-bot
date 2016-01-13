@@ -27,7 +27,7 @@ const char HERO_IDS[NUM_HEROES][32] = {
 Q_DECLARE_METATYPE( ::CardHistoryList );
 
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurnCounter( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false )
+  : mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false )
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
@@ -44,8 +44,7 @@ HearthstoneLogTracker::HearthstoneLogTracker()
 }
 
 void HearthstoneLogTracker::Reset() {
-  mTurnCounter = 0;
-  mLastHeroPowerUsed = QString();
+  mTurn = 0;
   mCardHistoryList.clear();
   mLegendTracked = false;
 }
@@ -78,10 +77,25 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
   }
 
-  // CardPlayed / CardReturned / PlayerDied
-  static QRegExp regex( "ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+|).*\\].*zone from (.*) ->\\s?(.*)" );
-  if( regex.indexIn(line) != -1 ) {
-    QStringList captures = regex.capturedTexts();
+  // Coin
+  static QRegExp regexCoin( "ZoneChangeList.ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
+  if( regexCoin.indexIn(line) != -1 ) {
+    QStringList captures = regexCoin.capturedTexts();
+    QString to = captures[1];
+
+    if( to.contains( "FRIENDLY HAND" ) ) {
+      // I go second because I get the coin
+      emit HandleOrder( ORDER_SECOND );
+    } else if( to.contains( "OPPOSING HAND" ) ) {
+      // Opponent got coin, so I go first
+      emit HandleOrder( ORDER_FIRST );
+    }
+  }
+
+  // CardPlayed
+  static QRegExp regexCardPlayed( "ZoneChangeList.ProcessChanges.*\\[.*id=(\\d+).*cardId=(\\w+).*\\].*zone from (.*) ->\\s?(.*)" );
+  if( regexCardPlayed.indexIn(line) != -1 ) {
+    QStringList captures = regexCardPlayed.capturedTexts();
     int id = captures[1].toInt();
     QString cardId = captures[2];
     QString from = captures[3];
@@ -103,11 +117,14 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    if( from.contains( "FRIENDLY PLAY" ) && to.contains( "FRIENDLY HAND" ) ) {
-      CardReturned( PLAYER_SELF, cardId.toStdString() );
-    }
-
     DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, id );
+  }
+
+  static QRegExp regexCardReturn( "ZoneChangeList.ProcessChanges.*local=True.*cardId=(\\w+).*zone from  -> FRIENDLY HAND" );
+  if( regexCardReturn.indexIn(line) != -1 ) {
+    QStringList captures = regexCardReturn.capturedTexts();
+    QString cardId = captures[1];
+    CardReturned( PLAYER_SELF, cardId.toStdString() );
   }
 
   // Outcome
@@ -125,34 +142,16 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     Reset();
   }
 
-  // Coin
-  static QRegExp regexCoin( "ProcessChanges.*zonePos=5.*zone from  -> (.*)" );  // unique because from is nothing -> " "
-  if( regexCoin.indexIn(line) != -1 ) {
-    QStringList captures = regexCoin.capturedTexts();
-    QString to = captures[1];
-
-    if( to.contains( "FRIENDLY HAND" ) ) {
-      // I go second because I get the coin
-      emit HandleOrder( ORDER_SECOND );
-    } else if( to.contains( "OPPOSING HAND" ) ) {
-      // Opponent got coin, so I go first
-      emit HandleOrder( ORDER_FIRST );
-    }
-  }
-
   // Turn Info
-  static QRegExp regexTurn( "change=powerTask.*tag=NEXT_STEP value=MAIN_ACTION" );
+  static QRegExp regexTurn( "PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=GameEntity tag=TURN value=(\\d+)" );
   if( regexTurn.indexIn(line) != -1 ) {
-    mTurnCounter++;
-
-    emit HandleTurn( mTurnCounter );
-
-    // reset hero power usage on turn change
-    mLastHeroPowerUsed = QString();
+    QStringList captures = regexTurn.capturedTexts();
+    mTurn = captures[1].toInt();
+    emit HandleTurn( mTurn );
   }
 
   // Hero Power
-  static QRegExp regexHeroPowerEquip( "player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
+  static QRegExp regexHeroPowerEquip( "ZoneChangeList.ProcessChanges.*player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
   if( regexHeroPowerEquip.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPowerEquip.capturedTexts();
     QString playerId = captures[1];
@@ -161,7 +160,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     DBG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
   }
 
-  static QRegExp regexHeroPower( "PowerProcessor\\.DoTaskListForCard.*cardId=(\\w+).*player=(\\d+)" );
+  static QRegExp regexHeroPower( "PowerTaskList.DebugPrintPower.*ACTION_START.*zone=PLAY zonePos=0 cardId=(\\w+) player=(\\d+).*BlockType=POWER" );
   if( regexHeroPower.indexIn(line) != -1 ) {
     QStringList captures = regexHeroPower.capturedTexts();
     QString cardId = captures[1];
@@ -175,18 +174,13 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
         break;
       }
     }
-
-    // Power log line is emitted multiple times
-    // Make sure we only account for first occurrence
-    // Plus line is emitted when match starts, so ignore turn 0
-    if( isHeroPower && mLastHeroPowerUsed != cardId && CurrentTurn() > 0 ) {
+    if( isHeroPower ) {
       CardPlayed( player, cardId.toStdString() );
-      mLastHeroPowerUsed = cardId;
     }
   }
 
   // Hero Equip
-  static QRegExp regexHeroEquip( "cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
+  static QRegExp regexHeroEquip( "ZoneChangeList.ProcessChanges.*cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
   if( regexHeroEquip.indexIn(line) != -1 ) {
     QStringList captures = regexHeroEquip.capturedTexts();
     QString cardId = captures[1];
@@ -230,6 +224,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // Casual/Ranked distinction
+  // This is a Unloading Asset event, which may be unreliable in the timing
+  // Alas, I don't see a more reliable way to distinguish casual from ranked
   static QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {
     HandleGameMode( MODE_RANKED );
@@ -278,5 +274,5 @@ void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId,
 }
 
 int HearthstoneLogTracker::CurrentTurn() const {
-  return ( mTurnCounter + 1 ) / 2;
+  return ( mTurn + 1 ) / 2;
 }

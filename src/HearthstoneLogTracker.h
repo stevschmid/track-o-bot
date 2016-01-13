@@ -10,8 +10,7 @@ class HearthstoneLogTracker : public QObject
 private:
   QList< HearthstoneLogWatcher* > mLogWatchers;
 
-  int mTurnCounter;
-  QString mLastHeroPowerUsed;
+  int mTurn;
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
