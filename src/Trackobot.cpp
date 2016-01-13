@@ -47,8 +47,6 @@ int Trackobot::Run() {
   if( IsAlreadyRunning() )
     return 1;
 
-  SetupLogging();
-
   LOG( "--> Launched v%s on %s", VERSION, qt2cstr( QDate::currentDate().toString( Qt::ISODate ) ) );
 
   SetupUpdater();
@@ -56,6 +54,8 @@ int Trackobot::Run() {
   CreateUI();
 
   Initialize();
+
+  SetupLogging();
 
   int exitCode = mApp.exec();
 
@@ -107,6 +107,7 @@ void Trackobot::SetupLogging() {
   }
   QString logFilePath = dataLocation + QDir::separator() + mApp.applicationName() + ".log";
   Logger::Instance()->SetLogPath( logFilePath );
+  Logger::Instance()->StartProcessing();
 }
 
 void Trackobot::SetupUpdater() {

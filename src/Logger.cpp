@@ -6,7 +6,7 @@
 DEFINE_SINGLETON_SCOPE( Logger );
 
 Logger::Logger()
-  : mFile( NULL )
+  : mFile( NULL ), mProcessMessages( false )
 {
 }
 
@@ -17,6 +17,10 @@ Logger::~Logger() {
   }
 }
 
+void Logger::StartProcessing() {
+  mProcessMessages = true;
+  ProcessMessages();
+}
 
 void Logger::SetLogPath( const QString& path ) {
   if( mFile )
@@ -25,6 +29,24 @@ void Logger::SetLogPath( const QString& path ) {
   mFile = new QFile( path );
   if( mFile )  {
     mFile->open( QIODevice::WriteOnly | QIODevice::Text );
+  }
+}
+
+void Logger::ProcessMessages() {
+  if( !mProcessMessages )
+    return;
+
+  for( auto it : mQueue ) {
+    LogEventType type = it.first;
+    const QString& msg = it.second;
+
+    if( mFile && mFile->isOpen() ) {
+      QTextStream out( mFile );
+      out << msg;
+      mFile->flush();
+    }
+
+    emit NewMessage( type, msg );
   }
 }
 
@@ -48,11 +70,6 @@ void Logger::Add( LogEventType type, const char *fmt, ... ) {
   sprintf( decorated, "[%s] %s: %s\n", timestamp, LOG_EVENT_TYPE_NAMES[ type ], buffer );
   QString line( decorated );
 
-  if( mFile && mFile->isOpen() ) {
-    QTextStream out( mFile );
-    out << line;
-    mFile->flush();
-  }
-
-  emit NewMessage( type, line );
+  mQueue.push_back( QPair< LogEventType, QString >( type, line ) );
+  ProcessMessages();
 }

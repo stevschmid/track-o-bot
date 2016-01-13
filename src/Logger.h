@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QString>
+#include <QPair>
 
 typedef enum {
   LOG_DEBUG = 0,
@@ -23,11 +24,17 @@ class Logger : public QObject {
 DEFINE_SINGLETON( Logger )
 
 private:
+  QList< QPair< LogEventType, QString > > mQueue;
   QFile *mFile;
+  bool mProcessMessages; // delay first messages until StartProcessing()
+
+  void ProcessMessages();
 
 public:
   void SetLogPath( const QString& path );
   void Add( LogEventType type, const char *fmt, ... );
+
+  void StartProcessing();
 
 signals:
   void NewMessage( LogEventType type, const QString& message );
