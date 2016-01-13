@@ -180,7 +180,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
     int entityId = mEntityIdByName.value( entityName, -1 );
     if( entityId == -1 ) {
-      LOG( "Could not resolve entity id %d to determine outcome", entityId );
+      LOG( "Could not resolve entity %s to determine outcome", qt2cstr( entityName ) );
     } else {
       if( entityId == mHeroPlayerId ) {
         if( outcome == "LOST" ) {
