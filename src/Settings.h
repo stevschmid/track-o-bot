@@ -13,9 +13,9 @@ signals:
   void WebserviceURLChanged( const QString& webserviceUrl );
   void AutostartChanged( bool enabled );
   void AutoUpdateCheckChanged( bool enabled );
+  void UploadMetadataEnabledChanged( bool enabled );
 
 public:
-
   QString AccountUsername() const;
   QString AccountPassword() const;
   bool HasAccount() const;
@@ -30,4 +30,7 @@ public:
   bool AutoUpdateCheck() const;
   void SetAutoUpdateCheck( bool enabled );
   void CheckForUpdates();
+
+  bool UploadMetadataEnabled() const;
+  void SetUploadMetadataEnabled( bool enabled );
 };

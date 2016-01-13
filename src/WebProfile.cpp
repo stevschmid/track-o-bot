@@ -49,13 +49,20 @@ void WebProfile::UploadResult( const QJsonObject& result )
   QJsonObject params;
   params[ "result" ] = result;
 
-  // Some metadata to find out room for improvement
-  QJsonArray meta;
-  meta.append( Hearthstone::Instance()->Width() );
-  meta.append( Hearthstone::Instance()->Height() );
-  meta.append( VERSION );
-  meta.append( PLATFORM );
-  params[ "_meta" ] = meta;
+  // Optional upload metadata to find out room for improvements
+  if( Settings::Instance()->UploadMetadataEnabled() ) {
+    METADATA( "GAME_WIDTH", Hearthstone::Instance()->Width() );
+    METADATA( "GAME_HEIGHT", Hearthstone::Instance()->Height() );
+    METADATA( "TOB_VERSION", VERSION );
+    METADATA( "PLATFORM", PLATFORM );
+
+    QJsonObject meta;
+    for( auto it : Metadata::Instance()->Map().toStdMap() ) {
+      meta[ it.first ] = it.second;
+    }
+    params[ "_meta" ] = meta;
+  }
+  Metadata::Instance()->Clear();
 
   QByteArray data = QJsonDocument( params ).toJson();
 

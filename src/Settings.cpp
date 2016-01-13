@@ -12,7 +12,7 @@ DEFINE_SINGLETON_SCOPE( Settings );
 #define KEY_ACCOUNT_USERNAME "username"
 #define KEY_ACCOUNT_PASSWORD "password"
 #define KEY_WEBSERVICE_URL "webserviceUrl"
-#define KEY_REPLAYS_ENABLED "replaysEnabled"
+#define KEY_UPLOAD_METADATA_ENABLED "uploadMetadataEnabled"
 
 Settings::Settings() {
 }
@@ -81,3 +81,12 @@ void Settings::CheckForUpdates() {
   }
 }
 
+bool Settings::UploadMetadataEnabled() const {
+  return QSettings().value( KEY_UPLOAD_METADATA_ENABLED, false ).toBool();
+}
+
+void Settings::SetUploadMetadataEnabled( bool enabled ) {
+  QSettings().setValue( KEY_UPLOAD_METADATA_ENABLED, enabled );
+
+  emit UploadMetadataEnabledChanged( enabled );
+}
