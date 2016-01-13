@@ -86,9 +86,11 @@ void ResultTracker::HandleLegend( int legend ) {
 void ResultTracker::HandleTurn( int turn ) {
   UNUSED_ARG( turn );
 
-  int rank = mRankClassifier.DetectCurrentRank();
-  mRanks.push_back( rank );
-  DBG( "Turn %d. Set Rank %d", turn, rank );
+  if( turn > 1 ) { // turn 1 (first player) happens before game is in-effect [mulligan]
+    int rank = mRankClassifier.DetectCurrentRank();
+    mRanks.push_back( rank );
+    DBG( "Turn %d. Set Rank %d", turn, rank );
+  }
 }
 
 // Screen capture can be tricky
