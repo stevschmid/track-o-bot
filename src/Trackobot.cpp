@@ -47,7 +47,7 @@ int Trackobot::Run() {
   if( IsAlreadyRunning() )
     return 1;
 
-  LOG( "--> Launched v%s on %s", VERSION, qt2cstr( QDate::currentDate().toString( Qt::ISODate ) ) );
+  LOG( "Launch v%s on %s", VERSION, qt2cstr( QDate::currentDate().toString( Qt::ISODate ) ) );
 
   SetupUpdater();
 
@@ -60,7 +60,7 @@ int Trackobot::Run() {
   int exitCode = mApp.exec();
 
   // Tear down
-  LOG( "<-- Shutdown" );
+  LOG( "Shutdown" );
 
   return exitCode;
 }
