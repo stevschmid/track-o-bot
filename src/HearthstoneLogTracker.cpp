@@ -136,7 +136,9 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // CardReturned
-  static QRegExp regexCardReturn( "ZoneChangeList.ProcessChanges.*local=True.*cardId=(\\w+).*zone from  -> FRIENDLY HAND" );
+  // Wrath: "from  -> FRIENDLY HAND"
+  // DotClaw: "from FRIENDLY PLAY -> FRIENDLY HAND"
+  static QRegExp regexCardReturn( "ZoneChangeList.ProcessChanges.*local=True.*cardId=(\\w+).*zone from (FRIENDLY PLAY)? -> FRIENDLY HAND" );
   if( regexCardReturn.indexIn(line) != -1 ) {
     QStringList captures = regexCardReturn.capturedTexts();
     QString cardId = captures[1];
