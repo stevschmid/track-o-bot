@@ -12,9 +12,9 @@ private:
   static MLP::Vector BinarizeImageSV( const QImage& img, float maxSaturation, float minValue );
 
   void LoadMLP();
+  int Classify( const QImage& label, float *outScore ) const;
 
 public:
   RankClassifier();
-  int Classify( const QImage& label ) const;
-  int DetectCurrentRank() const;
+  int DetectCurrentRank( float *outScore, QImage *outLabel );
 };

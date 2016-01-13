@@ -88,9 +88,16 @@ void ResultTracker::HandleTurn( int turn ) {
   UNUSED_ARG( turn );
 
   if( turn > 1 ) { // turn 1 (first player) happens before game is in-effect [mulligan]
-    int rank = mRankClassifier.DetectCurrentRank();
+    QImage label;
+    float score;
+
+    int rank = mRankClassifier.DetectCurrentRank( &score, &label );
     mRanks.push_back( rank );
     DBG( "Turn %d. Set Rank %d", turn, rank );
+
+    METADATA( QString( "RANK_CLASSIFIER_%1_RANK" ).arg( turn ), rank );
+    METADATA( QString( "RANK_CLASSIFIER_%1_SCORE" ).arg( turn ), score );
+    METADATA( QString( "RANK_CLASSIFIER_%1_LABEL" ).arg( turn ), label );
   }
 }
 

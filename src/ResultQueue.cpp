@@ -30,7 +30,9 @@ void ResultQueue::Load() {
     QJsonDocument doc = QJsonDocument::fromJson(
         settings.value( "resultsQueue" ).toByteArray() );
     mQueue = doc.array();
-    LOG( "%d unsaved results found", mQueue.size() );
+    if( mQueue.size() > 0 ) {
+      LOG( "%d unsaved results found", mQueue.size() );
+    }
 
     settings.remove( "resultsQueue" );
   }
@@ -82,6 +84,17 @@ void ResultQueue::Add( const Result& res ) {
     return;
   }
 
+  // Clear some metadata if mode not ranked
+  for( auto it : Metadata::Instance()->Map().toStdMap() ) {
+    const QString& key = it.first;
+
+    // Skip rank classification metadata for nonranked games
+    if( key.startsWith( "RANK_CLASSIFIER" ) && res.mode != MODE_RANKED ) {
+      Metadata::Instance()->Remove( key );
+    }
+  }
+
+  // Finally upload the result
   LOG( "Result: %s %s vs. %s as %s. Went %s",
       MODE_NAMES[ res.mode ],
       OUTCOME_NAMES[ res.outcome ],

@@ -81,7 +81,7 @@ void RankClassifier::LoadMLP() {
   }
 }
 
-int RankClassifier::Classify( const QImage& label ) const {
+int RankClassifier::Classify( const QImage& label, float *outScore ) const {
   assert( label.width() == RC_LABEL_WIDTH );
   assert( label.height() == RC_LABEL_HEIGHT );
 
@@ -101,10 +101,13 @@ int RankClassifier::Classify( const QImage& label ) const {
     DBG( "Rank %d = %f", scores[i].first + 1, scores[i].second );
   }
 
+  if( outScore )
+    *outScore = scores.front().second;
+
   return scores.front().first + 1;
 }
 
-int RankClassifier::DetectCurrentRank() const {
+int RankClassifier::DetectCurrentRank( float *outScore, QImage *outLabel ) {
   // Grab label
   QImage raw = Hearthstone::Instance()->Capture( RC_CAPTURE_SCREEN_WIDTH, RC_CAPTURE_SCREEN_HEIGHT,
       RC_CAPTURE_X, RC_CAPTURE_Y,
@@ -118,7 +121,10 @@ int RankClassifier::DetectCurrentRank() const {
     return 0;
   }
 
-  return Classify( label );
+  if( outLabel )
+    *outLabel = label;
+
+  return Classify( label, outScore );
 }
 
 MLP::Vector RankClassifier::BinarizeImageSV( const QImage& img, float maxSaturation, float minValue ) {

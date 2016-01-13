@@ -58,8 +58,12 @@ void WebProfile::UploadResult( const QJsonObject& result )
 
     QJsonObject meta;
     for( auto it : Metadata::Instance()->Map().toStdMap() ) {
-      meta[ it.first ] = it.second;
+      const QString& key = it.first;
+      const QString& value = it.second;
+
+      meta[ key ] = value;
     }
+
     params[ "_meta" ] = meta;
   }
   Metadata::Instance()->Clear();
