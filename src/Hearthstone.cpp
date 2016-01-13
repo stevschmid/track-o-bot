@@ -218,6 +218,13 @@ QString Hearthstone::LogPath( const QString& fileName ) const {
   }
 #endif
 
+#ifdef Q_OS_MAC
+  if( hsPath.isEmpty() ) {
+    LOG( "Using default path for path" );
+    hsPath = QString("/Applications/Hearthstone");
+  }
+#endif
+
   if( hsPath.isEmpty() ) {
     ERR( "Hearthstone path not found" );
     return QString();
