@@ -28,7 +28,7 @@ const char HERO_IDS[NUM_HEROES][32] = {
 Q_DECLARE_METATYPE( ::CardHistoryList );
 
 HearthstoneLogTracker::HearthstoneLogTracker()
-  : mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false ), mOutcomeDetermined( false )
+  : mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false ), mMatchConcluded( false )
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
@@ -49,7 +49,7 @@ void HearthstoneLogTracker::Reset() {
   mCardHistoryList.clear();
   mLegendTracked = false;
   mEntityIdByName.clear();
-  mOutcomeDetermined = false;
+  mMatchConcluded = false;
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -64,30 +64,32 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     QString prevMode = captures[1];
     QString currMode = captures[2];
 
-    if( prevMode == "GAMEPLAY" && mOutcomeDetermined ) {
-      // We delay the match end event to allow some log events to catch up
-      // For example the rank mode distinction is only possible
-      // via asset unload function, which is triggered on the scene change
-      QTimer::singleShot( 1000, [&]() {
+    // We delay the scene changes to allow some log events to catch up
+    // For example the rank mode distinction is only possible
+    // via asset unload function, which is triggered on the scene change
+    QTimer::singleShot( 1000, [this, prevMode, currMode]() {
+      // First check if match concluded for current game mode
+      if( prevMode == "GAMEPLAY" && mMatchConcluded ) {
         emit HandleMatchEnd( mCardHistoryList );
         Reset();
-      });
-    } else {
+      }
+
+      // Then set the new game mode
       if( currMode == "ADVENTURE" ) {
-        HandleGameMode( MODE_SOLO_ADVENTURES );
+        emit HandleGameMode( MODE_SOLO_ADVENTURES );
       } else if( currMode == "TAVERN_BRAWL" ) {
-        HandleGameMode( MODE_TAVERN_BRAWL );
+        emit HandleGameMode( MODE_TAVERN_BRAWL) ;
       } else if( currMode == "DRAFT" ) {
-        HandleGameMode( MODE_ARENA );
+        emit HandleGameMode( MODE_ARENA );
       } else if( currMode == "FRIENDLY" ) {
-        HandleGameMode( MODE_FRIENDLY );
+        emit HandleGameMode( MODE_FRIENDLY );
       } else if( currMode == "TOURNAMENT" ) {
         // casual or ranked
-        HandleGameMode( MODE_CASUAL );
+        emit HandleGameMode( MODE_CASUAL );
       }
-    }
 
-    DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
+      DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
+    });
   }
 
   // Coin
@@ -178,15 +180,15 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     } else {
       if( entityId == mHeroPlayerId ) {
         if( outcome == "LOST" ) {
-          HandleOutcome( OUTCOME_DEFEAT );
+          emit HandleOutcome( OUTCOME_DEFEAT );
         } else {
           // WON and TIED
-          HandleOutcome( OUTCOME_VICTORY );
+          emit HandleOutcome( OUTCOME_VICTORY );
         }
-
-        mOutcomeDetermined = true;
       }
     }
+
+    mMatchConcluded = true;
   }
 
   // Turn Info
@@ -265,7 +267,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     int legend = captures[1].toInt();
     if( legend > 0 ) {
       mLegendTracked = true;
-      HandleLegend( legend );
+      emit HandleLegend( legend );
     }
   }
 
@@ -274,7 +276,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   // Alas, I don't see a more reliable way to distinguish casual from ranked
   static QRegExp regexRanked( "name=rank_window" );
   if( regexRanked.indexIn(line) != -1 ) {
-    HandleGameMode( MODE_RANKED );
+    DBG( "Detected ranked game" );
+    emit HandleGameMode( MODE_RANKED );
   }
 
   // flag current GAME as spectated

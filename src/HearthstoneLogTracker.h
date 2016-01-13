@@ -16,7 +16,7 @@ private:
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
-  bool mOutcomeDetermined;
+  bool mMatchConcluded;
 
   CardHistoryList mCardHistoryList;
   QMap< QString, int > mEntityIdByName;
