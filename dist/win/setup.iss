@@ -40,13 +40,13 @@ Source: "../../../OpenSSL-Win32/bin/libeay32.dll"; DestDir: "{app}"
 Source: "../../../OpenSSL-Win32/bin/ssleay32.dll"; DestDir: "{app}"
 
 ; Qt
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/bin/Qt5Core.dll"; DestDir: "{app}"   
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/bin/Qt5Widgets.dll"; DestDir: "{app}"    
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/bin/Qt5WinExtras.dll"; DestDir: "{app}"   
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/bin/Qt5Gui.dll"; DestDir: "{app}"                      
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/bin/Qt5Network.dll"; DestDir: "{app}"                      
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/plugins/imageformats/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/imageformats" 
-Source: "../../../../Qt/Qt5.5.0/5.5/msvc2012/plugins/platforms/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/platforms" 
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/bin/Qt5Core.dll"; DestDir: "{app}"   
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/bin/Qt5Widgets.dll"; DestDir: "{app}"    
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/bin/Qt5WinExtras.dll"; DestDir: "{app}"   
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/bin/Qt5Gui.dll"; DestDir: "{app}"                      
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/bin/Qt5Network.dll"; DestDir: "{app}"                      
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/plugins/imageformats/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/imageformats" 
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2012/plugins/platforms/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/platforms" 
 
 ; C/C++ Runtime
 Source: "../../../../Program Files (x86)/Microsoft Visual Studio 11.0/VC/redist/x86/Microsoft.VC110.CRT/msvcp110.dll"; DestDir: "{app}"    
