@@ -46,6 +46,9 @@ private: \
 #define DBG(str, ...)
 #endif
 
+#include "Metadata.h"
+#define METADATA(key, fmt, ...) Metadata::Instance()->Add(key, fmt, ##__VA_ARGS__)
+
 #define UNUSED_ARG(x) (void)(x)
 
 const char *qt2cstr( const QString& str );

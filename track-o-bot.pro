@@ -27,6 +27,7 @@ HEADERS = src/Local.h \
           src/Settings.h \
           src/ResultTracker.h \
           src/ResultQueue.h \
+          src/Metadata.h \
           src/Trackobot.h
 
 SOURCES = src/Main.cpp \
@@ -47,6 +48,7 @@ SOURCES = src/Main.cpp \
           src/ResultTracker.cpp \
           src/ResultQueue.cpp \
           src/Local.cpp \
+          src/Metadata.cpp \
           src/Trackobot.cpp
 
 FORMS   = src/ui/MainWindow.ui \
