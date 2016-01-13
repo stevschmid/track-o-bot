@@ -48,6 +48,8 @@ void Logger::ProcessMessages() {
 
     emit NewMessage( type, msg );
   }
+
+  mQueue.clear();
 }
 
 void Logger::Add( LogEventType type, const char *fmt, ... ) {
