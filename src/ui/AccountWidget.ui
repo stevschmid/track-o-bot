@@ -33,7 +33,7 @@ QLabel#importExportDescription2 {
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
      <property name="rowWrapPolicy">
       <enum>QFormLayout::DontWrapRows</enum>

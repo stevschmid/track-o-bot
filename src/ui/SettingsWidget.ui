@@ -31,7 +31,7 @@ QLabel#updateDescription {
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
      <property name="verticalSpacing">
       <number>4</number>
@@ -100,6 +100,18 @@ QLabel#updateDescription {
       <widget class="QPushButton" name="checkForUpdatesNowButton">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>180</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="text">
         <string>Check for updates now</string>
