@@ -4,7 +4,7 @@
 #include <map>
 
 ResultTracker::ResultTracker()
-  : mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN)
+  : mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN )
 {
   connect( &mLogTracker, &HearthstoneLogTracker::HandleOutcome, this, &ResultTracker::HandleOutcome );
   connect( &mLogTracker, &HearthstoneLogTracker::HandleOrder, this, &ResultTracker::HandleOrder );

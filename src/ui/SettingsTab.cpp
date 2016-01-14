@@ -10,7 +10,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   connect( mUI->checkForUpdatesNowButton, &QAbstractButton::clicked, this, &SettingsTab::CheckForUpdatesNow );
   connect( mUI->startAtLogin, &QAbstractButton::clicked, this, &SettingsTab::UpdateAutostart );
   connect( mUI->checkForUpdates, &QAbstractButton::clicked, this, &SettingsTab::UpdateAutoUpdateCheck );
-  connect( mUI->checkUploadMetadata, &QAbstractButton::clicked, this, &SettingsTab::UpdateMetadataUpload );
+  connect( mUI->checkUploadMetadata, &QAbstractButton::clicked, this, &SettingsTab::UpdateUploadMetadata );
   LoadSettings();
 }
 
@@ -30,7 +30,7 @@ void SettingsTab::UpdateAutoUpdateCheck() {
   Settings::Instance()->SetAutoUpdateCheck( mUI->checkForUpdates->isChecked() );
 }
 
-void SettingsTab::UpdateMetadataUpload() {
+void SettingsTab::UpdateUploadMetadata() {
   Settings::Instance()->SetUploadMetadataEnabled( mUI->checkUploadMetadata->isChecked() );
 }
 

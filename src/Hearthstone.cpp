@@ -47,10 +47,10 @@ void Hearthstone::Update() {
     mGameRunning = isRunning;
 
     if( isRunning ) {
-      DBG( "Game started" );
+      LOG( "Hearthstone is running" );
       emit GameStarted();
     } else {
-      DBG( "Game stopped" );
+      LOG( "Hearthstone stopped" );
       emit GameStopped();
     }
   }

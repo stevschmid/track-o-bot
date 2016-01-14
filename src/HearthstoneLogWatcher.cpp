@@ -9,8 +9,7 @@
 HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& path )
   : QObject( parent ),
     mPath( path ),
-    mLastSeekPos( 0 ),
-    mTimer( this )
+    mLastSeekPos( 0 )
 {
   // We used QFileSystemWatcher before but it fails on windows
   // Windows File Notification seems to be very tricky with files
