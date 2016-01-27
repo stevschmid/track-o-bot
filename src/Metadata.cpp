@@ -35,14 +35,6 @@ void Metadata::Add( const QString& key, const char* fmt, ... ) {
   Add( key, QString( buffer ) );
 }
 
-void Metadata::Add( const QString& key, const QImage& image ) {
-  QByteArray byteArray;
-  QBuffer buffer( &byteArray );
-  image.save( &buffer, "PNG" );
-
-  Add( key, QString::fromLatin1( byteArray.toBase64().data() ) );
-}
-
 void Metadata::Remove( const QString& key ) {
   mMetadata.remove( key );
 }

@@ -16,7 +16,6 @@ public:
   void Add( const QString& key, const char* fmt, ... );
   void Add( const QString& key, int value );
   void Add( const QString& key, float value );
-  void Add( const QString& key, const QImage& img );
 
   void Remove( const QString& key );
   void Clear();
