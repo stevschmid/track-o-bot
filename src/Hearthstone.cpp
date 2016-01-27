@@ -217,7 +217,7 @@ QString Hearthstone::LogPath( const QString& fileName ) const {
     QString hsPathByRegistry = hsKey.value( "InstallLocation" ).toString();
 
     if( hsPathByAgent.isEmpty() && hsPathByRegistry.isEmpty() ) {
-      LOG( "Fall back to default game path" );
+      LOG( "Game folder not found (you might want to try Scan & Repair in the Battle.net Launcher). Fall back to default game path for now" );
       hsPath = QString( getenv("PROGRAMFILES") ) + "/Hearthstone";
     } else if( !hsPathByRegistry.isEmpty() ) {
       hsPath = hsPathByRegistry;
