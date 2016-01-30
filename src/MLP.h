@@ -9,7 +9,8 @@ namespace MLP
 
   typedef enum {
     LAYER_SIGMOID,
-    LAYER_SOFTMAX
+    LAYER_SOFTMAX,
+    LAYER_RECTIFIER
   } LayerType;
 
   typedef struct {

@@ -34,6 +34,10 @@ namespace MLP
       for( int i = 0; i < numNodes; i++ ) {
         output[ i ] = 1.0f / ( 1.0f + expf( -z[ i ] ) );
       }
+    } else if( layer.type == LAYER_RECTIFIER ) {
+      for( int i = 0; i < numNodes; i++ ) {
+        output[ i ] = std::max( 0.0f, z[ i ] );
+      }
     } else if( layer.type == LAYER_SOFTMAX ) {
       // Use the log-sum trick to compute the exponential sum
       // oi = exp(zi) / sum_j { exp(zj) }

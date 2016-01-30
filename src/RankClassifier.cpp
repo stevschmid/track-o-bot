@@ -5,6 +5,8 @@
 
 #include <cassert>
 
+#define RC_PROBA_THRESHOLD 0.95 // return 0/RANK_UNKNOWN when best output below this threshold (prob. since we use SOFTMAX)
+
 // The width / height of the rank label
 #define RC_LABEL_WIDTH 28
 #define RC_LABEL_HEIGHT 28
@@ -57,9 +59,15 @@ void RankClassifier::LoadMLP() {
     MLP::Layer layer;
 
     // type
-    layer.type = MLP::LAYER_SIGMOID;
-    if( jsonLayer["type"].toString() == "SOFTMAX" ) {
+    QString type = jsonLayer["type"].toString();
+    if( type == "SOFTMAX" ) {
       layer.type = MLP::LAYER_SOFTMAX;
+    } else if( type == "SIGMOID" ) {
+      layer.type = MLP::LAYER_SIGMOID;
+    } else if( type == "RECTIFIER" ) {
+      layer.type = MLP::LAYER_RECTIFIER;
+    } else {
+      assert( "Unknown layer type" );
     }
 
     // biases
@@ -101,10 +109,17 @@ int RankClassifier::Classify( const QImage& label, float *outScore ) const {
     DBG( "Rank %d = %f", scores[i].first + 1, scores[i].second );
   }
 
+  float bestScore = scores.front().second;
   if( outScore )
-    *outScore = scores.front().second;
+    *outScore = bestScore;
 
-  return scores.front().first + 1;
+  int rank = 0; // RANK_UNKNOWN
+  if( bestScore >= RC_PROBA_THRESHOLD ) {
+    rank = scores.front().first + 1;
+  }
+
+  DBG( "Best score %.3f >= %.3f. Return %d", bestScore, RC_PROBA_THRESHOLD, rank );
+  return rank;
 }
 
 int RankClassifier::DetectCurrentRank( float *outScore, QImage *outLabel ) {
