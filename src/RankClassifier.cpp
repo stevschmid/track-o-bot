@@ -153,6 +153,11 @@ MLP::Vector RankClassifier::BinarizeImageSV( const QImage& img, float maxSaturat
 
       int h, s, v;
       QColor( pixel ).getHsv( &h, &s, &v );
+
+      h = std::max(0, h);
+      s = int(float(s) / 255.0f * 100.0f);
+      v = int(float(v) / 255.0f * 100.0f);
+
       bool white = ( s <= maxSaturation && v >= minValue );
       out[ idx ] = white ? 1.0f : 0.0f;
     }
