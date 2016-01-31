@@ -46,6 +46,6 @@ private slots:
   void HandleLegend( int legend );
 
 public:
-  ResultTracker();
+  ResultTracker( QObject *parent = 0 );
   ~ResultTracker();
 };

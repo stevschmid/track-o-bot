@@ -16,8 +16,8 @@ private:
   Window *mWindow;
   QLocalServer *mSingleInstanceServer;
 
-  ResultTracker mResultTracker;
-  WebProfile mWebProfile;
+  ResultTracker *mResultTracker;
+  WebProfile *mWebProfile;
 
   bool IsAlreadyRunning();
 

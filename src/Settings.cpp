@@ -3,6 +3,7 @@
 #include <QSettings>
 
 #include "Autostart.h"
+#include "Hearthstone.h"
 
 #include "Updater.h"
 extern Updater *gUpdater;
@@ -13,6 +14,7 @@ DEFINE_SINGLETON_SCOPE( Settings );
 #define KEY_ACCOUNT_PASSWORD "password"
 #define KEY_WEBSERVICE_URL "webserviceUrl"
 #define KEY_UPLOAD_METADATA_ENABLED "uploadMetadataEnabled"
+#define KEY_HEARTHSTONE_DIRECTORY_PATH "hearthstoneDirectoryPath"
 
 Settings::Settings() {
 }
@@ -89,4 +91,19 @@ void Settings::SetUploadMetadataEnabled( bool enabled ) {
   QSettings().setValue( KEY_UPLOAD_METADATA_ENABLED, enabled );
 
   emit UploadMetadataEnabledChanged( enabled );
+}
+
+QString Settings::HearthstoneDirectoryPath() const {
+  QString path = QSettings().value( KEY_HEARTHSTONE_DIRECTORY_PATH ).toString();
+  if( path.isEmpty() ) {
+    path = Hearthstone::Instance()->DetectHearthstonePath();
+  }
+  return path;
+}
+
+void Settings::SetHearthstoneDirectoryPath( const QString& path ) {
+  QSettings s;
+  s.setValue( KEY_HEARTHSTONE_DIRECTORY_PATH, path );
+
+  emit HearthstoneDirectoryPathChanged( path );
 }

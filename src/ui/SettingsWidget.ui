@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>224</height>
+    <width>465</width>
+    <height>284</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>210</height>
+    <height>250</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,7 @@
   <property name="styleSheet">
    <string notr="true">QLabel#startDescription,
 QLabel#metadataDescription,
+QLabel#hearthstonePathDescription,
 QLabel#updateDescription {
 	font-size: 11px;
 	color: #898989;
@@ -40,36 +41,129 @@ QLabel#updateDescription {
       <number>10</number>
      </property>
      <property name="topMargin">
-      <number>10</number>
+      <number>0</number>
      </property>
      <property name="rightMargin">
       <number>10</number>
      </property>
      <property name="bottomMargin">
-      <number>10</number>
+      <number>0</number>
      </property>
-     <item row="1" column="0">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Game</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,1">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="hearthstoneDirectoryPath">
+           <property name="text">
+            <string>Select path...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="hearthstonePathDescription">
+           <property name="text">
+            <string>Hearthstone installation directory.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QPushButton" name="selectHearthstoneDirectoryPath">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+             <kerning>true</kerning>
+            </font>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>0</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="1">
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="4" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>System</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="4" column="1">
       <widget class="QCheckBox" name="startAtLogin">
        <property name="text">
         <string>Start at login </string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="5" column="1">
       <widget class="QLabel" name="startDescription">
        <property name="text">
         <string>Open Track-o-Bot when you log in.</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="7" column="1">
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -82,21 +176,21 @@ QLabel#updateDescription {
        </property>
       </spacer>
      </item>
-     <item row="5" column="1">
+     <item row="8" column="1">
       <widget class="QCheckBox" name="checkForUpdates">
        <property name="text">
         <string>Check for updates</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="9" column="1">
       <widget class="QLabel" name="updateDescription">
        <property name="text">
         <string>Check for updates automatically.</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="10" column="1">
       <widget class="QPushButton" name="checkForUpdatesNowButton">
        <property name="enabled">
         <bool>true</bool>
@@ -121,7 +215,7 @@ QLabel#updateDescription {
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="11" column="1">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -134,24 +228,24 @@ QLabel#updateDescription {
        </property>
       </spacer>
      </item>
-     <item row="9" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Diagnostics</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="12" column="1">
       <widget class="QCheckBox" name="checkUploadMetadata">
        <property name="text">
         <string>Upload diagnostic data</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="13" column="1">
       <widget class="QLabel" name="metadataDescription">
        <property name="text">
-        <string>Enable upload of additional tracking data. This helps to fix bugs and improve tracking.</string>
+        <string>Enable upload of additional tracking data. This helps to detect problems and fix bugs.</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>

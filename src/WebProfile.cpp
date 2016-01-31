@@ -16,7 +16,9 @@
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
-WebProfile::WebProfile() {
+WebProfile::WebProfile( QObject *parent )
+  : QObject( parent )
+{
   connect( &mNetworkManager, &QNetworkAccessManager::sslErrors, this, &WebProfile::SSLErrors );
 }
 

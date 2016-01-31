@@ -14,6 +14,7 @@ signals:
   void AutostartChanged( bool enabled );
   void AutoUpdateCheckChanged( bool enabled );
   void UploadMetadataEnabledChanged( bool enabled );
+  void HearthstoneDirectoryPathChanged( const QString& path );
 
 public:
   QString AccountUsername() const;
@@ -33,4 +34,7 @@ public:
 
   bool UploadMetadataEnabled() const;
   void SetUploadMetadataEnabled( bool enabled );
+
+  QString HearthstoneDirectoryPath() const;
+  void SetHearthstoneDirectoryPath( const QString& path );
 };

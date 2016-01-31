@@ -3,8 +3,8 @@
 
 #include <map>
 
-ResultTracker::ResultTracker()
-  : mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN )
+ResultTracker::ResultTracker( QObject *parent )
+  : QObject( parent ), mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN )
 {
   connect( &mLogTracker, &HearthstoneLogTracker::HandleOutcome, this, &ResultTracker::HandleOutcome );
   connect( &mLogTracker, &HearthstoneLogTracker::HandleOrder, this, &ResultTracker::HandleOrder );

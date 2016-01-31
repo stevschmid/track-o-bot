@@ -43,7 +43,7 @@ public:
   void DisableLogging();
 
   QString LogConfigPath() const;
-  QString LogPath( const QString& fileName ) const;
+  QString DetectHearthstonePath() const;
 
   int Width() const;
   int Height() const;

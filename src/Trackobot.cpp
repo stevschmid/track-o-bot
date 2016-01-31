@@ -29,6 +29,8 @@ Trackobot::Trackobot( int argc, char **argv )
     mSingleInstanceServer( NULL )
 {
   SetupApplication();
+  mWebProfile = new WebProfile( this );
+  mResultTracker = new ResultTracker( this );
 }
 
 Trackobot::~Trackobot() {
@@ -112,10 +114,10 @@ void Trackobot::SetupLogging() {
 
 void Trackobot::SetupUpdater() {
 #if defined Q_OS_MAC
-CocoaInitializer cocoaInitializer;
-gUpdater = new SparkleUpdater( mWebProfile.WebserviceURL( "/appcast.xml" ) );
+  CocoaInitializer cocoaInitializer;
+  gUpdater = new SparkleUpdater( mWebProfile->WebserviceURL( "/appcast.xml" ) );
 #elif defined Q_OS_WIN
-gUpdater = new WinSparkleUpdater( mWebProfile.WebserviceURL( "/appcast_win.xml" ) );
+  gUpdater = new WinSparkleUpdater( mWebProfile->WebserviceURL( "/appcast_win.xml" ) );
 #endif
 }
 
@@ -127,12 +129,14 @@ void Trackobot::Initialize() {
   assert( mWindow );
 
   // Wire stuff
-  connect( mWindow, &Window::OpenProfile, &mWebProfile, &WebProfile::OpenProfile );
+  connect( mWindow, &Window::OpenProfile, mWebProfile, &WebProfile::OpenProfile );
 
   // Make sure Account exists or create one
-  mWebProfile.EnsureAccountIsSetUp();
+  mWebProfile->EnsureAccountIsSetUp();
 
   // Enable HS Logging
   Hearthstone::Instance()->EnableLogging();
+
+  // Create Result Tracker
 }
 

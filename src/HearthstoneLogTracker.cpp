@@ -1,9 +1,11 @@
 #include "HearthstoneLogTracker.h"
 #include "Hearthstone.h"
+#include "Settings.h"
 
 #include <QRegExp>
 #include <QStringList>
 #include <QTimer>
+#include <QDir>
 
 // Hero Power Card Ids: Auto generated
 const int NUM_HERO_POWER_CARDS = 115;
@@ -32,11 +34,21 @@ HearthstoneLogTracker::HearthstoneLogTracker()
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
+  QString hsPath = Settings::Instance()->HearthstoneDirectoryPath();
+  QString logFolderPath = QString( "%1/Logs" ).arg( hsPath );
+
+  if( !QDir( logFolderPath ).exists() ) {
+    LOG( "Log folder does not exist! Make sure you select the correct Hearthstone path in the settings." );
+  } else {
+    LOG( "Watching HS logs at %s", qt2cstr( logFolderPath ) );
+  }
+
   for( int i = 0; i < NUM_LOG_MODULES; i++ ) {
     const char *moduleName = LOG_MODULE_NAMES[ i ];
-    QString logPath = Hearthstone::Instance()->LogPath( QString( "%1.log" ).arg( moduleName ) );
 
-    HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, logPath );
+    QString logFilePath = QString( "%1/%2.log" ).arg( logFolderPath ).arg( moduleName );
+
+    HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, logFilePath );
     connect( logWatcher, &HearthstoneLogWatcher::LineAdded, this, &HearthstoneLogTracker::HandleLogLine );
     mLogWatchers.push_back( logWatcher );
   }

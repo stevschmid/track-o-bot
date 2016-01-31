@@ -31,7 +31,7 @@ signals:
   void UploadResultSucceeded( const QJsonObject& response );
 
 public:
-  WebProfile();
+  WebProfile( QObject *parent = 0 );
 
   bool IsAccountSetUp() const;
   void UploadResult( const QJsonObject& result );

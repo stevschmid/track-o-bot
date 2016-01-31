@@ -68,7 +68,7 @@ QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
 
   QFile file( path );
   if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-    ERR( "Couldn't open %s (%d)", qt2cstr( path ), file.error() );
+    DBG( "Couldn't open %s (%d)", qt2cstr( path ), file.error() );
     return "";
   }
 
@@ -206,7 +206,7 @@ QString Hearthstone::LogConfigPath() const {
   return configPath;
 }
 
-QString Hearthstone::LogPath( const QString& fileName ) const {
+QString Hearthstone::DetectHearthstonePath() const {
   static QString hsPath;
 
   if( hsPath.isEmpty() ) {
@@ -217,7 +217,7 @@ QString Hearthstone::LogPath( const QString& fileName ) const {
     QString hsPathByRegistry = hsKey.value( "InstallLocation" ).toString();
 
     if( hsPathByAgent.isEmpty() && hsPathByRegistry.isEmpty() ) {
-      LOG( "Game folder not found (you might want to try Scan & Repair in the Battle.net Launcher). Fall back to default game path for now" );
+      LOG( "Game folder not found. Fall back to default game path for now. You should set the path manually in the settings!" );
       hsPath = QString( getenv("PROGRAMFILES") ) + "/Hearthstone";
     } else if( !hsPathByRegistry.isEmpty() ) {
       hsPath = hsPathByRegistry;
@@ -227,15 +227,13 @@ QString Hearthstone::LogPath( const QString& fileName ) const {
 #elif defined Q_OS_MAC
     hsPath = ReadAgentAttribute( "install_dir" );
     if( hsPath.isEmpty() ) {
-      LOG( "Fall back to default game path" );
+      LOG( "Fall back to default game path. You should set the path manually in the settings!" );
       hsPath = QStandardPaths::standardLocations( QStandardPaths::ApplicationsLocation ).first() + "/Hearthstone";
     }
 #endif
-
-    LOG( "Use Hearthstone location %s", qt2cstr( hsPath ) );
   }
 
-  return QString( "%1/Logs/%2" ).arg( hsPath ).arg( fileName );
+  return hsPath;
 }
 
 QString Hearthstone::WindowName() const {
