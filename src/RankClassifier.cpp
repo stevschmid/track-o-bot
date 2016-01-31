@@ -5,7 +5,7 @@
 
 #include <cassert>
 
-#define RC_PROBA_THRESHOLD 0.95 // return 0/RANK_UNKNOWN when best output below this threshold (prob. since we use SOFTMAX)
+#define RC_PROBA_THRESHOLD 0.99 // return 0/RANK_UNKNOWN when best output below this threshold (prob. since we use SOFTMAX)
 
 // The width / height of the rank label
 #define RC_LABEL_WIDTH 28
