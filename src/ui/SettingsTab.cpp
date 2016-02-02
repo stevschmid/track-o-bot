@@ -58,8 +58,8 @@ void SettingsTab::SelectHearthstoneDirectoryPath() {
     LoadSettings();
 
     QMessageBox msgBox( QMessageBox::Information,
-        "Restart Track-o-Bot",
-        "Please restart Track-o-Bot for changes to take effect", QMessageBox::Ok, this );
+        "Restart required!",
+        "Please restart Track-o-Bot for changes to take effect!", QMessageBox::Ok, this );
     msgBox.exec();
   }
 }
