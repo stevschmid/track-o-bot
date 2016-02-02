@@ -94,6 +94,9 @@ void ResultTracker::HandleTurn( int turn ) {
     int rank = mRankClassifier.DetectCurrentRank( &score, &label );
     mRanks.push_back( rank );
     DBG( "Turn %d. Set Rank %d", turn, rank );
+
+    METADATA( QString( "RANK_CLASSIFIER_%1_RANK" ).arg( turn ), rank );
+    METADATA( QString( "RANK_CLASSIFIER_%1_SCORE" ).arg( turn ), score );
   }
 }
 
