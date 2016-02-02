@@ -4,8 +4,9 @@
 #include "Hearthstone.h"
 
 #include <cassert>
+#include <cmath>
 
-#define RC_PROBA_THRESHOLD 0.99 // return 0/RANK_UNKNOWN when best output below this threshold (prob. since we use SOFTMAX)
+#define RC_PROBA_THRESHOLD 0.95 // return 0/RANK_UNKNOWN when best output below this threshold (prob. since we use SOFTMAX)
 
 // The width / height of the rank label
 #define RC_LABEL_WIDTH 28
@@ -143,7 +144,11 @@ int RankClassifier::DetectCurrentRank( float *outScore, QImage *outLabel ) {
 }
 
 MLP::Vector RankClassifier::BinarizeImageSV( const QImage& img, float maxSaturation, float minValue ) {
-  MLP::Vector out( img.width() * img.height() );
+  MLP::Vector bin( img.width() * img.height() );
+
+  float sumX = 0.0f;
+  float sumY = 0.0f;
+  int area = 0;
 
   for( int y = 0; y < img.height(); y++ ) {
     for( int x = 0; x < img.width(); x++ ) {
@@ -159,10 +164,44 @@ MLP::Vector RankClassifier::BinarizeImageSV( const QImage& img, float maxSaturat
       v = int(float(v) / 255.0f * 100.0f);
 
       bool white = ( s <= maxSaturation && v >= minValue );
-      out[ idx ] = white ? 1.0f : 0.0f;
+      bin[ idx ] = white ? 1.0f : 0.0f;
+
+      if( white ) {
+        sumX += (float(x) + 0.5f);
+        sumY += (float(y) + 0.5f);
+        area++;
+      }
     }
   }
 
-  return out;
+  MLP::Vector binCentered( img.width() * img.height(), 0.0f );
+
+  float imageCenterX = img.width() * 0.5f;
+  float imageCenterY = img.height() * 0.5f;
+
+  float gravityX = area ? sumX / area : imageCenterX;
+  float gravityY = area ? sumY / area : imageCenterY;
+
+  int offsetX = std::round(imageCenterX - gravityX);
+  int offsetY = std::round(imageCenterY - gravityY);
+
+  for( int y = 0; y < img.height(); y++ ) {
+    for( int x = 0; x < img.width(); x++ ) {
+      int idx = y * img.width() + x;
+      float val = bin[ idx ];
+
+      int newX = x + offsetX;
+      int newY = y + offsetY;
+
+      if( newX >= 0 && newX < img.width() &&
+          newY >= 0 && newY < img.height() )
+      {
+        int newIdx = newY * img.width() + newX;
+        binCentered[ newIdx ] = val;
+      }
+    }
+  }
+
+  return binCentered;
 }
 
