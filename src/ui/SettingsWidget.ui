@@ -100,7 +100,7 @@ QLabel#updateDescription {
            </property>
            <property name="maximumSize">
             <size>
-             <width>30</width>
+             <width>50</width>
              <height>16777215</height>
             </size>
            </property>
