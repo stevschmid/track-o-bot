@@ -19,6 +19,8 @@ OutputBaseFilename=Track-o-Bot_{#Version}
 [InstallDelete]
 Type: Files; Name: "{app}/msvcp100.dll"
 Type: Files; Name: "{app}/msvcr100.dll"
+Type: Files; Name: "{app}/msvcp110.dll"
+Type: Files; Name: "{app}/msvcr110.dll"
 Type: Files; Name: "{app}/QtCore4.dll" 
 Type: Files; Name: "{app}/QtGui4.dll"
 Type: Files; Name: "{app}/QtNetwork4.dll"
@@ -36,21 +38,21 @@ Source: "../../build/Track-o-Bot.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../../WinSparkle/Release/WinSparkle.dll"; DestDir: "{app}"; Flags: ignoreversion  
 
 ; Required for QtNetworkManager to work with HTTPS
-Source: "../../../OpenSSL-Win32/bin/libeay32.dll"; DestDir: "{app}"
-Source: "../../../OpenSSL-Win32/bin/ssleay32.dll"; DestDir: "{app}"
+Source: "../../../OpenSSL-Win32/bin/libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../OpenSSL-Win32/bin/ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Qt
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Core.dll"; DestDir: "{app}"   
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Widgets.dll"; DestDir: "{app}"    
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5WinExtras.dll"; DestDir: "{app}"   
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Gui.dll"; DestDir: "{app}"                      
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Network.dll"; DestDir: "{app}"                      
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/plugins/imageformats/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/imageformats" 
-Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/plugins/platforms/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/platforms" 
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5WinExtras.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/plugins/imageformats/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/imageformats"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/plugins/platforms/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/platforms"; Flags: ignoreversion
 
 ; C/C++ Runtime
-Source: "../../../../Program Files (x86)/Microsoft Visual Studio 11.0/VC/redist/x86/Microsoft.VC110.CRT/msvcp110.dll"; DestDir: "{app}"    
-Source: "../../../../Program Files (x86)/Microsoft Visual Studio 11.0/VC/redist/x86/Microsoft.VC110.CRT/msvcr110.dll"; DestDir: "{app}" 
+Source: "../../../../Program Files (x86)/Microsoft Visual Studio 12.0/VC/redist/x86/Microsoft.VC120.CRT/msvcp120.dll"; DestDir: "{app}"
+Source: "../../../../Program Files (x86)/Microsoft Visual Studio 12.0/VC/redist/x86/Microsoft.VC120.CRT/msvcr120.dll"; DestDir: "{app}"
 
 [Run]
 Filename: "{app}\Track-o-Bot.exe"; Description: "Launch Track-o-Bot"; Flags: postinstall nowait
