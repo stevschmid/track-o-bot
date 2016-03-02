@@ -27,7 +27,7 @@ private slots:
   QNetworkRequest CreateWebProfileRequest( const QString& path );
 
 signals:
-  void UploadResultFailed( const QJsonObject& result, int errorCode );
+  void UploadResultFailed( const QJsonObject& result, int replyCode, int httpStatusCode );
   void UploadResultSucceeded( const QJsonObject& response );
 
 public:

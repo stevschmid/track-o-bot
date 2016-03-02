@@ -24,7 +24,7 @@ private:
   void Save();
 
 private slots:
-  void UploadResultFailed( const QJsonObject& result, int errorCode );
+  void UploadResultFailed( const QJsonObject& result, int replyCode, int httpStatusCode );
   void UploadResultSucceeded( const QJsonObject& response );
 
   void Check();

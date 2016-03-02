@@ -73,14 +73,16 @@ void WebProfile::UploadResult( const QJsonObject& result )
 
   QNetworkReply *reply = AuthPostJson( "/profile/results.json", data );
   connect( reply, &QNetworkReply::finished, [&, reply, result]() {
-    if( reply->error() == QNetworkReply::NoError ) {
+    int replyCode = reply->error();
+
+    if( replyCode == QNetworkReply::NoError ) {
       QJsonObject response;
       if( JsonFromReply( reply, &response) ) {
         emit UploadResultSucceeded( response );
       }
     } else {
       int statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
-      emit UploadResultFailed( result, statusCode );
+      emit UploadResultFailed( result, replyCode, statusCode );
     }
 
     reply->deleteLater();
@@ -175,6 +177,8 @@ void WebProfile::SSLErrors(QNetworkReply *reply, const QList<QSslError>& errors)
         err.error() == QSslError::SelfSignedCertificateInChain )
     {
       errorsToIgnore << err;
+    } else {
+      ERR( "SSL Error %d", err.error() );
     }
   }
 

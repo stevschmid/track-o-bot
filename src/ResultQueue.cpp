@@ -104,8 +104,8 @@ void ResultQueue::Add( const Result& res ) {
   Upload();
 }
 
-void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode ) {
-  ERR( "There was a problem uploading the result (Code %d). Will save the result locally and try again later.", errorCode );
+void ResultQueue::UploadResultFailed( const QJsonObject& result, int replyCode, int httpStatusCode ) {
+  ERR( "There was a problem uploading the result (Reply %d, HTTP %d). Will save the result locally and try again later.", replyCode, httpStatusCode );
   mQueue.append( result );
 
   // Upload not working, check periodically from now on
