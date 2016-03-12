@@ -12,6 +12,9 @@ public:
   virtual int Width() = 0;
   virtual int Height() = 0;
 
+  virtual int Left() = 0;
+  virtual int Top() = 0;
+
   virtual QPixmap Capture( int x, int y, int w, int h ) = 0;
 };
 

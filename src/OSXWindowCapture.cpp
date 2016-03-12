@@ -32,6 +32,14 @@ int OSXWindowCapture::Height() {
   return Fullscreen() ? height : std::max< int >( height - OSX_WINDOW_TITLE_BAR_HEIGHT, 0 );
 }
 
+int OSXWindowCapture::Left() {
+  return CGRectGetMinX( mRect );
+}
+
+int OSXWindowCapture::Top() {
+  return CGRectGetMinY( mRect );
+}
+
 QPixmap OSXWindowCapture::Capture( int x, int y, int w, int h ) {
   CGRect captureRect = CGRectMake(
       x + CGRectGetMinX( mRect ),
