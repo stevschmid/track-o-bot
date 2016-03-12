@@ -71,7 +71,7 @@ typedef enum {
   CLASS_SHAMAN,
   CLASS_DRUID,
   CLASS_UNKNOWN
-} Class;
+} HeroClass;
 
 const char CLASS_NAMES[][128] = {
   "priest",
@@ -110,8 +110,8 @@ public:
   Outcome outcome;
   GoingOrder order;
 
-  Class hero;
-  Class opponent;
+  HeroClass hero;
+  HeroClass opponent;
 
   CardHistoryList cardList;
 

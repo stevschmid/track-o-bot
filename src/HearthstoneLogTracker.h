@@ -35,20 +35,21 @@ private slots:
 
 signals:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
+  void HandleMatchEnd();
 
   void HandleOutcome( Outcome outcome );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
-  void HandleOpponentClass( Class opponentClass );
-  void HandleOwnClass( Class ownClass );
+  void HandleOpponentClass( HeroClass opponentClass );
+  void HandleOwnClass( HeroClass ownClass );
   void HandleLegend( int legend );
   void HandleTurn( int turnCounter );
+  void HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
 
   void HandleSpectating( bool nowSpectating );
 
 public:
-  HearthstoneLogTracker();
+  HearthstoneLogTracker( QObject *parent = 0 );
 
   const CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
 };

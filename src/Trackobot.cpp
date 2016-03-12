@@ -26,11 +26,13 @@ Updater *gUpdater = NULL;
 Trackobot::Trackobot( int argc, char **argv )
   : mApp( argc, argv ),
     mWindow( NULL ),
+    mOverlay( NULL ),
     mSingleInstanceServer( NULL )
 {
   SetupApplication();
   mWebProfile = new WebProfile( this );
   mResultTracker = new ResultTracker( this );
+  mLogTracker = new HearthstoneLogTracker( this );
 }
 
 Trackobot::~Trackobot() {
@@ -54,6 +56,8 @@ int Trackobot::Run() {
   SetupUpdater();
 
   CreateUI();
+
+  WireStuff();
 
   Initialize();
 
@@ -123,6 +127,26 @@ void Trackobot::SetupUpdater() {
 
 void Trackobot::CreateUI() {
   mWindow = new Window();
+  mOverlay = new Overlay();
+}
+
+void Trackobot::WireStuff() {
+  // ResultTracker
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOutcome, mResultTracker, &ResultTracker::HandleOutcome );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOrder, mResultTracker, &ResultTracker::HandleOrder );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOwnClass, mResultTracker, &ResultTracker::HandleOwnClass ) ;
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOpponentClass, mResultTracker, &ResultTracker::HandleOpponentClass );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleGameMode, mResultTracker, &ResultTracker::HandleGameMode );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleLegend, mResultTracker, &ResultTracker::HandleLegend );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleTurn, mResultTracker, &ResultTracker::HandleTurn );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardHistoryListUpdate, mResultTracker, &ResultTracker::HandleCardHistoryListUpdate );
+
+  connect( mLogTracker, &HearthstoneLogTracker::HandleSpectating, mResultTracker, &ResultTracker::HandleSpectating );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleMatchStart, mResultTracker, &ResultTracker::HandleMatchStart );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleMatchEnd, mResultTracker, &ResultTracker::HandleMatchEnd );
+
+  // Overlay
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardHistoryListUpdate, mOverlay, &Overlay::HandleCardHistoryListUpdate );
 }
 
 void Trackobot::Initialize() {

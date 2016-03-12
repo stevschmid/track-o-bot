@@ -4,8 +4,6 @@
 
 #include "ui_MainWindow.h"
 
-#include "Overlay.h"
-
 #if defined Q_OS_MAC
 #include "../OSXLocal.h"
 #endif
@@ -52,8 +50,6 @@ Window::Window()
   connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Window::HandleGameClientStop );
 
   QTimer::singleShot( 1000, this, &Window::HandleFirstStartCheck );
-
-  new Overlay( this );
 
 #ifdef Q_OS_WIN
   // This is a fix for

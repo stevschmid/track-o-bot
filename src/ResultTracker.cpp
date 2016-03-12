@@ -6,18 +6,6 @@
 ResultTracker::ResultTracker( QObject *parent )
   : QObject( parent ), mSpectating( false ), mCurrentGameMode( MODE_UNKNOWN )
 {
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleOutcome, this, &ResultTracker::HandleOutcome );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleOrder, this, &ResultTracker::HandleOrder );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleOwnClass, this, &ResultTracker::HandleOwnClass ) ;
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleOpponentClass, this, &ResultTracker::HandleOpponentClass );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleGameMode, this, &ResultTracker::HandleGameMode );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleLegend, this, &ResultTracker::HandleLegend );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleTurn, this, &ResultTracker::HandleTurn );
-
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleSpectating, this, &ResultTracker::HandleSpectating );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleMatchStart, this, &ResultTracker::HandleMatchStart );
-  connect( &mLogTracker, &HearthstoneLogTracker::HandleMatchEnd, this, &ResultTracker::HandleMatchEnd );
-
   ResetResult();
 }
 
@@ -40,12 +28,12 @@ void ResultTracker::HandleOutcome( Outcome outcome ) {
   mResult.outcome = outcome;
 }
 
-void ResultTracker::HandleOwnClass( Class ownClass ) {
+void ResultTracker::HandleOwnClass( HeroClass ownClass ) {
   DBG( "HandleOwnClass %s", CLASS_NAMES[ ownClass ] );
   mResult.hero = ownClass;
 }
 
-void ResultTracker::HandleOpponentClass( Class opponentClass ) {
+void ResultTracker::HandleOpponentClass( HeroClass opponentClass ) {
   DBG( "HandleOpponentClass %s", CLASS_NAMES[ opponentClass ] );
   mResult.opponent = opponentClass;
 }
@@ -60,7 +48,12 @@ void ResultTracker::HandleSpectating( bool nowSpectating ) {
   mSpectating = nowSpectating;
 }
 
-void ResultTracker::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
+void ResultTracker::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList ) {
+  DBG( "HandleCardHistoryListUpdate" );
+  mResult.cardList = cardHistoryList;
+}
+
+void ResultTracker::HandleMatchEnd() {
   if( mSpectating ) {
     LOG( "Ignore spectated match" );
     ResetResult();
@@ -68,7 +61,6 @@ void ResultTracker::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
   }
 
   DBG( "HandleMatchEnd" );
-  mResult.cardList = cardHistoryList;
   mResult.duration = mDurationTimer.elapsed() / 1000;
   mResult.mode = mCurrentGameMode;
   UploadResult();

@@ -39,13 +39,33 @@ Overlay::~Overlay() {
 void Overlay::paintEvent( QPaintEvent* ) {
   QPainter painter(this);
 
-  painter.setPen( Qt::red );
-  painter.drawText( 0, 100, "Hello World" );
+  QFontMetrics metrics(font());
+
+  int player = 100, opponent = 100;
+  int spacing = metrics.ascent() - metrics.descent();
+
+  QPen w(QColor(0xFF, 0xFF, 0xFF, 0x80));
+  painter.setPen( w );
+
+  for( const CardHistoryItem& it : mCardHistoryList ) {
+    if( it.player == PLAYER_SELF ) {
+      painter.drawText( 0.8 * width(), player, it.cardId.c_str() );
+      player += spacing;
+    } else {
+      painter.drawText( 0.1 * width(), opponent, it.cardId.c_str() );
+      opponent += spacing;
+    }
+  }
 }
 
 void Overlay::GameWindowChanged( int x, int y, int w, int h ) {
   LOG( "GameWindowChanged %d %d %d %d", x, y, w, h );
   move( x, y );
   setFixedSize( w, h );
+  update();
+}
+
+void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList ) {
+  mCardHistoryList = cardHistoryList;
   update();
 }

@@ -5,7 +5,10 @@
 
 #include "ResultTracker.h"
 #include "WebProfile.h"
+#include "HearthstoneLogTracker.h"
+
 #include "ui/Window.h"
+#include "ui/Overlay.h"
 
 class Trackobot : public QObject
 {
@@ -14,10 +17,12 @@ class Trackobot : public QObject
 private:
   QApplication mApp;
   Window *mWindow;
+  Overlay *mOverlay;
   QLocalServer *mSingleInstanceServer;
 
   ResultTracker *mResultTracker;
   WebProfile *mWebProfile;
+  HearthstoneLogTracker *mLogTracker;
 
   bool IsAlreadyRunning();
 
@@ -26,6 +31,7 @@ private:
   void SetupUpdater();
 
   void CreateUI();
+  void WireStuff();
   void Initialize();
 
 public:
