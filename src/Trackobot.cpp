@@ -147,13 +147,13 @@ void Trackobot::WireStuff() {
 
   // Overlay
   connect( mLogTracker, &HearthstoneLogTracker::HandleCardHistoryListUpdate, mOverlay, &Overlay::HandleCardHistoryListUpdate );
+
+  // Window
+  connect( mWindow, &Window::OpenProfile, mWebProfile, &WebProfile::OpenProfile );
 }
 
 void Trackobot::Initialize() {
   assert( mWindow );
-
-  // Wire stuff
-  connect( mWindow, &Window::OpenProfile, mWebProfile, &WebProfile::OpenProfile );
 
   // Make sure Account exists or create one
   mWebProfile->EnsureAccountIsSetUp();
