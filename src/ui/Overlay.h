@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <QVariantMap>
+#include <QPainter>
 
 namespace Ui { class Overlay; }
 
@@ -20,6 +21,7 @@ private:
   QMap< QString, QVariantMap > mCardDB;
 
   void LoadCards();
+  void PaintHistory( QPainter& painter, int x, int y, QList< QVariantMap >& history );
 
 protected:
   void paintEvent( QPaintEvent *event );

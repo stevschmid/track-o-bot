@@ -10,7 +10,6 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QFile>
-#include <QPainter>
 
 Overlay::Overlay( QWidget *parent )
   : QMainWindow( parent ), mUI( new Ui::Overlay )
@@ -18,10 +17,6 @@ Overlay::Overlay( QWidget *parent )
   mUI->setupUi( this );
   setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Window );
   setAttribute( Qt::WA_TranslucentBackground );
-
-  QFont newFont = font();
-  newFont.setPointSize(newFont.pointSize() + 20);
-  setFont(newFont);
 
   connect( Hearthstone::Instance(), &Hearthstone::GameWindowChanged, this, &Overlay::HandleGameWindowChanged );
   connect( Hearthstone::Instance(), &Hearthstone::GameStarted, this, &Overlay::HandleGameStarted );
@@ -67,26 +62,30 @@ void Overlay::LoadCards() {
 void Overlay::paintEvent( QPaintEvent* ) {
   QPainter painter(this);
 
-  QFontMetrics metrics(font());
+  QFont newFont = font();
+  newFont.setPointSize( 20 );
+  setFont( newFont );
 
-  int playerY = 100, opponentY = 100;
-  int spacing = metrics.ascent() - metrics.descent();
-
-  QPen pen( QColor( 255, 255, 255, 150 ) );
+  QPen pen( QColor( 255, 255, 255, 200 ) );
   painter.setPen( pen );
+  PaintHistory( painter, 20, 0.15 * height(), mOpponentHistory );
+  PaintHistory( painter, width() - 200, 0.15 * height(), mPlayerHistory );
+}
 
-  for( const QVariantMap& it : mOpponentHistory ) {
-    painter.drawText( 0.1 * width(),
-        opponentY,
-        QString( "[%1] %2 (%3)" ).arg( it["mana"].toInt() ).arg( it["name"].toString() ).arg( it["count"].toInt() ) );
-    opponentY += spacing;
-  }
+void Overlay::PaintHistory( QPainter& painter, int x, int y, QList< QVariantMap >& history ) {
+  QFontMetrics metrics(font());
+  int spacing = (metrics.ascent() - metrics.descent()) * 1.4;
 
-  for( const QVariantMap& it : mPlayerHistory ) {
-    painter.drawText( 0.8 * width(),
-        playerY,
-        QString( "[%1] %2 (%3)" ).arg( it["mana"].toInt() ).arg( it["name"].toString() ).arg( it["count"].toInt() ) );
-    playerY += spacing;
+  for( const QVariantMap& it : history ) {
+    QString line;
+    if( it["count"].toInt() > 1 ) {
+      line = QString( "%1x%2" ).arg( it["count"].toInt() ).arg( it["name"].toString() );
+    } else {
+      line = QString( "%1" ).arg( it["name"].toString() );
+    }
+
+    painter.drawText( x, y, line );
+    y += spacing;
   }
 }
 
@@ -114,6 +113,10 @@ void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryL
 
     if( !mCardDB.contains( cardId ) ) {
       DBG( "Card %s not found", qt2cstr( cardId ) );
+      continue;
+    }
+
+    if( mCardDB[ cardId ][ "type" ] == "hero" ) {
       continue;
     }
 
