@@ -21,10 +21,10 @@ private:
   CardHistoryList mCardHistoryList;
   QMap< QString, int > mEntityIdByName;
 
-  void CardPlayed( Player player, const string& cardId, int internalId = 0 );
-  void CardReturned( Player player, const string& cardId );
+  void CardPlayed( Player player, const QString& cardId, int internalId = 0 );
+  void CardReturned( Player player, const QString& cardId );
 
-  void SecretResolved( Player player, const string& cardId, int internalId );
+  void SecretResolved( Player player, const QString& cardId, int internalId );
 
   int CurrentTurn() const;
 

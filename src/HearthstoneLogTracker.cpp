@@ -144,11 +144,11 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 
     if( !draw && !mulligan && !discard && !setaside ) {
       if( from.contains( "FRIENDLY HAND" ) ) {
-        CardPlayed( PLAYER_SELF, cardId.toStdString(), id );
+        CardPlayed( PLAYER_SELF, cardId, id );
       } else if( from.contains( "OPPOSING HAND" ) ) {
-        CardPlayed( PLAYER_OPPONENT, cardId.toStdString(), id );
+        CardPlayed( PLAYER_OPPONENT, cardId, id );
       } else if( from.contains( "OPPOSING SECRET" ) && to.contains( "OPPOSING GRAVEYARD" ) ) {
-        SecretResolved( PLAYER_OPPONENT, cardId.toStdString(), id );
+        SecretResolved( PLAYER_OPPONENT, cardId, id );
       }
     }
 
@@ -162,7 +162,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   if( regexCardReturned.indexIn(line) != -1 ) {
     QStringList captures = regexCardReturned.capturedTexts();
     QString cardId = captures[1];
-    CardReturned( PLAYER_SELF, cardId.toStdString() );
+    CardReturned( PLAYER_SELF, cardId );
   }
 
   // Entity
@@ -242,7 +242,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
     if( isHeroPower ) {
-      CardPlayed( player, cardId.toStdString() );
+      CardPlayed( player, cardId );
     }
   }
 
@@ -313,15 +313,15 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 }
 
-void HearthstoneLogTracker::CardPlayed( Player player, const string& cardId, int internalId ) {
-  DBG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], cardId.c_str(), CurrentTurn() );
+void HearthstoneLogTracker::CardPlayed( Player player, const QString& cardId, int internalId ) {
+  DBG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn() );
 
   mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
   emit HandleCardHistoryListUpdate( mCardHistoryList );
 }
 
-void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) {
-  DBG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), cardId.c_str() );
+void HearthstoneLogTracker::CardReturned( Player player, const QString& cardId ) {
+  DBG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), qt2cstr( cardId ) );
   // Make sure we remove the "Choose One"-cards from the history
   // if we decide to withdraw them after a second of thought
   if( !mCardHistoryList.empty() &&
@@ -334,8 +334,8 @@ void HearthstoneLogTracker::CardReturned( Player player, const string& cardId ) 
   }
 }
 
-void HearthstoneLogTracker::SecretResolved( Player player, const string& cardId, int internalId ) {
-  DBG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], cardId.c_str() );
+void HearthstoneLogTracker::SecretResolved( Player player, const QString& cardId, int internalId ) {
+  DBG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], qt2cstr( cardId ) );
   for( CardHistoryItem& item : mCardHistoryList ) {
     if( item.player == player && item.internalId == internalId ) {
       item.cardId = cardId;

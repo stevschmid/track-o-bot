@@ -109,7 +109,7 @@ void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryL
   QMap< QString, QVariantMap > opponent;
 
   for( const CardHistoryItem& it : cardHistoryList ) {
-    QString cardId = QString( it.cardId.c_str() );
+    const QString& cardId = it.cardId;
 
     if( !mCardDB.contains( cardId ) ) {
       DBG( "Card %s not found", qt2cstr( cardId ) );

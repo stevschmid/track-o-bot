@@ -4,6 +4,8 @@
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QString>
+#include <QList>
 
 typedef enum {
   PLAYER_SELF = 0,
@@ -94,15 +96,15 @@ class CardHistoryItem {
 public:
   int turn;
   Player player;
-  string cardId;
+  QString cardId;
   int internalId;
 
-  CardHistoryItem( int turn, Player player, const string& cardId, int internalId = 0 )
+  CardHistoryItem( int turn, Player player, const QString& cardId, int internalId = 0 )
     : turn( turn ), player( player ), cardId( cardId ), internalId( internalId )
   {
   }
 };
-typedef vector< CardHistoryItem > CardHistoryList;
+typedef QList< CardHistoryItem > CardHistoryList;
 
 class Result {
 public:
@@ -161,7 +163,7 @@ public:
       QJsonObject item;
       item[ "turn" ] = chi.turn;
       item[ "player" ] = chi.player == PLAYER_SELF ? "me" : "opponent";
-      item[ "card_id" ] = chi.cardId.c_str();
+      item[ "card_id" ] = chi.cardId;
       card_history.append(item);
     }
     result[ "card_history" ] = card_history;
