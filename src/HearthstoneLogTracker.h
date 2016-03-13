@@ -19,10 +19,13 @@ private:
   bool mMatchConcluded;
 
   CardHistoryList mCardHistoryList;
+  CardHistoryList mCardDrawHistoryList;
   QMap< QString, int > mEntityIdByName;
 
   void CardPlayed( Player player, const QString& cardId, int internalId = 0 );
   void CardReturned( Player player, const QString& cardId );
+  void CardDrawn( Player player, const QString& cardId, int internalId = 0 );
+  void CardUndrawn( Player player, const QString& cardId, int internalId = 0 );
 
   void SecretResolved( Player player, const QString& cardId, int internalId );
 
@@ -44,7 +47,9 @@ signals:
   void HandleOwnClass( HeroClass ownClass );
   void HandleLegend( int legend );
   void HandleTurn( int turnCounter );
+
   void HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
+  void HandleCardDrawHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
 
   void HandleSpectating( bool nowSpectating );
 

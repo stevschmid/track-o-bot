@@ -64,6 +64,9 @@ void HearthstoneLogTracker::Reset() {
 
   mCardHistoryList.clear();
   emit HandleCardHistoryListUpdate( mCardHistoryList );
+
+  mCardDrawHistoryList.clear();
+  emit HandleCardDrawHistoryListUpdate( mCardDrawHistoryList );
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -133,7 +136,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     QString from = captures[4];
     QString to = captures[5];
 
-    bool draw = from.contains( "DECK" ) && to.contains( "HAND" );
+    bool draw = (from.isEmpty() || from.contains( "DECK" )) && to.contains( "HAND" );
     bool mulligan = from.contains( "HAND" ) && to.contains( "DECK" );
 
     // Discarded cards by playing Soulfire, Doomguard etc.
@@ -152,7 +155,14 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
       }
     }
 
-    DBG( "Card %s from %s -> %s. (draw: %d, mulligan %d, discard %d, setaside %d) [%d]", qt2cstr( cardId ), qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, setaside, id );
+    if( draw && to.contains( "FRIENDLY HAND" ) ) {
+      CardDrawn( PLAYER_SELF, cardId, id );
+    }
+    if( mulligan && to.contains( "FRIENDLY DECK" ) ) {
+      CardUndrawn( PLAYER_SELF, cardId, id );
+    }
+
+    DBG( "Card %s [%d] from %s -> %s. (draw: %d, mulligan %d, discard %d, setaside %d) [%d]", qt2cstr( cardId ), id, qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, setaside, id );
   }
 
   // CardReturned
@@ -331,6 +341,28 @@ void HearthstoneLogTracker::CardReturned( Player player, const QString& cardId )
   {
     mCardHistoryList.pop_back();
     emit HandleCardHistoryListUpdate( mCardHistoryList );
+  }
+}
+
+void HearthstoneLogTracker::CardDrawn( Player player, const QString& cardId, int internalId ) {
+  DBG( "%s Card drawn %s on turn %d (%d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
+
+  mCardDrawHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) ) ;
+  emit HandleCardDrawHistoryListUpdate( mCardDrawHistoryList );
+}
+
+void HearthstoneLogTracker::CardUndrawn( Player player, const QString& cardId, int internalId ) {
+  DBG( "%s Card undrawn %s on turn %d (%d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
+
+  CardHistoryList::iterator it = mCardDrawHistoryList.begin();
+  while( it != mCardDrawHistoryList.end() ) {
+    if( (*it).internalId == internalId && (*it).player == player )
+    {
+      it = mCardDrawHistoryList.erase( it );
+      emit HandleCardDrawHistoryListUpdate( mCardDrawHistoryList );
+    } else {
+      it++;
+    }
   }
 }
 

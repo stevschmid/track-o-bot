@@ -22,6 +22,7 @@ private:
 
   void LoadCards();
   void PaintHistory( QPainter& painter, int x, int y, QList< QVariantMap >& history );
+  void UpdateHistoryFor( Player player, const ::CardHistoryList& list );
 
 protected:
   void paintEvent( QPaintEvent *event );
@@ -36,6 +37,7 @@ public slots:
   void HandleGameStopped();
 
   void HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
+  void HandleCardDrawHistoryListUpdate( const ::CardHistoryList& cardDrawHistoryList );
 
 };
 

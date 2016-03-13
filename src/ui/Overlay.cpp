@@ -50,11 +50,9 @@ void Overlay::LoadCards() {
   assert( error.error == QJsonParseError::NoError );
 
   mCardDB.clear();
-  LOG("LoadCards");
 
   for( QJsonValueRef jsonCardRef : jsonCards ) {
     QJsonObject jsonCard = jsonCardRef.toObject();
-    LOG( "Add card %s", qt2cstr( jsonCard["id"].toString() ) );
     mCardDB[ jsonCard["id"].toString() ] = jsonCard.toVariantMap();
   }
 }
@@ -104,11 +102,10 @@ void Overlay::HandleGameStopped() {
   hide();
 }
 
-void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList ) {
-  QMap< QString, QVariantMap > player;
-  QMap< QString, QVariantMap > opponent;
+void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
+  QMap< QString, QVariantMap > entries;
 
-  for( const CardHistoryItem& it : cardHistoryList ) {
+  for( const CardHistoryItem& it : list ) {
     const QString& cardId = it.cardId;
 
     if( !mCardDB.contains( cardId ) ) {
@@ -120,36 +117,40 @@ void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryL
       continue;
     }
 
-    QMap< QString, QVariantMap > *ref;
-    if( it.player == PLAYER_SELF ) {
-      ref = &player;
-    } else {
-      ref = &opponent;
+    if( it.player != player ) {
+      continue;
     }
 
-    QVariantMap& entry = (*ref)[ cardId ];
+    QVariantMap& entry = entries[ cardId ];
     entry[ "count" ] = entry.value( "count", 0 ).toInt() + 1;
     entry[ "mana" ] = mCardDB[ cardId ][ "mana" ];
     entry[ "name" ] = mCardDB[ cardId ][ "name" ];
   }
 
-  mPlayerHistory = player.values();
-  qSort( mPlayerHistory.begin(), mPlayerHistory.end(), []( const QVariantMap& a, const QVariantMap& b ) {
+  QList< QVariantMap >* ref;
+  if( player == PLAYER_SELF ) {
+    ref = &mPlayerHistory;
+  } else {
+    ref = &mOpponentHistory;
+  }
+
+  *ref = entries.values();
+
+  qSort( ref->begin(), ref->end(), []( const QVariantMap& a, const QVariantMap& b ) {
     if( a["mana"].toInt() == b["mana"].toInt() ) {
       return a["name"].toString() < b["name"].toString();
     } else {
       return a["mana"].toInt() < b["mana"].toInt();
     }
   });
+}
 
-  mOpponentHistory = opponent.values();
-  qSort( mOpponentHistory.begin(), mOpponentHistory.end(), []( const QVariantMap& a, const QVariantMap& b ) {
-    if( a["mana"].toInt() == b["mana"].toInt() ) {
-      return a["name"].toString() < b["name"].toString();
-    } else {
-      return a["mana"].toInt() < b["mana"].toInt();
-    }
-  });
+void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList ) {
+  UpdateHistoryFor( PLAYER_OPPONENT, cardHistoryList );
+  update();
+}
 
+void Overlay::HandleCardDrawHistoryListUpdate( const ::CardHistoryList& cardDrawHistoryList ) {
+  UpdateHistoryFor( PLAYER_SELF, cardDrawHistoryList );
   update();
 }

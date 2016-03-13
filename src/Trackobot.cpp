@@ -147,6 +147,7 @@ void Trackobot::WireStuff() {
 
   // Overlay
   connect( mLogTracker, &HearthstoneLogTracker::HandleCardHistoryListUpdate, mOverlay, &Overlay::HandleCardHistoryListUpdate );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardDrawHistoryListUpdate, mOverlay, &Overlay::HandleCardDrawHistoryListUpdate );
 
   // Window
   connect( mWindow, &Window::OpenProfile, mWebProfile, &WebProfile::OpenProfile );
