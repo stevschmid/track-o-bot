@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <QVariantMap>
 #include <QPainter>
+#include <QTimer>
+#include <QRect>
 
 namespace Ui { class Overlay; }
 
@@ -20,6 +22,12 @@ private:
 
   QMap< QString, QVariantMap > mCardDB;
 
+  Player mShowPlayerHistory;
+  QRect mPlayerDeckRect;
+  QRect mOpponentDeckRect;
+
+  QTimer mCheckForHoverTimer;
+
   void LoadCards();
   void PaintHistory( QPainter& painter, int x, int y, int width, const QString& title, QList< QVariantMap >& history );
   void UpdateHistoryFor( Player player, const ::CardHistoryList& list );
@@ -30,6 +38,9 @@ protected:
 public:
   explicit Overlay( QWidget *parent = 0 );
   ~Overlay();
+
+private slots:
+  void CheckForHover();
 
 public slots:
   void HandleGameWindowChanged( int x, int y, int w, int h );

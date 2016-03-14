@@ -126,8 +126,8 @@ void Trackobot::SetupUpdater() {
 }
 
 void Trackobot::CreateUI() {
-  mWindow = new Window();
   mOverlay = new Overlay();
+  mWindow = new Window();
 }
 
 void Trackobot::WireStuff() {

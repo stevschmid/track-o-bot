@@ -10,9 +10,12 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QFile>
+#include <QMouseEvent>
+
+#define CHECK_FOR_OVERLAY_HOVER_INTERVAL_MS 100
 
 Overlay::Overlay( QWidget *parent )
-  : QMainWindow( parent ), mUI( new Ui::Overlay )
+  : QMainWindow( parent ), mUI( new Ui::Overlay ), mShowPlayerHistory( PLAYER_UNKNOWN )
 {
   mUI->setupUi( this );
   setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Window );
@@ -22,6 +25,12 @@ Overlay::Overlay( QWidget *parent )
   connect( Hearthstone::Instance(), &Hearthstone::GameStarted, this, &Overlay::HandleGameStarted );
   connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Overlay::HandleGameStopped );
 
+  connect( &mCheckForHoverTimer, &QTimer::timeout, this, &Overlay::CheckForHover );
+
+  LoadCards();
+
+  hide();
+
 #ifdef Q_OS_MAC
   WId windowObject = this->winId();
   objc_object* nsviewObject = reinterpret_cast<objc_object*>(windowObject);
@@ -29,15 +38,29 @@ Overlay::Overlay( QWidget *parent )
   int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
   objc_msgSend( nsWindowObject, sel_registerName("setCollectionBehavior:"), NSWindowCollectionBehaviorCanJoinAllSpaces );
 #endif
-
-  LoadCards();
-
-  /* hide(); */
-  show();
 }
 
 Overlay::~Overlay() {
   delete mUI;
+}
+
+void Overlay::CheckForHover() {
+  QPoint mouseLoc = QCursor::pos();
+
+  Player showPlayerHistory = PLAYER_UNKNOWN;
+
+  if( mPlayerDeckRect.contains( mouseLoc ) ) {
+    showPlayerHistory = PLAYER_SELF;
+  } else if( mOpponentDeckRect.contains( mouseLoc ) ) {
+    showPlayerHistory = PLAYER_OPPONENT;
+  }
+
+  LOG( "%d", showPlayerHistory );
+
+  if( mShowPlayerHistory != showPlayerHistory ) {
+    mShowPlayerHistory = showPlayerHistory;
+    update();
+  }
 }
 
 void Overlay::LoadCards() {
@@ -110,8 +133,13 @@ void Overlay::paintEvent( QPaintEvent* ) {
   list.push_back( CardHistoryItem( 0, PLAYER_SELF, "NEW1_008" ) );
   UpdateHistoryFor( PLAYER_SELF, list );
 
-  PaintHistory( painter, 20, 0.15 * height(), 200, "Cards played by opponent", mOpponentHistory );
-  PaintHistory( painter, width() - 200, 0.15 * height(), 200, "Cards drawn", mPlayerHistory );
+  if( mShowPlayerHistory == PLAYER_SELF ) {
+    /* PaintHistory( painter, mPlayerDeckRect.x(), mPlayerDeckRect.y(), 200, "Cards drawn", mPlayerHistory ); */
+
+    PaintHistory( painter, width() - 200, 0.15 * height(), 200, "Cards drawn", mPlayerHistory );
+  } else if( mShowPlayerHistory == PLAYER_OPPONENT ) {
+    PaintHistory( painter, 20, 0.15 * height(), 200, "Cards played by opponent", mOpponentHistory );
+  }
 }
 
 void Overlay::PaintHistory( QPainter& painter, int x, int y, int width, const QString& title, QList< QVariantMap >& history ) {
@@ -164,17 +192,28 @@ void Overlay::PaintHistory( QPainter& painter, int x, int y, int width, const QS
 
 void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
   LOG( "HandleGameWindowChanged %d %d %d %d", x, y, w, h );
+
   move( x, y );
   setFixedSize( w, h );
+
+  int minWidth = h * 4 / 3;
+  QRect localPlayerDeck( w / 2 + 0.435 * minWidth, h * 0.570, 0.05 * minWidth, h * 0.135 );
+  QRect localOpponentDeck = localPlayerDeck.translated( 0, -0.27 * h );
+
+  mPlayerDeckRect = localPlayerDeck.translated( x, y );
+  mOpponentDeckRect = localOpponentDeck.translated( x, y );
+
   update();
 }
 
 void Overlay::HandleGameStarted() {
   show();
+  mCheckForHoverTimer.start( CHECK_FOR_OVERLAY_HOVER_INTERVAL_MS );
 }
 
 void Overlay::HandleGameStopped() {
   hide();
+  mCheckForHoverTimer.stop();
 }
 
 void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
