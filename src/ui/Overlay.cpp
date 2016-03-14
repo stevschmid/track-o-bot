@@ -32,7 +32,8 @@ Overlay::Overlay( QWidget *parent )
 
   LoadCards();
 
-  hide();
+  /* hide(); */
+  show();
 }
 
 Overlay::~Overlay() {
@@ -57,33 +58,107 @@ void Overlay::LoadCards() {
   }
 }
 
-void Overlay::paintEvent( QPaintEvent* ) {
-  QPainter painter(this);
-
-  QFont newFont = font();
-  newFont.setPointSize( 20 );
-  setFont( newFont );
-
-  QPen pen( QColor( 255, 255, 255, 200 ) );
+void DrawMana( QPainter& painter, int x, int y, int width, int height, int mana ) {
+  // Draw mana
+  QPen origPen = painter.pen();
+  QPen pen( QColor( 0, 52, 113 ) );
+  pen.setCosmetic( true );
+  pen.setWidth( 1 );
   painter.setPen( pen );
-  PaintHistory( painter, 20, 0.15 * height(), mOpponentHistory );
-  PaintHistory( painter, width() - 200, 0.15 * height(), mPlayerHistory );
+
+  QBrush brush( QColor( 40, 119, 238 ) );
+  painter.setBrush( brush );
+
+  QTransform transform;
+  painter.translate( x + width * 0.5, y + height * 0.5 );
+  painter.scale( width * 0.8, height * 0.8 );
+
+  static const QPointF points[5] = {
+    QPointF( 0.0, -1.0 ),
+    QPointF( 1.0, -0.2 ),
+    QPointF( 0.6, 1.0 ),
+    QPointF( -0.6, 1.0 ),
+    QPointF( -1.0, -0.2 ),
+  };
+  painter.drawConvexPolygon( points, 5 );
+  painter.resetTransform();
+  painter.setPen( origPen );
+
+  painter.drawText( x, y, width, height, Qt::AlignCenter | Qt::AlignVCenter, QString::number( mana ) );
 }
 
-void Overlay::PaintHistory( QPainter& painter, int x, int y, QList< QVariantMap >& history ) {
-  QFontMetrics metrics(font());
-  int spacing = (metrics.ascent() - metrics.descent()) * 1.4;
+void DrawCardLine( QPainter& painter, int x, int y, int width, int height, const QString& name, int count ) {
+  QString line = name;
+  if( count > 1 ) {
+    line += QString( " (x%1)" ).arg( count );
+  }
 
+  painter.drawText( x, y, width, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, line );
+  painter.resetTransform();
+}
+
+void Overlay::paintEvent( QPaintEvent* ) {
+  QPainter painter( this );
+  painter.setRenderHint( QPainter::Antialiasing );
+
+  CardHistoryList list;
+  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "CS_013" ) );
+  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "EX1_166" ) );
+  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "CS2_012" ) );
+  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "EX1_571" ) );
+  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "EX1_571" ) );
+  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "NEW1_008" ) );
+  UpdateHistoryFor( PLAYER_SELF, list );
+
+  PaintHistory( painter, 20, 0.15 * height(), 200, "Cards played by opponent", mOpponentHistory );
+  PaintHistory( painter, width() - 200, 0.15 * height(), 200, "Cards drawn", mPlayerHistory );
+}
+
+void Overlay::PaintHistory( QPainter& painter, int x, int y, int width, const QString& title, QList< QVariantMap >& history ) {
+  int padding = 10;
+
+  QFont rowFont = font();
+  rowFont.setPointSize( 12 );
+
+  QFont titleFont = font();
+  titleFont.setPointSize( 12 );
+  titleFont.setUnderline( true );
+  titleFont.setBold( true );
+
+  QFontMetrics rowMetrics( rowFont );
+  int rowHeight = rowMetrics.ascent() - rowMetrics.descent();
+  int rowSpacing = 10;
+  int rowWidth = width - padding * 2;
+
+  QFontMetrics titleMetrics( titleFont );
+  int titleHeight = titleMetrics.ascent() - titleMetrics.descent();
+  int totalHeight = history.count() * ( rowHeight + rowSpacing ) + rowSpacing + ( titleHeight + rowSpacing );
+
+  // Rect
+  QRect rect( x, y, width, totalHeight );
+  painter.setClipRect( rect );
+
+  QPen pen = QPen( QColor( 160, 160, 160 ) );
+  pen.setWidth( 3 );
+  painter.setPen( pen );
+  painter.setBrush( QBrush( QColor( 70, 70, 70 ) ) );
+  painter.drawRoundedRect( rect, 10, 10 );
+
+  // Title
+  y += padding;
+  painter.setPen( QPen( Qt::white) );
+  painter.setFont( titleFont );
+  painter.drawText( x, y, width, titleHeight, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextDontClip, title );
+  y += titleHeight + rowSpacing;
+
+  // Lines
+  painter.setFont( rowFont );
   for( const QVariantMap& it : history ) {
-    QString line;
-    if( it["count"].toInt() > 1 ) {
-      line = QString( "%1x%2" ).arg( it["count"].toInt() ).arg( it["name"].toString() );
-    } else {
-      line = QString( "%1" ).arg( it["name"].toString() );
-    }
-
-    painter.drawText( x, y, line );
-    y += spacing;
+    int mx = x + padding;
+    DrawMana( painter, mx, y, rowHeight, rowHeight, it["mana"].toInt() );
+    int cx = mx + rowHeight + 5;
+    DrawCardLine( painter, cx, y, rowWidth - cx, rowHeight, it["name"].toString(), it["count"].toInt() );
+    y += rowHeight + rowSpacing;
   }
 }
 

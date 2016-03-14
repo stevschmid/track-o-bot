@@ -21,7 +21,7 @@ private:
   QMap< QString, QVariantMap > mCardDB;
 
   void LoadCards();
-  void PaintHistory( QPainter& painter, int x, int y, QList< QVariantMap >& history );
+  void PaintHistory( QPainter& painter, int x, int y, int width, const QString& title, QList< QVariantMap >& history );
   void UpdateHistoryFor( Player player, const ::CardHistoryList& list );
 
 protected:
