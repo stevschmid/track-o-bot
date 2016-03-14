@@ -5,10 +5,13 @@
 #include <QPainter>
 #include <QTimer>
 #include <QRect>
+#include <QPoint>
 
 namespace Ui { class Overlay; }
 
 #include "../Result.h"
+
+typedef QList< QVariantMap > OverlayHistoryList;
 
 class Overlay : public QMainWindow
 {
@@ -17,19 +20,19 @@ class Overlay : public QMainWindow
 private:
   Ui::Overlay *mUI;
 
-  QList< QVariantMap > mPlayerHistory;
-  QList< QVariantMap > mOpponentHistory;
+  OverlayHistoryList mPlayerHistory;
+  OverlayHistoryList mOpponentHistory;
 
   QMap< QString, QVariantMap > mCardDB;
 
   Player mShowPlayerHistory;
+
   QRect mPlayerDeckRect;
   QRect mOpponentDeckRect;
 
   QTimer mCheckForHoverTimer;
 
   void LoadCards();
-  void PaintHistory( QPainter& painter, int x, int y, int width, const QString& title, QList< QVariantMap >& history );
   void UpdateHistoryFor( Player player, const ::CardHistoryList& list );
 
 protected:
