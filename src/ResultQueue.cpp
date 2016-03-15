@@ -8,9 +8,10 @@ ResultQueue::ResultQueue()
   connect( &mWebProfile, &WebProfile::UploadResultSucceeded, this, &ResultQueue::UploadResultSucceeded );
 
   mCheckTimer = new QTimer( this );
-  connect( mCheckTimer, &QTimer::timeout, this, &ResultQueue::Check );
+  connect( mCheckTimer, &QTimer::timeout, this, &ResultQueue::Upload );
   mCheckTimer->start( RESULT_QUEUE_CHECK_PERIOD );
 
+  // Start next upload if the previous one succeeded
   connect( this, &ResultQueue::ResultUploaded, this, &ResultQueue::Upload );
 
   Load();
@@ -127,8 +128,4 @@ void ResultQueue::Upload() {
 
     mWebProfile.UploadResult( result );
   }
-}
-
-void ResultQueue::Check() {
-  Upload();
 }
