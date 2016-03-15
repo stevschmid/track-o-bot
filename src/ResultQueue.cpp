@@ -1,7 +1,6 @@
 #include "ResultQueue.h"
 
 #define RESULT_QUEUE_CHECK_PERIOD (30 * 60 * 1000)
-#define RESULT_QUEUE_UPLOAD_PERIOD (5 * 60 * 1000)
 
 ResultQueue::ResultQueue()
 {
@@ -9,11 +8,11 @@ ResultQueue::ResultQueue()
   connect( &mWebProfile, &WebProfile::UploadResultSucceeded, this, &ResultQueue::UploadResultSucceeded );
 
   mCheckTimer = new QTimer( this );
-  connect( mCheckTimer, &QTimer::timeout, this, &ResultQueue::Check );
+  connect( mCheckTimer, &QTimer::timeout, this, &ResultQueue::Upload );
   mCheckTimer->start( RESULT_QUEUE_CHECK_PERIOD );
 
-  mUploadTimer = new QTimer( this );
-  connect( mUploadTimer, &QTimer::timeout, this, &ResultQueue::Upload );
+  // Start next upload if the previous one succeeded
+  connect( this, &ResultQueue::ResultUploaded, this, &ResultQueue::Upload );
 
   Load();
 }
@@ -107,9 +106,6 @@ void ResultQueue::Add( const Result& res ) {
 void ResultQueue::UploadResultFailed( const QJsonObject& result, int errorCode ) {
   ERR( "There was a problem uploading the result (Code %d). Will save the result locally and try again later.", errorCode );
   mQueue.append( result );
-
-  // Upload not working, check periodically from now on
-  mUploadTimer->stop();
 }
 
 void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
@@ -119,9 +115,6 @@ void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
   } else {
     ERR( "Response without id received" );
   }
-
-  // If we have items in the queue, it's time to slowly roll them out
-  mUploadTimer->start( RESULT_QUEUE_UPLOAD_PERIOD );
 }
 
 void ResultQueue::Upload() {
@@ -135,13 +128,4 @@ void ResultQueue::Upload() {
 
     mWebProfile.UploadResult( result );
   }
-}
-
-void ResultQueue::Check() {
-  if( mUploadTimer->isActive() ) {
-    // Upload works, nothing to be done
-    return;
-  }
-
-  Upload();
 }
