@@ -237,8 +237,6 @@ void Overlay::paintEvent( QPaintEvent* ) {
 }
 
 void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
-  LOG( "HandleGameWindowChanged %d %d %d %d", x, y, w, h );
-
   move( x, y );
   setFixedSize( w, h );
 
