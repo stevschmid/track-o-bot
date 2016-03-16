@@ -227,21 +227,12 @@ void Overlay::paintEvent( QPaintEvent* ) {
   QPainter painter( this );
   painter.setRenderHint( QPainter::Antialiasing );
 
-  CardHistoryList list;
-  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "CS_013" ) );
-  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "EX1_166" ) );
-  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "CS2_012" ) );
-  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "EX1_571" ) );
-  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "EX1_571" ) );
-  list.push_back( CardHistoryItem( 0, PLAYER_SELF, "NEW1_008" ) );
-  UpdateHistoryFor( PLAYER_SELF, list );
-
   int overlayWidth = 200;
 
-  if( mShowPlayerHistory == PLAYER_SELF ) {
+  if( mShowPlayerHistory == PLAYER_SELF && mPlayerHistory.count() > 0 ) {
     OverlayHistoryWindow wnd( "Cards drawn", mPlayerHistory, overlayWidth, 10, 10, 12, 12 );
     PaintHistoryInScreen( painter, wnd, mPlayerDeckRect.topRight() + QPoint( 20, 0 ) );
-  } else if( mShowPlayerHistory == PLAYER_OPPONENT ) {
+  } else if( mShowPlayerHistory == PLAYER_OPPONENT && mOpponentHistory.count() > 0 ) {
     OverlayHistoryWindow wnd( "Cards played by opponent", mOpponentHistory, overlayWidth, 10, 10, 12, 12 );
     PaintHistoryInScreen( painter, wnd, mOpponentDeckRect.topRight() + QPoint( 20, 0 ) );
   }
@@ -254,8 +245,8 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
   setFixedSize( w, h );
 
   int minWidth = h * 4 / 3;
-  mPlayerDeckRect = QRect( w / 2 + 0.435 * minWidth, h * 0.570, 0.05 * minWidth, h * 0.135 );
-  mOpponentDeckRect = mPlayerDeckRect.translated( 0, -0.27 * h );
+  mPlayerDeckRect = QRect( w / 2 + 0.440 * minWidth, h * 0.540, 0.05 * minWidth, h * 0.165 );
+  mOpponentDeckRect = mPlayerDeckRect.translated( -0.005 * minWidth, -0.275 * h );
 
   update();
 }

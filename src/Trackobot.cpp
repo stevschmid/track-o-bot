@@ -131,6 +131,8 @@ void Trackobot::CreateUI() {
 }
 
 void Trackobot::WireStuff() {
+  assert( mWindow && mLogTracker && mOverlay );
+
   // ResultTracker
   connect( mLogTracker, &HearthstoneLogTracker::HandleOutcome, mResultTracker, &ResultTracker::HandleOutcome );
   connect( mLogTracker, &HearthstoneLogTracker::HandleOrder, mResultTracker, &ResultTracker::HandleOrder );
@@ -154,7 +156,6 @@ void Trackobot::WireStuff() {
 }
 
 void Trackobot::Initialize() {
-  assert( mWindow );
 
   // Make sure Account exists or create one
   mWebProfile->EnsureAccountIsSetUp();
