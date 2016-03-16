@@ -3,6 +3,7 @@
 #include "Settings.h"
 
 #include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QTimer>
 #include <QDir>
@@ -62,11 +63,11 @@ void HearthstoneLogTracker::Reset() {
   mEntityIdByName.clear();
   mMatchConcluded = false;
 
-  mCardHistoryList.clear();
-  emit HandleCardHistoryListUpdate( mCardHistoryList );
+  mCardsPlayed.clear();
+  emit HandleCardsPlayedUpdate( mCardsPlayed );
 
-  mCardDrawHistoryList.clear();
-  emit HandleCardDrawHistoryListUpdate( mCardDrawHistoryList );
+  mCardsDrawn.clear();
+  emit HandleCardsDrawnUpdate( mCardsDrawn );
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
@@ -127,52 +128,87 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
   }
 
   // CardPlayed
-  static QRegExp regexCardPlayed( "ZoneChangeList.ProcessChanges.*\\[.*id=(\\d+).*zone=(\\w+).*cardId=(\\w+).*\\].*zone from (.*) ->\\s?(.*)" );
-  if( regexCardPlayed.indexIn(line) != -1 ) {
-    QStringList captures = regexCardPlayed.capturedTexts();
-    int id = captures[1].toInt();
-    QString zone = captures[2];
-    QString cardId = captures[3];
-    QString from = captures[4];
-    QString to = captures[5];
+  static QRegularExpression regexCardPlayed( "ZoneChangeList.ProcessChanges.*\\[(?<attributes>.*?)\\].*zone from (?<from>.*) ->\\s?(?<to>.*)" );
+  QRegularExpressionMatch match = regexCardPlayed.match( line );
+  if( match.hasMatch() ) {
+    QString from = match.captured( "from" );
+    QString to = match.captured( "to" );
 
-    bool draw = (from.isEmpty() || from.contains( "DECK" )) && to.contains( "HAND" );
-    bool mulligan = from.contains( "HAND" ) && to.contains( "DECK" );
+    // Attribute order changes (i.e. when secret is played)
+    QString attributes = match.captured( "attributes" );
 
-    // Discarded cards by playing Soulfire, Doomguard etc.
-    bool discard = from.contains( "HAND" ) && to.contains( "GRAVEYARD" );
+    static QRegularExpression regexId( "id=(\\d+)" );
+    int id = regexId.match( attributes ).captured(1).toInt();
 
-    // Set aside cards, i.e. by playing Golden Monkey
+    static QRegularExpression regexZone( "zone=(\\w+)" );
+    QString zone = regexZone.match( attributes ).captured(1);
+
+    static QRegularExpression regexCardId( "cardId=(\\w+)" );
+    QString cardId = regexCardId.match( attributes ).captured(1);
+
+    // Cases to consider:
+    // Initial cards, Mulligan, Mill, Joust, Malorne, Deathlord, Voidwalker, Discard, Tracking
+
+    // Card played?
+    // "": spell, PLAY: minion, weapon, SECRET: secret
+    bool playedFromHand = from.contains( "HAND" ) && ( to.isEmpty() || to.contains( "PLAY" ) || to.contains( "SECRET" ) );
+
+    // I.e. by deathlord
+    bool playedFromDeck = from.contains( "DECK" ) && ( to.contains( "PLAY" ) || to.contains( "SECRET" ) );
+
+    // Set aside cards, i.e. by playing Golden Monkey or tracking
     bool setaside = zone.contains( "SETASIDE" );
 
-    if( !draw && !mulligan && !discard && !setaside ) {
-      if( from.contains( "FRIENDLY HAND" ) ) {
-        CardPlayed( PLAYER_SELF, cardId, id );
-      } else if( from.contains( "OPPOSING HAND" ) ) {
-        CardPlayed( PLAYER_OPPONENT, cardId, id );
-      } else if( from.contains( "OPPOSING SECRET" ) && to.contains( "OPPOSING GRAVEYARD" ) ) {
-        SecretResolved( PLAYER_OPPONENT, cardId, id );
+    // Card drawn?
+    // "" && turn = 0: initial draw, DECK: remaining draws (anything which comes from the deck)
+    bool draw = ( from.isEmpty() && CurrentTurn() == 0 && to.contains("HAND") ) ||
+        from.contains( "DECK" );
+
+    // Card put back? (i.e. mulligan)
+    bool putBack = from.contains( "HAND" ) && to.contains( "DECK" );
+
+    // Milled cards
+    /* bool mill = from.contains( "DECK" ) && to.contains( "GRAVEYARD" ); */
+
+    // Discarded cards by playing Soulfire, Doomguard etc.
+    /* bool discard = from.contains( "HAND" ) && to.contains( "GRAVEYARD" ); */
+
+    // Secrets triggered
+    /* bool secretResolved = from.contains( "SECRET" ) && to.contains( "GRAVEYARD" ); */
+
+    Player player = from.contains( "FRIENDLY" ) || to.contains( "FRIENDLY" ) ? PLAYER_SELF : PLAYER_OPPONENT;
+
+    if( draw ) {
+      CardDrawn( player, cardId, id );
+    } else if( putBack ) {
+      CardUndrawn( player, cardId, id );
+    }
+
+    if( !setaside ) {
+      if( playedFromHand || playedFromDeck ) {
+        CardPlayed( player, cardId, id );
+      } else if( putBack ) {
+        CardReturned( player, cardId, id );
       }
     }
 
-    if( draw && to.contains( "FRIENDLY HAND" ) ) {
-      CardDrawn( PLAYER_SELF, cardId, id );
-    }
-    if( mulligan && to.contains( "FRIENDLY DECK" ) ) {
-      CardUndrawn( PLAYER_SELF, cardId, id );
+    if( !cardId.isEmpty() ) {
+      // When secrets get resolved, cards discarded etc. update the internal id to the revealed card id
+      ResolveCard( player, cardId, id );
     }
 
-    DBG( "Card %s [%d] from %s -> %s. (draw: %d, mulligan %d, discard %d, setaside %d) [%d]", qt2cstr( cardId ), id, qt2cstr( from ), qt2cstr( to ), draw, mulligan, discard, setaside, id );
+    DBG( "Card %s [%d] from %s -> %s", qt2cstr( cardId ), id, qt2cstr( from ), qt2cstr( to ) );
   }
 
   // CardReturned
   // Wrath: "from  -> FRIENDLY HAND"
   // DotClaw: "from FRIENDLY PLAY -> FRIENDLY HAND"
-  static QRegExp regexCardReturned( "ZoneChangeList.ProcessChanges.*local=True.*cardId=(\\w+).*zone from (FRIENDLY PLAY)? -> FRIENDLY HAND" );
+  static QRegExp regexCardReturned( "ZoneChangeList.ProcessChanges.*local=True.*id=(\\d+).*cardId=(\\w+).*zone from (FRIENDLY PLAY)? -> FRIENDLY HAND" );
   if( regexCardReturned.indexIn(line) != -1 ) {
     QStringList captures = regexCardReturned.capturedTexts();
-    QString cardId = captures[1];
-    CardReturned( PLAYER_SELF, cardId );
+    int id = captures[1].toInt();
+    QString cardId = captures[2];
+    CardReturned( PLAYER_SELF, cardId, id );
   }
 
   // Entity
@@ -324,53 +360,61 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
 }
 
 void HearthstoneLogTracker::CardPlayed( Player player, const QString& cardId, int internalId ) {
-  DBG( "%s played card %s on turn %d", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn() );
+  DBG( "%s played card %s on turn %d (id %d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
 
-  mCardHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
-  emit HandleCardHistoryListUpdate( mCardHistoryList );
+  mCardsPlayed.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
+  emit HandleCardsPlayedUpdate( mCardsPlayed );
 }
 
-void HearthstoneLogTracker::CardReturned( Player player, const QString& cardId ) {
-  DBG( "Card returned %s on turn %d: %s", PLAYER_NAMES[ player ], CurrentTurn(), qt2cstr( cardId ) );
+void HearthstoneLogTracker::CardReturned( Player player, const QString& cardId, int internalId ) {
+  DBG( "%s returned card %s on turn %d (id %d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
+
   // Make sure we remove the "Choose One"-cards from the history
   // if we decide to withdraw them after a second of thought
-  if( !mCardHistoryList.empty() &&
-      mCardHistoryList.back().turn == CurrentTurn() &&
-      mCardHistoryList.back().player == player &&
-      mCardHistoryList.back().cardId == cardId )
-  {
-    mCardHistoryList.pop_back();
-    emit HandleCardHistoryListUpdate( mCardHistoryList );
+  if( !mCardsPlayed.empty() && mCardsPlayed.back().internalId == internalId ) {
+    mCardsPlayed.pop_back();
+    emit HandleCardsPlayedUpdate( mCardsPlayed );
   }
 }
 
 void HearthstoneLogTracker::CardDrawn( Player player, const QString& cardId, int internalId ) {
   DBG( "%s Card drawn %s on turn %d (%d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
 
-  mCardDrawHistoryList.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) ) ;
-  emit HandleCardDrawHistoryListUpdate( mCardDrawHistoryList );
+  mCardsDrawn.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
+  emit HandleCardsDrawnUpdate( mCardsDrawn );
 }
 
 void HearthstoneLogTracker::CardUndrawn( Player player, const QString& cardId, int internalId ) {
   DBG( "%s Card undrawn %s on turn %d (%d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
 
-  CardHistoryList::iterator it = mCardDrawHistoryList.begin();
-  while( it != mCardDrawHistoryList.end() ) {
-    if( (*it).internalId == internalId && (*it).player == player )
-    {
-      it = mCardDrawHistoryList.erase( it );
-      emit HandleCardDrawHistoryListUpdate( mCardDrawHistoryList );
+  CardHistoryList::iterator it = mCardsDrawn.begin();
+  while( it != mCardsDrawn.end() ) {
+    if( (*it).internalId == internalId && (*it).player == player ) { // check player too in case of entomb
+      it = mCardsDrawn.erase( it );
+      emit HandleCardsDrawnUpdate( mCardsDrawn );
     } else {
       it++;
     }
   }
 }
 
-void HearthstoneLogTracker::SecretResolved( Player player, const QString& cardId, int internalId ) {
-  DBG( "Secret resolved by %s: %s", PLAYER_NAMES[ player ], qt2cstr( cardId ) );
-  for( CardHistoryItem& item : mCardHistoryList ) {
+void HearthstoneLogTracker::ResolveCard( Player player, const QString& cardId, int internalId ) {
+  DBG( "Card %d resolved for %s: %s", internalId, PLAYER_NAMES[ player ], qt2cstr( cardId ) );
+  for( CardHistoryItem& item : mCardsPlayed ) {
     if( item.player == player && item.internalId == internalId ) {
-      item.cardId = cardId;
+      if( item.cardId != cardId ) {
+        item.cardId = cardId;
+        emit HandleCardsPlayedUpdate( mCardsPlayed );
+      }
+    }
+  }
+
+  for( CardHistoryItem& item : mCardsDrawn ) {
+    if( item.player == player && item.internalId == internalId ) {
+      if( item.cardId != cardId ) {
+        item.cardId = cardId;
+        emit HandleCardsDrawnUpdate( mCardsDrawn );
+      }
     }
   }
 }

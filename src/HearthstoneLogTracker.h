@@ -18,16 +18,16 @@ private:
   bool mSpectating;
   bool mMatchConcluded;
 
-  CardHistoryList mCardHistoryList;
-  CardHistoryList mCardDrawHistoryList;
+  CardHistoryList mCardsPlayed;
+  CardHistoryList mCardsDrawn;
   QMap< QString, int > mEntityIdByName;
 
   void CardPlayed( Player player, const QString& cardId, int internalId = 0 );
-  void CardReturned( Player player, const QString& cardId );
+  void CardReturned( Player player, const QString& cardId, int internalId = 0 );
   void CardDrawn( Player player, const QString& cardId, int internalId = 0 );
   void CardUndrawn( Player player, const QString& cardId, int internalId = 0 );
 
-  void SecretResolved( Player player, const QString& cardId, int internalId );
+  void ResolveCard( Player player, const QString& cardId, int internalId );
 
   int CurrentTurn() const;
 
@@ -48,13 +48,13 @@ signals:
   void HandleLegend( int legend );
   void HandleTurn( int turnCounter );
 
-  void HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
-  void HandleCardDrawHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
+  void HandleCardsPlayedUpdate( const ::CardHistoryList& cardsPlayed );
+  void HandleCardsDrawnUpdate( const ::CardHistoryList& cardsDrawn );
 
   void HandleSpectating( bool nowSpectating );
 
 public:
   HearthstoneLogTracker( QObject *parent = 0 );
 
-  const CardHistoryList& CardHistoryList() const { return mCardHistoryList; }
+  const CardHistoryList& CardHistoryList() const { return mCardsPlayed; }
 };

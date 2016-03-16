@@ -33,7 +33,7 @@ private:
 public slots:
   void HandleMatchStart();
   void HandleMatchEnd();
-  void HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
+  void HandleCardsPlayedUpdate( const ::CardHistoryList& cardsPlayed );
   void HandleSpectating( bool nowSpectating );
 
   void HandleOutcome( Outcome outcome );

@@ -48,9 +48,9 @@ void ResultTracker::HandleSpectating( bool nowSpectating ) {
   mSpectating = nowSpectating;
 }
 
-void ResultTracker::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList ) {
-  DBG( "HandleCardHistoryListUpdate" );
-  mResult.cardList = cardHistoryList;
+void ResultTracker::HandleCardsPlayedUpdate( const ::CardHistoryList& cardsPlayed ) {
+  DBG( "HandleCardsPlayedUpdate" );
+  mResult.cardList = cardsPlayed;
 }
 
 void ResultTracker::HandleMatchEnd() {

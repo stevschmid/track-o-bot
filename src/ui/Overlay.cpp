@@ -265,6 +265,10 @@ void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
   for( const CardHistoryItem& it : list ) {
     const QString& cardId = it.cardId;
 
+    if( cardId.isEmpty() ) {
+      continue;
+    }
+
     if( !mCardDB.contains( cardId ) ) {
       DBG( "Card %s not found", qt2cstr( cardId ) );
       continue;
@@ -302,12 +306,8 @@ void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
   });
 }
 
-void Overlay::HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList ) {
-  UpdateHistoryFor( PLAYER_OPPONENT, cardHistoryList );
-  update();
-}
-
-void Overlay::HandleCardDrawHistoryListUpdate( const ::CardHistoryList& cardDrawHistoryList ) {
-  UpdateHistoryFor( PLAYER_SELF, cardDrawHistoryList );
+void Overlay::HandleCardsDrawnUpdate( const ::CardHistoryList& cardsDrawn ) {
+  UpdateHistoryFor( PLAYER_OPPONENT, cardsDrawn );
+  UpdateHistoryFor( PLAYER_SELF, cardsDrawn );
   update();
 }

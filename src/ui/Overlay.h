@@ -50,8 +50,7 @@ public slots:
   void HandleGameStarted();
   void HandleGameStopped();
 
-  void HandleCardHistoryListUpdate( const ::CardHistoryList& cardHistoryList );
-  void HandleCardDrawHistoryListUpdate( const ::CardHistoryList& cardDrawHistoryList );
+  void HandleCardsDrawnUpdate( const ::CardHistoryList& cardsDrawn );
 
 };
 

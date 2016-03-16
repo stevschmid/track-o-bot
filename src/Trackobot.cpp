@@ -141,15 +141,14 @@ void Trackobot::WireStuff() {
   connect( mLogTracker, &HearthstoneLogTracker::HandleGameMode, mResultTracker, &ResultTracker::HandleGameMode );
   connect( mLogTracker, &HearthstoneLogTracker::HandleLegend, mResultTracker, &ResultTracker::HandleLegend );
   connect( mLogTracker, &HearthstoneLogTracker::HandleTurn, mResultTracker, &ResultTracker::HandleTurn );
-  connect( mLogTracker, &HearthstoneLogTracker::HandleCardHistoryListUpdate, mResultTracker, &ResultTracker::HandleCardHistoryListUpdate );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardsPlayedUpdate, mResultTracker, &ResultTracker::HandleCardsPlayedUpdate );
 
   connect( mLogTracker, &HearthstoneLogTracker::HandleSpectating, mResultTracker, &ResultTracker::HandleSpectating );
   connect( mLogTracker, &HearthstoneLogTracker::HandleMatchStart, mResultTracker, &ResultTracker::HandleMatchStart );
   connect( mLogTracker, &HearthstoneLogTracker::HandleMatchEnd, mResultTracker, &ResultTracker::HandleMatchEnd );
 
   // Overlay
-  connect( mLogTracker, &HearthstoneLogTracker::HandleCardHistoryListUpdate, mOverlay, &Overlay::HandleCardHistoryListUpdate );
-  connect( mLogTracker, &HearthstoneLogTracker::HandleCardDrawHistoryListUpdate, mOverlay, &Overlay::HandleCardDrawHistoryListUpdate );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardsDrawnUpdate, mOverlay, &Overlay::HandleCardsDrawnUpdate );
 
   // Window
   connect( mWindow, &Window::OpenProfile, mWebProfile, &WebProfile::OpenProfile );
