@@ -189,8 +189,6 @@ void Overlay::CheckForHover() {
     showPlayerHistory = PLAYER_OPPONENT;
   }
 
-  LOG( "%d", showPlayerHistory );
-
   if( mShowPlayerHistory != showPlayerHistory ) {
     mShowPlayerHistory = showPlayerHistory;
     update();
