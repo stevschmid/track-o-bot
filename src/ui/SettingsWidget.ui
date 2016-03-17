@@ -265,6 +265,9 @@ QLabel#updateDescription {
        <property name="text">
         <string>Hover over your or opponents deck to see which cards were drawn.</string>
        </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>

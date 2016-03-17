@@ -161,7 +161,14 @@ Overlay::Overlay( QWidget *parent )
   : QMainWindow( parent ), mUI( new Ui::Overlay ), mShowPlayerHistory( PLAYER_UNKNOWN )
 {
   mUI->setupUi( this );
-  setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool );
+  setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
+
+#ifdef Q_OS_WIN
+  setWindowFlags( windowFlags() | Qt::Tool );
+#else
+  setWindowFlags( windowFlags() | Qt::Window );
+#endif
+
   setAttribute( Qt::WA_TranslucentBackground );
 
   connect( Hearthstone::Instance(), &Hearthstone::GameWindowChanged, this, &Overlay::HandleGameWindowChanged );
@@ -236,15 +243,21 @@ void Overlay::paintEvent( QPaintEvent* ) {
   QPainter painter( this );
   painter.setRenderHint( QPainter::Antialiasing );
 
+#ifdef Q_OS_WIN
   float rowFontSize = 9;
   float titleFontSize = 9;
+#else
+  float rowFontSize = 12;
+  float titleFontSize = 12;
+#endif
+
   int spacing = 8;
   int overlayWidth = 200;
 
-  if( mShowPlayerHistory == PLAYER_SELF && mPlayerHistory.count() > -1 ) {
+  if( mShowPlayerHistory == PLAYER_SELF && mPlayerHistory.count() > 0 ) {
     OverlayHistoryWindow wnd( "Cards drawn", mPlayerHistory, overlayWidth, spacing, spacing, titleFontSize, rowFontSize );
     PaintHistoryInScreen( painter, wnd, mPlayerDeckRect.topRight() + QPoint( 20, 0 ) );
-  } else if( mShowPlayerHistory == PLAYER_OPPONENT && mOpponentHistory.count() > -1 ) {
+  } else if( mShowPlayerHistory == PLAYER_OPPONENT && mOpponentHistory.count() > 0 ) {
     OverlayHistoryWindow wnd( "Cards played by opponent", mOpponentHistory, overlayWidth, spacing, spacing, titleFontSize, rowFontSize );
     PaintHistoryInScreen( painter, wnd, mOpponentDeckRect.topRight() + QPoint( 20, 0 ) );
   }
@@ -264,7 +277,9 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
 void Overlay::Update() {
   if( Settings::Instance()->OverlayEnabled() ) {
     show();
+#ifdef Q_OS_WIN
     setAttribute( Qt::WA_QuitOnClose ); // otherwise taskkill /IM Track-o-Bot.exe does not work (http://www.qtcentre.org/threads/11713-Qt-Tool?p=62466#post62466)
+#endif
   } else {
     hide();
   }
