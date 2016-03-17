@@ -32,7 +32,11 @@ Hearthstone::Hearthstone()
   // So just check only once in a while
   mTimer = new QTimer( this );
   connect( mTimer, &QTimer::timeout, this, &Hearthstone::Update );
+#ifdef Q_OS_MAC
   mTimer->start( 5000 );
+#else
+  mTimer->start( 250 );
+#endif
 }
 
 Hearthstone::~Hearthstone() {
@@ -42,6 +46,21 @@ Hearthstone::~Hearthstone() {
 
 void Hearthstone::Update() {
   bool isRunning = mCapture->WindowFound();
+
+  if( isRunning ) {
+    static int lastLeft = 0, lastTop = 0, lastWidth = 0, lastHeight = 0;
+    if( lastLeft != mCapture->Left() || lastTop != mCapture->Top() ||
+        lastWidth != mCapture->Width() || lastHeight != mCapture->Height() )
+    {
+      lastLeft = mCapture->Left(),
+               lastTop = mCapture->Top(),
+               lastWidth = mCapture->Width(),
+               lastHeight = mCapture->Height();
+
+      DBG( "HS window changed %d %d %d %d", lastLeft, lastTop, lastWidth, lastHeight );
+      emit GameWindowChanged( lastLeft, lastTop, lastWidth, lastHeight );
+    }
+  }
 
   if( mGameRunning != isRunning ) {
     mGameRunning = isRunning;

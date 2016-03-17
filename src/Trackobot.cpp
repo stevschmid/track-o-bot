@@ -26,11 +26,13 @@ Updater *gUpdater = NULL;
 Trackobot::Trackobot( int argc, char **argv )
   : mApp( argc, argv ),
     mWindow( NULL ),
+    mOverlay( NULL ),
     mSingleInstanceServer( NULL )
 {
   SetupApplication();
   mWebProfile = new WebProfile( this );
   mResultTracker = new ResultTracker( this );
+  mLogTracker = new HearthstoneLogTracker( this );
 }
 
 Trackobot::~Trackobot() {
@@ -54,6 +56,8 @@ int Trackobot::Run() {
   SetupUpdater();
 
   CreateUI();
+
+  WireStuff();
 
   Initialize();
 
@@ -122,14 +126,35 @@ void Trackobot::SetupUpdater() {
 }
 
 void Trackobot::CreateUI() {
+  mOverlay = new Overlay();
   mWindow = new Window();
 }
 
-void Trackobot::Initialize() {
-  assert( mWindow );
+void Trackobot::WireStuff() {
+  assert( mWindow && mLogTracker && mOverlay );
 
-  // Wire stuff
+  // ResultTracker
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOutcome, mResultTracker, &ResultTracker::HandleOutcome );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOrder, mResultTracker, &ResultTracker::HandleOrder );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOwnClass, mResultTracker, &ResultTracker::HandleOwnClass ) ;
+  connect( mLogTracker, &HearthstoneLogTracker::HandleOpponentClass, mResultTracker, &ResultTracker::HandleOpponentClass );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleGameMode, mResultTracker, &ResultTracker::HandleGameMode );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleLegend, mResultTracker, &ResultTracker::HandleLegend );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleTurn, mResultTracker, &ResultTracker::HandleTurn );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardsPlayedUpdate, mResultTracker, &ResultTracker::HandleCardsPlayedUpdate );
+
+  connect( mLogTracker, &HearthstoneLogTracker::HandleSpectating, mResultTracker, &ResultTracker::HandleSpectating );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleMatchStart, mResultTracker, &ResultTracker::HandleMatchStart );
+  connect( mLogTracker, &HearthstoneLogTracker::HandleMatchEnd, mResultTracker, &ResultTracker::HandleMatchEnd );
+
+  // Overlay
+  connect( mLogTracker, &HearthstoneLogTracker::HandleCardsDrawnUpdate, mOverlay, &Overlay::HandleCardsDrawnUpdate );
+
+  // Window
   connect( mWindow, &Window::OpenProfile, mWebProfile, &WebProfile::OpenProfile );
+}
+
+void Trackobot::Initialize() {
 
   // Make sure Account exists or create one
   mWebProfile->EnsureAccountIsSetUp();

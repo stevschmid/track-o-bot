@@ -1,6 +1,5 @@
 #pragma once
 
-#include "HearthstoneLogTracker.h"
 #include "Result.h"
 #include "ResultQueue.h"
 #include "RankClassifier.h"
@@ -18,7 +17,6 @@ private:
   QTime                 mDurationTimer;
   bool                  mSpectating;
 
-  HearthstoneLogTracker mLogTracker;
   Result                mResult;
   GameMode              mCurrentGameMode;
 
@@ -32,14 +30,15 @@ private:
 
   int DetermineRank();
 
-private slots:
+public slots:
   void HandleMatchStart();
-  void HandleMatchEnd( const ::CardHistoryList& cardHistoryList );
+  void HandleMatchEnd();
+  void HandleCardsPlayedUpdate( const ::CardHistoryList& cardsPlayed );
   void HandleSpectating( bool nowSpectating );
 
   void HandleOutcome( Outcome outcome );
-  void HandleOwnClass( Class ownClass );
-  void HandleOpponentClass( Class opponentClass );
+  void HandleOwnClass( HeroClass ownClass );
+  void HandleOpponentClass( HeroClass opponentClass );
   void HandleOrder( GoingOrder order );
   void HandleGameMode( GameMode mode );
   void HandleTurn( int turn );

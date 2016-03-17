@@ -6,8 +6,9 @@
 #define CHECK_FOR_LOG_CHANGES_INTERVAL_MS 50
 
 #include <QTextStream>
-HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& path )
+HearthstoneLogWatcher::HearthstoneLogWatcher( QObject *parent, const QString& id, const QString& path )
   : QObject( parent ),
+    mId( id ),
     mPath( path ),
     mLastSeekPos( 0 )
 {
@@ -61,7 +62,7 @@ void HearthstoneLogWatcher::CheckForLogChanges() {
 
     QByteArray lastLine = lines.takeLast();
     for( const QByteArray& line : lines ) {
-      emit LineAdded( QString::fromUtf8( line.trimmed() ) );
+      emit LineAdded( mId, QString::fromUtf8( line.trimmed() ) );
     }
 
     mLastSeekPos = file.pos() - lastLine.size();

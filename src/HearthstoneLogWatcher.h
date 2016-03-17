@@ -8,12 +8,13 @@ class HearthstoneLogWatcher : public QObject
   Q_OBJECT
 
 private:
+  QString mId;
   QString mPath;
   qint64 mLastSeekPos;
   QTimer mTimer;
 
 public:
-  HearthstoneLogWatcher( QObject *parent, const QString& path );
+  HearthstoneLogWatcher( QObject *parent, const QString& id, const QString& path );
 
 private slots:
   void CheckForLogChanges();
@@ -22,6 +23,6 @@ private slots:
   void HandleGameStop();
 
 signals:
-  void LineAdded( const QString& line );
+  void LineAdded( const QString& id, const QString& line );
 
 };

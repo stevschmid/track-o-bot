@@ -17,10 +17,12 @@ HEADERS = src/Local.h \
           src/ui/AccountTab.h \
           src/ui/LogTab.h \
           src/ui/AboutTab.h \
+          src/ui/Overlay.h \
           src/Logger.h \
           src/WebProfile.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
+          src/HearthstoneLogLineHandler.h \
           src/Hearthstone.h \
           src/MLP.h \
           src/RankClassifier.h \
@@ -38,6 +40,7 @@ SOURCES = src/Main.cpp \
           src/ui/AccountTab.cpp \
           src/ui/LogTab.cpp \
           src/ui/AboutTab.cpp \
+          src/ui/Overlay.cpp \
           src/Logger.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
@@ -55,7 +58,8 @@ FORMS   = src/ui/MainWindow.ui \
           src/ui/SettingsWidget.ui \
           src/ui/AccountWidget.ui \
           src/ui/LogWidget.ui \
-          src/ui/AboutWidget.ui 
+          src/ui/AboutWidget.ui \
+          src/ui/Overlay.ui
 
 DEFINES += VERSION=\\\"$$VERSION\\\"
 

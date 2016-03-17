@@ -52,6 +52,7 @@ signals:
   void GameStarted();
   void GameStopped();
   void GameRequiresRestart();
+  void GameWindowChanged( int x, int y, int w, int h );
 
 private slots:
   void Update();

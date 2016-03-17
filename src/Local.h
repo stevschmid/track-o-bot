@@ -1,12 +1,3 @@
-#include <string>
-using std::string;
-
-#include <vector>
-using std::vector;
-
-#include <map>
-using std::map;
-
 #define DEFINE_SINGLETON(CLASSNAME) \
 public: \
   static CLASSNAME* Instance( void ) { \
