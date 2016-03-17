@@ -2,6 +2,7 @@
 #include "ui_Overlay.h"
 
 #include "../Hearthstone.h"
+#include "../Settings.h"
 
 #include <objc/objc-runtime.h>
 #include <cassert>
@@ -161,6 +162,8 @@ Overlay::Overlay( QWidget *parent )
 
   connect( &mCheckForHoverTimer, &QTimer::timeout, this, &Overlay::CheckForHover );
 
+  connect( Settings::Instance(), &Settings::OverlayEnabledChanged, this, &Overlay::HandleOverlaySettingChanged );
+
   LoadCards();
 
   hide();
@@ -247,14 +250,24 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
   update();
 }
 
+void Overlay::Update() {
+  if( Settings::Instance()->OverlayEnabled() ) {
+    show();
+  } else {
+    hide();
+  }
+
+  update();
+}
+
 void Overlay::HandleGameStarted() {
-  show();
   mCheckForHoverTimer.start( CHECK_FOR_OVERLAY_HOVER_INTERVAL_MS );
+  Update();
 }
 
 void Overlay::HandleGameStopped() {
-  hide();
   mCheckForHoverTimer.stop();
+  Update();
 }
 
 void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
@@ -307,5 +320,11 @@ void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
 void Overlay::HandleCardsDrawnUpdate( const ::CardHistoryList& cardsDrawn ) {
   UpdateHistoryFor( PLAYER_OPPONENT, cardsDrawn );
   UpdateHistoryFor( PLAYER_SELF, cardsDrawn );
-  update();
+  Update();
+}
+
+void Overlay::HandleOverlaySettingChanged( bool enabled ) {
+  UNUSED_ARG( enabled );
+
+  Update();
 }

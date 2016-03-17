@@ -14,6 +14,7 @@ SettingsTab::SettingsTab( QWidget *parent )
   connect( mUI->startAtLogin, &QAbstractButton::clicked, this, &SettingsTab::UpdateAutostart );
   connect( mUI->checkForUpdates, &QAbstractButton::clicked, this, &SettingsTab::UpdateAutoUpdateCheck );
   connect( mUI->checkUploadMetadata, &QAbstractButton::clicked, this, &SettingsTab::UpdateUploadMetadata );
+  connect( mUI->checkOverlay, &QAbstractButton::clicked, this, &SettingsTab::UpdateOverlayEnabled );
   connect( mUI->selectHearthstoneDirectoryPath, &QAbstractButton::clicked, this, &SettingsTab::SelectHearthstoneDirectoryPath );
   LoadSettings();
 }
@@ -38,12 +39,17 @@ void SettingsTab::UpdateUploadMetadata() {
   Settings::Instance()->SetUploadMetadataEnabled( mUI->checkUploadMetadata->isChecked() );
 }
 
+void SettingsTab::UpdateOverlayEnabled() {
+  Settings::Instance()->SetOverlayEnabled( mUI->checkOverlay->isChecked() );
+}
+
 void SettingsTab::LoadSettings() {
   Settings *settings = Settings::Instance();
 
   mUI->startAtLogin->setChecked( settings->Autostart() );
   mUI->checkForUpdates->setChecked( settings->AutoUpdateCheck() );
   mUI->checkUploadMetadata->setChecked( settings->UploadMetadataEnabled() );
+  mUI->checkOverlay->setChecked( settings->OverlayEnabled() );
   mUI->hearthstoneDirectoryPath->setText( settings->HearthstoneDirectoryPath() );
 }
 

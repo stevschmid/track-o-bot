@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>465</width>
-    <height>284</height>
+    <width>529</width>
+    <height>311</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,6 +23,7 @@
    <string notr="true">QLabel#startDescription,
 QLabel#metadataDescription,
 QLabel#hearthstonePathDescription,
+QLabel#overlayDescription,
 QLabel#updateDescription {
 	font-size: 11px;
 	color: #898989;
@@ -128,6 +129,13 @@ QLabel#updateDescription {
         </layout>
        </item>
       </layout>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="checkOverlay">
+       <property name="text">
+        <string>Enable in-game overlay</string>
+       </property>
+      </widget>
      </item>
      <item row="3" column="1">
       <spacer name="verticalSpacer_3">
@@ -249,6 +257,13 @@ QLabel#updateDescription {
        </property>
        <property name="wordWrap">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="overlayDescription">
+       <property name="text">
+        <string>Hover over your or opponents deck to see which cards were drawn.</string>
        </property>
       </widget>
      </item>

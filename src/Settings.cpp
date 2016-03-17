@@ -15,6 +15,7 @@ DEFINE_SINGLETON_SCOPE( Settings );
 #define KEY_WEBSERVICE_URL "webserviceUrl"
 #define KEY_UPLOAD_METADATA_ENABLED "uploadMetadataEnabled"
 #define KEY_HEARTHSTONE_DIRECTORY_PATH "hearthstoneDirectoryPath"
+#define KEY_OVERLAY_ENABLED "overlayEnabled"
 
 Settings::Settings() {
 }
@@ -91,6 +92,15 @@ void Settings::SetUploadMetadataEnabled( bool enabled ) {
   QSettings().setValue( KEY_UPLOAD_METADATA_ENABLED, enabled );
 
   emit UploadMetadataEnabledChanged( enabled );
+}
+
+bool Settings::OverlayEnabled() const {
+  return QSettings().value( KEY_OVERLAY_ENABLED, true ).toBool();
+}
+
+void Settings::SetOverlayEnabled( bool enabled ) {
+  QSettings().setValue( KEY_OVERLAY_ENABLED, enabled );
+  emit OverlayEnabledChanged( enabled );
 }
 
 QString Settings::HearthstoneDirectoryPath() const {

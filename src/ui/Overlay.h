@@ -34,6 +34,7 @@ private:
 
   void LoadCards();
   void UpdateHistoryFor( Player player, const ::CardHistoryList& list );
+  void Update();
 
 protected:
   void paintEvent( QPaintEvent *event );
@@ -51,6 +52,8 @@ public slots:
   void HandleGameStopped();
 
   void HandleCardsDrawnUpdate( const ::CardHistoryList& cardsDrawn );
+
+  void HandleOverlaySettingChanged( bool enabled );
 
 };
 
