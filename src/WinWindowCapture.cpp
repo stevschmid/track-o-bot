@@ -20,6 +20,14 @@ RECT WinWindowCapture::Rect() {
   return rect;
 }
 
+POINT WinWindowCapture::ScreenPos() {
+  POINT point = { 0 };
+  if( HWND hwnd = FindHWND() ) {
+    ClientToScreen( hwnd, &point );
+  }
+  return point;
+}
+
 bool WinWindowCapture::WindowFound() {
   return FindHWND() != NULL;
 }
@@ -32,6 +40,14 @@ int WinWindowCapture::Width() {
 int WinWindowCapture::Height() {
   RECT rect = Rect();
   return rect.bottom - rect.top;
+}
+
+int WinWindowCapture::Left() {
+  return ScreenPos().x + Rect().left;
+}
+
+int WinWindowCapture::Top() {
+  return ScreenPos().y + Rect().top;
 }
 
 QPixmap WinWindowCapture::Capture( int x, int y, int w, int h ) {

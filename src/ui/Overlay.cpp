@@ -4,7 +4,10 @@
 #include "../Hearthstone.h"
 #include "../Settings.h"
 
+#ifdef Q_OS_MAC
 #include <objc/objc-runtime.h>
+#endif
+
 #include <cassert>
 
 #include <QJsonArray>
@@ -94,8 +97,8 @@ public:
   OverlayHistoryWindow( const QString& title, const OverlayHistoryList& history, int width, int padding, int rowSpacing, int titleFontSize, int rowFontSize )
     : mTitle( title ), mHistory( history ), mWidth( width ), mPadding( padding ), mRowSpacing( rowSpacing )
   {
-    mRowFont.setPointSize( titleFontSize );
-    mTitleFont.setPointSize( rowFontSize );
+    mRowFont.setPixelSize( titleFontSize );
+    mTitleFont.setPixelSize( rowFontSize );
     mTitleFont.setUnderline( true );
     mTitleFont.setBold( true );
   }

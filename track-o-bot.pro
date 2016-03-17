@@ -110,7 +110,6 @@ win32 {
 
   LIBS += user32.lib Gdi32.lib shell32.lib
   LIBS += -L../WinSparkle/Release
-  LIBS += -lobjc
 
   QMAKE_PRE_LINK = ruby dist/win/patch_rc.rb
 }
