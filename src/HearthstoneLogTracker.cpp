@@ -61,7 +61,7 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   RegisterHearthstoneLogLineHandler( "Zone", "ZoneChangeList.ProcessChanges()", "(?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
-  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?)", &HearthstoneLogTracker::OnActionStart );
+  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?) EffectCardId=", &HearthstoneLogTracker::OnActionStart );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
   RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
   RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
@@ -74,6 +74,8 @@ void HearthstoneLogTracker::OnActionStart( const QVariantMap& args ) {
   QVariantMap entity = args[ "entity" ].toMap();
   QString cardId = entity[ "cardId" ].toString();
   int playerId = entity[ "player" ].toInt();
+
+  DBG( "OnActionStart %s %s %d", qt2cstr( blockType ), qt2cstr( cardId ), playerId );
 
   if( blockType == "POWER" ) {
     Player player = ( playerId == mHeroPlayerId ) ? PLAYER_SELF : PLAYER_OPPONENT;
@@ -94,7 +96,7 @@ void HearthstoneLogTracker::OnActionStart( const QVariantMap& args ) {
 void HearthstoneLogTracker::OnCreateGame( const QVariantMap& args ) {
   UNUSED_ARG( args );
 
-  DBG( "Create game" );
+  DBG( "OnCreateGame" );
   emit HandleMatchStart();
 }
 
@@ -103,6 +105,7 @@ void HearthstoneLogTracker::OnLegendRank( const QVariantMap& args ) {
   // Legend
   // Emitted at the end of the game twice, make sure we capture only the first time
   int legend = args[ "rank" ].toInt();
+  DBG( "OnLegendRank %d", legend );
   if( legend > 0 ) {
     mLegendTracked = true;
     emit HandleLegend( legend );
@@ -112,10 +115,11 @@ void HearthstoneLogTracker::OnLegendRank( const QVariantMap& args ) {
 void HearthstoneLogTracker::OnRanked( const QVariantMap& args ) {
   UNUSED_ARG( args );
 
+  DBG( "OnRanked" );
+
   // Casual/Ranked distinction
   // This is a Unloading Asset event, which may be unreliable in the timing
   // Alas, I don't see a more reliable way to distinguish casual from ranked
-  DBG( "Detected ranked game" );
   emit HandleGameMode( MODE_RANKED );
 }
 
@@ -157,7 +161,7 @@ void HearthstoneLogTracker::OnStartSpectating( const QVariantMap& args ) {
   UNUSED_ARG( args );
 
   // flag current GAME as spectated
-  DBG( "Begin spectator game" );
+  DBG( "OnStartSpectating" );
   emit HandleSpectating( true );
 }
 
@@ -165,7 +169,7 @@ void HearthstoneLogTracker::OnStopSpectating( const QVariantMap& args ) {
   UNUSED_ARG( args );
 
   // disable spectating flag if we leave the spectator MODE
-  DBG( "End spectator mode" );
+  DBG( "OnStopSpectating" );
   emit HandleSpectating( false );
 
   Reset();
@@ -174,6 +178,8 @@ void HearthstoneLogTracker::OnStopSpectating( const QVariantMap& args ) {
 void HearthstoneLogTracker::OnTagChange( const QVariantMap& args ) {
   QString tag = args[ "tag" ].toString();
   QString value = args[ "value" ].toString();
+
+  DBG( "OnTagChange %s = %s", qt2cstr( tag ), qt2cstr( value ) );
 
   if( tag == "PLAYER_ID" ) {
     QString entityName = args[ "entity" ].toString();
