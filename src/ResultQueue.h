@@ -15,7 +15,6 @@ class ResultQueue : public QObject
   Q_OBJECT
 
 private:
-  QTimer*     mCheckTimer;
   QTimer*     mUploadTimer;
   QJsonArray  mQueue;
   WebProfile  mWebProfile;
@@ -23,12 +22,13 @@ private:
   void Load();
   void Save();
 
+  void UploadResult( const QJsonObject& result );
+
 private slots:
   void UploadResultFailed( const QJsonObject& result, int replyCode, int httpStatusCode );
   void UploadResultSucceeded( const QJsonObject& response );
 
-  void Check();
-  void Upload();
+  void UploadQueue();
 
 signals:
   void ResultUploaded( int id );
