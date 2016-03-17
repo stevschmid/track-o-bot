@@ -22,7 +22,7 @@ private:
     // extract key=value pairs
     QVariantMap map;
 
-    QRegularExpression r( "[\\S]+=(?:\\s?(?!\\S+=)\\S*)+" );
+    QRegularExpression r( "[^\\s\\[]+=(?:\\s?(?!\\S+=)[^\\s\\]]*)" );
     QRegularExpressionMatchIterator it = r.globalMatch( str );
     while( it.hasNext() ) {
       QString keyValue = it.next().captured();
