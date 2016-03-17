@@ -99,7 +99,7 @@ void ResultQueue::Add( const Result& res ) {
 }
 
 void ResultQueue::UploadResult( const QJsonObject& result ) {
-  LOG( "Uploading an old result..." );
+  LOG( "Uploading result..." );
   mWebProfile.UploadResult( result );
 }
 
@@ -125,6 +125,7 @@ void ResultQueue::UploadResultSucceeded( const QJsonObject& response ) {
 
 void ResultQueue::UploadQueue() {
   if( !mQueue.isEmpty() ) {
+    LOG( "Uploading an old result..." );
     QJsonObject result = mQueue.takeAt( 0 ).toObject();
     UploadResult( result );
   }

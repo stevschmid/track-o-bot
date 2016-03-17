@@ -70,7 +70,7 @@ void ResultTracker::HandleMatchEnd( const ::CardHistoryList& cardHistoryList ) {
   DBG( "HandleMatchEnd" );
   mResult.cardList = cardHistoryList;
   mResult.duration = mDurationTimer.elapsed() / 1000;
-  mResult.added = QDateTime::currentDateTime().toTime_t();
+  mResult.added = QDateTime::currentDateTime();
   mResult.mode = mCurrentGameMode;
   UploadResult();
 }

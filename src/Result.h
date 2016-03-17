@@ -4,6 +4,7 @@
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDateTime>
 
 typedef enum {
   PLAYER_SELF = 0,
@@ -119,7 +120,7 @@ public:
   int legend;
 
   int duration;
-  int added;
+  QDateTime added;
 
   Result() {
     Reset();
@@ -149,7 +150,7 @@ public:
     result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
     result[ "mode" ]     = MODE_NAMES[ mode ];
     result[ "duration" ] = duration;
-    result[ "added" ] = added;
+    result[ "added" ] = added.toString( Qt::ISODate );
 
     if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
       result[ "rank" ] = rank;
