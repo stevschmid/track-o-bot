@@ -120,7 +120,7 @@ public:
     QPen pen = QPen( QColor( 160, 160, 160 ) );
     pen.setWidth( 3 );
     painter.setPen( pen );
-    painter.setBrush( QBrush( QColor( 70, 70, 70 ) ) );
+    painter.setBrush( QBrush( QColor( 70, 70, 70, 175 ) ) );
     painter.drawRoundedRect( rect, 10, 10 );
 
     // Title
