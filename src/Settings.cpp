@@ -95,7 +95,9 @@ void Settings::SetUploadMetadataEnabled( bool enabled ) {
 }
 
 bool Settings::OverlayEnabled() const {
-  return QSettings().value( KEY_OVERLAY_ENABLED, true ).toBool();
+  // Enable overlay by default for new users, but not for existing ones
+  bool defaultOverlayEnabled = HasAccount() ? false : true;
+  return QSettings().value( KEY_OVERLAY_ENABLED, defaultOverlayEnabled ).toBool();
 }
 
 void Settings::SetOverlayEnabled( bool enabled ) {
