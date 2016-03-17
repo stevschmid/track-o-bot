@@ -49,7 +49,7 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
 
     QString logFilePath = QString( "%1/%2.log" ).arg( logFolderPath ).arg( moduleName );
 
-    HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, logFilePath );
+    HearthstoneLogWatcher *logWatcher = new HearthstoneLogWatcher( this, moduleName, logFilePath );
     connect( logWatcher, &HearthstoneLogWatcher::LineAdded, this, &HearthstoneLogTracker::HandleLogLine );
     mLogWatchers.push_back( logWatcher );
   }
@@ -57,14 +57,15 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   Reset();
 
   // Add handlers
-  RegisterHearthstoneLogLineHandler( "LoadingScreen.OnSceneLoaded()", "prevMode=(?<prevMode>\\w+) currMode=(?<currMode>\\w+)", &HearthstoneLogTracker::OnSceneLoaded );
-  RegisterHearthstoneLogLineHandler( "ZoneChangeList.ProcessChanges()", "(?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
-  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
-  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
-  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?)", &HearthstoneLogTracker::OnActionStart );
-  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnActionStart );
-  RegisterHearthstoneLogLineHandler( "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
-  RegisterHearthstoneLogLineHandler( "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
+  RegisterHearthstoneLogLineHandler( "LoadingScreen", "LoadingScreen.OnSceneLoaded()", "prevMode=(?<prevMode>\\w+) currMode=(?<currMode>\\w+)", &HearthstoneLogTracker::OnSceneLoaded );
+  RegisterHearthstoneLogLineHandler( "Zone", "ZoneChangeList.ProcessChanges()", "(?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
+  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
+  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
+  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?)", &HearthstoneLogTracker::OnActionStart );
+  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
+  RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
+  RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
+  RegisterHearthstoneLogLineHandler( "Power", "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
 }
 
 void HearthstoneLogTracker::OnActionStart( const QVariantMap& args ) {
@@ -309,8 +310,8 @@ void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
   }
 }
 
-void HearthstoneLogTracker::RegisterHearthstoneLogLineHandler( const QString& module, const QString& regex, void (HearthstoneLogTracker::*func)( const QVariantMap& args ) ) {
-  HearthstoneLogLineHandler *handler = new HearthstoneLogLineHandler( this, module, regex );
+void HearthstoneLogTracker::RegisterHearthstoneLogLineHandler( const QString& module, const QString& call, const QString& regex, void (HearthstoneLogTracker::*func)( const QVariantMap& args ) ) {
+  HearthstoneLogLineHandler *handler = new HearthstoneLogLineHandler( this, module, call, regex );
   connect( handler, &HearthstoneLogLineHandler::Handle, this, func );
   mLineHandlers << handler;
 }
@@ -328,13 +329,13 @@ void HearthstoneLogTracker::Reset() {
   emit HandleCardsDrawnUpdate( mCardsDrawn );
 }
 
-void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
+void HearthstoneLogTracker::HandleLogLine( const QString& module, const QString& line ) {
   if( line.trimmed().isEmpty() || line.startsWith( "(Filename:" ) ) {
     return;
   }
 
   for( HearthstoneLogLineHandler* lineHandler : mLineHandlers ) {
-    lineHandler->Process( line );
+    lineHandler->Process( module, line );
   }
 }
 

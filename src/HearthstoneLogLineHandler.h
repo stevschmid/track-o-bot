@@ -9,6 +9,7 @@ class HearthstoneLogLineHandler : public QObject {
 
 private:
   QString mModule;
+  QString mCall;
   QRegularExpression mRegex;
 
   // Convert "[a=1 b=2]" to map
@@ -37,14 +38,19 @@ signals:
   void Handle( const QVariantMap& args );
 
 public:
-  HearthstoneLogLineHandler( QObject *parent, const QString& module, const QString& regex )
-    : QObject( parent ), mModule( module ), mRegex( regex )
+  HearthstoneLogLineHandler( QObject *parent, const QString& module, const QString& call, const QString& regex )
+    : QObject( parent ), mModule( module ), mCall( call ), mRegex( regex )
   {
   }
 
-  bool Process( const QString& line ) {
+  bool Process( const QString& module, const QString& line ) {
     // Check if line is eligible
-    if( !mModule.isEmpty() && !line.contains( mModule ) )  {
+    if( !mModule.isEmpty() && module != mModule ) {
+      return false;
+    }
+
+    // Check if line is eligible
+    if( !mCall.isEmpty() && !line.contains( mCall ) )  {
       return false;
     }
 

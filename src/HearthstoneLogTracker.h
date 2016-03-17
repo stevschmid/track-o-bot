@@ -23,7 +23,7 @@ private:
 
   QList< HearthstoneLogLineHandler* > mLineHandlers;
 
-  void RegisterHearthstoneLogLineHandler( const QString& module, const QString& regex, void (HearthstoneLogTracker::*)( const QVariantMap& args ) );
+  void RegisterHearthstoneLogLineHandler( const QString& module, const QString& call, const QString& regex, void (HearthstoneLogTracker::*)( const QVariantMap& args ) );
 
   void OnActionStart( const QVariantMap& args );
   void OnCreateGame( const QVariantMap& args );
@@ -47,7 +47,7 @@ private:
   void Reset();
 
 private slots:
-  void HandleLogLine( const QString& line );
+  void HandleLogLine( const QString& module, const QString& line );
 
 signals:
   void HandleMatchStart();
