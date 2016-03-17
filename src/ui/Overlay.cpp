@@ -84,13 +84,18 @@ private:
   }
 
   void DrawCardLine( QPainter& painter, int x, int y, int width, int height, const QString& name, int count ) const {
-    QString line = name;
-    if( count > 1 ) {
-      line += QString( " (x%1)" ).arg( count );
-    }
+    painter.save();
+    painter.drawText( x, y, width, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, name );
 
-    painter.drawText( x, y, width, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, line );
-    painter.resetTransform();
+    if( count > 1 ) {
+      int nameWidth = QFontMetrics( painter.font() ).width( name + " " );
+      QString countString = QString( "x%1" ).arg( count );
+      QFont font = painter.font();
+      font.setBold( true );
+      painter.setFont( font );
+      painter.drawText( x + nameWidth, y, width - nameWidth, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, countString );
+    }
+    painter.restore();
   }
 
 public:
