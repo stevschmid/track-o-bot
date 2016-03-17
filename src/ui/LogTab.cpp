@@ -25,5 +25,6 @@ void LogTab::AddLogEntry( LogEventType type, const QString& msg ) {
   UNUSED_ARG( type );
 
   mUI->logText->appendPlainText( msg.trimmed() );
+  mUI->logText->moveCursor( QTextCursor::End );
 }
 
