@@ -167,6 +167,8 @@ void HearthstoneLogTracker::OnStopSpectating( const QVariantMap& args ) {
   // disable spectating flag if we leave the spectator MODE
   DBG( "End spectator mode" );
   emit HandleSpectating( false );
+
+  Reset();
 }
 
 void HearthstoneLogTracker::OnTagChange( const QVariantMap& args ) {
