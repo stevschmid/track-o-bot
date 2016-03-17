@@ -1,6 +1,6 @@
 #include "ResultQueue.h"
 
-#define RESULT_QUEUE_UPLOAD_PERIOD (30 * 1000)
+#define RESULT_QUEUE_UPLOAD_PERIOD (60 * 1000)
 
 ResultQueue::ResultQueue()
 {
