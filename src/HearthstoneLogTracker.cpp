@@ -55,188 +55,133 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   }
 
   Reset();
+
+  // Add handlers
+  RegisterHearthstoneLogLineHandler( "LoadingScreen.OnSceneLoaded()", "prevMode=(?<prevMode>\\w+) currMode=(?<currMode>\\w+)", &HearthstoneLogTracker::OnSceneLoaded );
+  RegisterHearthstoneLogLineHandler( "ZoneChangeList.ProcessChanges()", "(?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
+  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
+  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
+  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?)", &HearthstoneLogTracker::OnActionStart );
+  RegisterHearthstoneLogLineHandler( "PowerTaskList.DebugPrintPower()", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnActionStart );
+  RegisterHearthstoneLogLineHandler( "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
+  RegisterHearthstoneLogLineHandler( "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
 }
 
-void HearthstoneLogTracker::Reset() {
-  mTurn = 0;
-  mLegendTracked = false;
-  mEntityIdByName.clear();
-  mMatchConcluded = false;
+void HearthstoneLogTracker::OnActionStart( const QVariantMap& args ) {
+  QString blockType = args[ "blockType" ].toString();
 
-  mCardsPlayed.clear();
-  emit HandleCardsPlayedUpdate( mCardsPlayed );
+  QVariantMap entity = args[ "entity" ].toMap();
+  QString cardId = entity[ "cardId" ].toString();
+  int playerId = entity[ "player" ].toInt();
 
-  mCardsDrawn.clear();
-  emit HandleCardsDrawnUpdate( mCardsDrawn );
+  if( blockType == "POWER" ) {
+    Player player = ( playerId == mHeroPlayerId ) ? PLAYER_SELF : PLAYER_OPPONENT;
+
+    bool isHeroPower = false;
+    for( int i = 0; i < NUM_HERO_POWER_CARDS; i++ ) {
+      if( cardId == HERO_POWER_CARD_IDS[ i ] ) {
+        isHeroPower = true;
+        break;
+      }
+    }
+    if( isHeroPower ) {
+      CardPlayed( player, cardId );
+    }
+  }
 }
 
-void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
-  if( line.trimmed().isEmpty() || line.startsWith( "(Filename:" )  ) {
-    return;
+void HearthstoneLogTracker::OnCreateGame( const QVariantMap& args ) {
+  UNUSED_ARG( args );
+
+  DBG( "Create game" );
+  emit HandleMatchStart();
+}
+
+
+void HearthstoneLogTracker::OnLegendRank( const QVariantMap& args ) {
+  // Legend
+  // Emitted at the end of the game twice, make sure we capture only the first time
+  int legend = args[ "rank" ].toInt();
+  if( legend > 0 ) {
+    mLegendTracked = true;
+    emit HandleLegend( legend );
   }
+}
 
-  // LoadingScreen
-  static QRegExp regexLoadingScreen( "LoadingScreen.OnSceneLoaded\\(\\) - prevMode=(\\w+) currMode=(\\w+)" );
-  if( regexLoadingScreen.indexIn(line) != -1 ) {
-    QStringList captures = regexLoadingScreen.capturedTexts();
-    QString prevMode = captures[1];
-    QString currMode = captures[2];
+void HearthstoneLogTracker::OnRanked( const QVariantMap& args ) {
+  UNUSED_ARG( args );
 
-    // We delay the scene changes to allow some log events to catch up
-    // For example the rank mode distinction is only possible
-    // via asset unload function, which is triggered on the scene change
-    QTimer::singleShot( 1000, [this, prevMode, currMode]() {
-      // First check if match concluded for current game mode
-      if( prevMode == "GAMEPLAY" && mMatchConcluded ) {
-        emit HandleMatchEnd();
-        Reset();
-      }
+  // Casual/Ranked distinction
+  // This is a Unloading Asset event, which may be unreliable in the timing
+  // Alas, I don't see a more reliable way to distinguish casual from ranked
+  DBG( "Detected ranked game" );
+  emit HandleGameMode( MODE_RANKED );
+}
 
-      // Then set the new game mode
-      if( currMode == "ADVENTURE" ) {
-        emit HandleGameMode( MODE_SOLO_ADVENTURES );
-      } else if( currMode == "TAVERN_BRAWL" ) {
-        emit HandleGameMode( MODE_TAVERN_BRAWL) ;
-      } else if( currMode == "DRAFT" ) {
-        emit HandleGameMode( MODE_ARENA );
-      } else if( currMode == "FRIENDLY" ) {
-        emit HandleGameMode( MODE_FRIENDLY );
-      } else if( currMode == "TOURNAMENT" ) {
-        // casual or ranked
-        emit HandleGameMode( MODE_CASUAL );
-      }
+void HearthstoneLogTracker::OnSceneLoaded( const QVariantMap& args ) {
+  QString prevMode = args[ "prevMode" ].toString();
+  QString currMode = args[ "currMode" ].toString();
 
-      DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
-    });
-  }
+  DBG( "OnSceneLoaded %s -> %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
 
-  // Coin
-  static QRegExp regexCoin( "ZoneChangeList.ProcessChanges.*local=False.*zonePos=5.*zone from  -> (.*)" );
-  if( regexCoin.indexIn(line) != -1 ) {
-    QStringList captures = regexCoin.capturedTexts();
-    QString to = captures[1];
-
-    if( CurrentTurn() == 0 ) {
-      if( to.contains( "FRIENDLY HAND" ) ) {
-        // I go second because I get the coin
-        emit HandleOrder( ORDER_SECOND );
-      } else if( to.contains( "OPPOSING HAND" ) ) {
-        // Opponent got coin, so I go first
-        emit HandleOrder( ORDER_FIRST );
-      }
-    }
-  }
-
-  // CardPlayed
-  static QRegularExpression regexCardPlayed( "ZoneChangeList.ProcessChanges.*\\[(?<attributes>.*?)\\].*zone from (?<from>.*) ->\\s?(?<to>.*)" );
-  QRegularExpressionMatch match = regexCardPlayed.match( line );
-  if( match.hasMatch() ) {
-    QString from = match.captured( "from" );
-    QString to = match.captured( "to" );
-
-    // Attribute order changes (i.e. when secret is played)
-    QString attributes = match.captured( "attributes" );
-
-    static QRegularExpression regexId( "id=(\\d+)" );
-    int id = regexId.match( attributes ).captured(1).toInt();
-
-    static QRegularExpression regexZone( "zone=(\\w+)" );
-    QString zone = regexZone.match( attributes ).captured(1);
-
-    static QRegularExpression regexCardId( "cardId=(\\w+)" );
-    QString cardId = regexCardId.match( attributes ).captured(1);
-
-    // Cases to consider:
-    // Initial cards, Mulligan, Mill, Joust, Malorne, Deathlord, Voidwalker, Discard, Tracking
-
-    // Card played?
-    // "": spell, PLAY: minion, weapon, SECRET: secret
-    bool playedFromHand = from.contains( "HAND" ) && ( to.isEmpty() || to.contains( "PLAY" ) || to.contains( "SECRET" ) );
-
-    // I.e. by deathlord
-    bool playedFromDeck = from.contains( "DECK" ) && ( to.contains( "PLAY" ) || to.contains( "SECRET" ) );
-
-    // Set aside cards, i.e. by playing Golden Monkey or tracking
-    bool setaside = zone.contains( "SETASIDE" );
-
-    // Card drawn?
-    // "" && turn = 0: initial draw, DECK: remaining draws (anything which comes from the deck)
-    bool draw = ( from.isEmpty() && CurrentTurn() == 0 && to.contains("HAND") ) ||
-        from.contains( "DECK" );
-
-    // Card put back? (i.e. mulligan)
-    bool putBack = from.contains( "HAND" ) && to.contains( "DECK" );
-
-    // Milled cards
-    /* bool mill = from.contains( "DECK" ) && to.contains( "GRAVEYARD" ); */
-
-    // Discarded cards by playing Soulfire, Doomguard etc.
-    /* bool discard = from.contains( "HAND" ) && to.contains( "GRAVEYARD" ); */
-
-    // Secrets triggered
-    /* bool secretResolved = from.contains( "SECRET" ) && to.contains( "GRAVEYARD" ); */
-
-    Player player = from.contains( "FRIENDLY" ) || to.contains( "FRIENDLY" ) ? PLAYER_SELF : PLAYER_OPPONENT;
-
-    if( draw ) {
-      CardDrawn( player, cardId, id );
-    } else if( putBack ) {
-      CardUndrawn( player, cardId, id );
+  // We delay the scene changes to allow some log events to catch up
+  // For example the rank mode distinction is only possible
+  // via asset unload function, which is triggered on the scene change
+  QTimer::singleShot( 1000, [this, prevMode, currMode]() {
+    // First check if match concluded for current game mode
+    if( prevMode == "GAMEPLAY" && mMatchConcluded ) {
+      emit HandleMatchEnd();
+      Reset();
     }
 
-    if( !setaside ) {
-      if( playedFromHand || playedFromDeck ) {
-        CardPlayed( player, cardId, id );
-      } else if( putBack ) {
-        CardReturned( player, cardId, id );
-      }
+    // Then set the new game mode
+    if( currMode == "ADVENTURE" ) {
+      emit HandleGameMode( MODE_SOLO_ADVENTURES );
+    } else if( currMode == "TAVERN_BRAWL" ) {
+      emit HandleGameMode( MODE_TAVERN_BRAWL) ;
+    } else if( currMode == "DRAFT" ) {
+      emit HandleGameMode( MODE_ARENA );
+    } else if( currMode == "FRIENDLY" ) {
+      emit HandleGameMode( MODE_FRIENDLY );
+    } else if( currMode == "TOURNAMENT" ) {
+      // casual or ranked
+      emit HandleGameMode( MODE_CASUAL );
     }
 
-    if( !cardId.isEmpty() ) {
-      // When secrets get resolved, cards discarded etc. update the internal id to the revealed card id
-      ResolveCard( player, cardId, id );
-    }
+    DBG( "Switch scene from %s to %s", qt2cstr( prevMode ), qt2cstr( currMode ) );
+  });
+}
 
-    DBG( "Card %s [%d] from %s -> %s", qt2cstr( cardId ), id, qt2cstr( from ), qt2cstr( to ) );
-  }
+void HearthstoneLogTracker::OnStartSpectating( const QVariantMap& args ) {
+  UNUSED_ARG( args );
 
-  // CardReturned
-  // Wrath: "from  -> FRIENDLY HAND"
-  // DotClaw: "from FRIENDLY PLAY -> FRIENDLY HAND"
-  static QRegExp regexCardReturned( "ZoneChangeList.ProcessChanges.*local=True.*id=(\\d+).*cardId=(\\w+).*zone from (FRIENDLY PLAY)? -> FRIENDLY HAND" );
-  if( regexCardReturned.indexIn(line) != -1 ) {
-    QStringList captures = regexCardReturned.capturedTexts();
-    int id = captures[1].toInt();
-    QString cardId = captures[2];
-    CardReturned( PLAYER_SELF, cardId, id );
-  }
+  // flag current GAME as spectated
+  DBG( "Begin spectator game" );
+  emit HandleSpectating( true );
+}
 
-  // Entity
-  static QRegExp regexPlayerEntity( "PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=(.+) tag=PLAYER_ID value=(\\d+)" );
-  regexPlayerEntity.setMinimal( true ); // non-greedy for entity name
-  if( regexPlayerEntity.indexIn(line) != -1 ) {
-    QStringList captures = regexPlayerEntity.capturedTexts();
-    QString entityName = captures[1];
-    int entityId = captures[2].toInt();
+void HearthstoneLogTracker::OnStopSpectating( const QVariantMap& args ) {
+  UNUSED_ARG( args );
 
+  // disable spectating flag if we leave the spectator MODE
+  DBG( "End spectator mode" );
+  emit HandleSpectating( false );
+}
+
+void HearthstoneLogTracker::OnTagChange( const QVariantMap& args ) {
+  QString tag = args[ "tag" ].toString();
+  QString value = args[ "value" ].toString();
+
+  if( tag == "PLAYER_ID" ) {
+    QString entityName = args[ "entity" ].toString();
+    int entityId = value.toInt();
     mEntityIdByName[ entityName ] = entityId;
     DBG( "Player Entity %s = %d", qt2cstr( entityName ), entityId );
   }
 
-  // Start
-  static QRegExp regexStart( "PowerTaskList.DebugPrintPower.*CREATE_GAME");
-  if( regexStart.indexIn(line) != -1 ) {
-    DBG( "Create game" );
-    emit HandleMatchStart();
-  }
-
-  // End
-  static QRegExp regexEnd( "PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=(.+) tag=PLAYSTATE value=(WON|LOST|TIED)" );
-  regexEnd.setMinimal( true ); // non-greedy for entity name
-  if( regexEnd.indexIn(line) != -1 ) {
-    QStringList captures = regexEnd.capturedTexts();
-    QString entityName = captures[1];
-    QString outcome = captures[2];
+  if( tag == "PLAYSTATE" && ( value == "WON" || value == "LOST" || value == "TIED" ) ) {
+    QString entityName = args[ "entity" ].toString();
+    QString outcome = value;
 
     int entityId = mEntityIdByName.value( entityName, -1 );
     if( entityId == -1 ) {
@@ -255,51 +200,87 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     mMatchConcluded = true;
   }
 
-  // Turn Info
-  static QRegExp regexTurn( "PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=GameEntity tag=TURN value=(\\d+)" );
-  if( regexTurn.indexIn(line) != -1 ) {
-    QStringList captures = regexTurn.capturedTexts();
-    mTurn = captures[1].toInt();
+  if( tag == "TURN" ) {
+    mTurn = value.toInt();
     emit HandleTurn( mTurn );
   }
+}
 
-  // Hero Power
-  static QRegExp regexHeroPowerEquip( "ZoneChangeList.ProcessChanges.*player=(\\d+).*-> FRIENDLY PLAY \\(Hero Power\\)" );
-  if( regexHeroPowerEquip.indexIn(line) != -1 ) {
-    QStringList captures = regexHeroPowerEquip.capturedTexts();
-    QString playerId = captures[1];
+void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
+  QString from = args[ "from" ].toString();
+  QString to = args[ "to" ].toString();
 
-    mHeroPlayerId = playerId.toInt();
-    DBG( "Hero Power Equip -> My Player Id: %d", mHeroPlayerId );
+  QVariantMap entity = args[ "entity" ].toMap();
+  int id = entity[ "id" ].toInt();
+  QString zone = entity[ "zone" ].toString();
+  QString cardId = entity[ "cardId" ].toString();
+  int playerId = entity[ "player" ].toInt();
+
+  Player player = from.contains( "FRIENDLY" ) || to.contains( "FRIENDLY" ) ? PLAYER_SELF : PLAYER_OPPONENT;
+
+  DBG( "OnZoneChange %s -> %s (entity id %d)", qt2cstr( from ), qt2cstr( to ), id );
+
+  /*
+   * The Coin
+   */
+  if( entity[ "zonePos" ] == 5 && from.isEmpty() && CurrentTurn() == 0 ) {
+    if( to.contains( "FRIENDLY HAND" ) ) {
+      // I go second because I get the coin
+      emit HandleOrder( ORDER_SECOND );
+    } else if( to.contains( "OPPOSING HAND" ) ) {
+      // Opponent got coin, so I go first
+      emit HandleOrder( ORDER_FIRST );
+    }
   }
 
-  static QRegExp regexHeroPower( "PowerTaskList.DebugPrintPower.*ACTION_START.*zone=PLAY zonePos=0 cardId=(\\w+) player=(\\d+).*BlockType=POWER" );
-  if( regexHeroPower.indexIn(line) != -1 ) {
-    QStringList captures = regexHeroPower.capturedTexts();
-    QString cardId = captures[1];
-    int playerId = captures[2].toInt();
-    Player player = ( playerId == mHeroPlayerId ) ? PLAYER_SELF : PLAYER_OPPONENT;
+  /*
+   * Cards played/drawn
+   */
+  // Cases to consider:
+  // Initial cards, Mulligan, Mill, Joust, Malorne, Deathlord, Voidwalker, Discard, Tracking
 
-    bool isHeroPower = false;
-    for( int i = 0; i < NUM_HERO_POWER_CARDS; i++ ) {
-      if( cardId == HERO_POWER_CARD_IDS[ i ] ) {
-        isHeroPower = true;
-        break;
-      }
-    }
-    if( isHeroPower ) {
-      CardPlayed( player, cardId );
+  // Card played?
+  // "": spell, PLAY: minion, weapon, SECRET: secret
+  bool playedFromHand = from.contains( "HAND" ) && ( to.isEmpty() || to.contains( "PLAY" ) || to.contains( "SECRET" ) );
+
+  // I.e. by deathlord
+  bool playedFromDeck = from.contains( "DECK" ) && ( to.contains( "PLAY" ) || to.contains( "SECRET" ) );
+
+  // Set aside cards, i.e. by playing Golden Monkey or tracking
+  bool setaside = zone.contains( "SETASIDE" );
+
+  // Card drawn?
+  // "" && turn = 0: initial draw, DECK: remaining draws (anything which comes from the deck)
+  bool draw = ( from.isEmpty() && CurrentTurn() == 0 && to.contains("HAND") ) ||
+      from.contains( "DECK" );
+
+  // Card put back? (i.e. mulligan)
+  bool putBack = from.contains( "HAND" ) && to.contains( "DECK" );
+
+  if( draw ) {
+    CardDrawn( player, cardId, id );
+  } else if( putBack ) {
+    CardUndrawn( player, cardId, id );
+  }
+
+  if( !setaside ) {
+    if( playedFromHand || playedFromDeck ) {
+      CardPlayed( player, cardId, id );
+    } else if( putBack ) {
+      CardReturned( player, cardId, id );
     }
   }
 
-  // Hero Equip
-  static QRegExp regexHeroEquip( "ZoneChangeList.ProcessChanges.*cardId=(\\w+).*-> (\\w+) PLAY \\(Hero\\)" );
-  if( regexHeroEquip.indexIn(line) != -1 ) {
-    QStringList captures = regexHeroEquip.capturedTexts();
-    QString cardId = captures[1];
-    QString type = captures[2];
+  if( !cardId.isEmpty() ) {
+    // When secrets get resolved, cards discarded etc. update the internal id to the revealed card id
+    ResolveCard( player, cardId, id );
+  }
 
-    // This log line can be emitted when hero swaps (Lord Jaraxxus)
+  /*
+   * Hero Equip
+   */
+  if( to.contains( "PLAY (Hero)" ) ) {
+    // This can happen when hero swaps (Lord Jaraxxus)
     // So make sure we only account for the "initial" playable heroes
     HeroClass hero = CLASS_UNKNOWN;
     for( int i = 0; i < NUM_HEROES; i++ ) {
@@ -312,7 +293,7 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     }
 
     if( hero != CLASS_UNKNOWN ) {
-      if( type == "FRIENDLY" ) {
+      if( player == PLAYER_SELF ) {
         emit HandleOwnClass( hero );
       } else {
         emit HandleOpponentClass( hero );
@@ -320,42 +301,40 @@ void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
     }
   }
 
-  // Rank
-  // Rank events via log are unreliable
+  /*
+   * Use Hero Power Equip to find ids for mapping players
+   */
+  if( to.contains( "FRIENDLY PLAY (Hero Power)" ) ) {
+    mHeroPlayerId = playerId;
+  }
+}
 
-  // Legend
-  // Emitted at the end of the game twice, make sure we capture only the first time
-  static QRegExp regexLegend( "legend rank (\\d+)" );
-  if( !mLegendTracked && regexLegend.indexIn(line) != -1 ) {
-    QStringList captures = regexLegend.capturedTexts();
-    int legend = captures[1].toInt();
-    if( legend > 0 ) {
-      mLegendTracked = true;
-      emit HandleLegend( legend );
-    }
+void HearthstoneLogTracker::RegisterHearthstoneLogLineHandler( const QString& module, const QString& regex, void (HearthstoneLogTracker::*func)( const QVariantMap& args ) ) {
+  HearthstoneLogLineHandler *handler = new HearthstoneLogLineHandler( this, module, regex );
+  connect( handler, &HearthstoneLogLineHandler::Handle, this, func );
+  mLineHandlers << handler;
+}
+
+void HearthstoneLogTracker::Reset() {
+  mTurn = 0;
+  mLegendTracked = false;
+  mEntityIdByName.clear();
+  mMatchConcluded = false;
+
+  mCardsPlayed.clear();
+  emit HandleCardsPlayedUpdate( mCardsPlayed );
+
+  mCardsDrawn.clear();
+  emit HandleCardsDrawnUpdate( mCardsDrawn );
+}
+
+void HearthstoneLogTracker::HandleLogLine( const QString& line ) {
+  if( line.trimmed().isEmpty() || line.startsWith( "(Filename:" ) ) {
+    return;
   }
 
-  // Casual/Ranked distinction
-  // This is a Unloading Asset event, which may be unreliable in the timing
-  // Alas, I don't see a more reliable way to distinguish casual from ranked
-  static QRegExp regexRanked( "name=rank_window" );
-  if( regexRanked.indexIn(line) != -1 ) {
-    DBG( "Detected ranked game" );
-    emit HandleGameMode( MODE_RANKED );
-  }
-
-  // flag current GAME as spectated
-  static QRegExp regexBeginSpectating( "Start Spectator Game" );
-  if( regexBeginSpectating.indexIn(line) != -1 ) {
-    DBG( "Begin spectator game" );
-    emit HandleSpectating( true );
-  }
-
-  // disable spectating flag if we leave the spectator MODE
-  static QRegExp regexEndSpectating( "End Spectator Mode" );
-  if( regexEndSpectating.indexIn(line) != -1 ) {
-    DBG( "End spectator mode" );
-    emit HandleSpectating( false );
+  for( HearthstoneLogLineHandler* lineHandler : mLineHandlers ) {
+    lineHandler->Process( line );
   }
 }
 

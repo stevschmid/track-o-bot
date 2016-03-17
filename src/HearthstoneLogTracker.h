@@ -1,9 +1,8 @@
 #pragma once
 
 #include "HearthstoneLogWatcher.h"
+#include "HearthstoneLogLineHandler.h"
 #include "Result.h"
-
-#include <QMap>
 
 class HearthstoneLogTracker : public QObject
 {
@@ -21,6 +20,20 @@ private:
   CardHistoryList mCardsPlayed;
   CardHistoryList mCardsDrawn;
   QMap< QString, int > mEntityIdByName;
+
+  QList< HearthstoneLogLineHandler* > mLineHandlers;
+
+  void RegisterHearthstoneLogLineHandler( const QString& module, const QString& regex, void (HearthstoneLogTracker::*)( const QVariantMap& args ) );
+
+  void OnActionStart( const QVariantMap& args );
+  void OnCreateGame( const QVariantMap& args );
+  void OnLegendRank( const QVariantMap& args );
+  void OnRanked( const QVariantMap& args );
+  void OnSceneLoaded( const QVariantMap& args );
+  void OnStartSpectating( const QVariantMap& args );
+  void OnStopSpectating( const QVariantMap& args );
+  void OnTagChange( const QVariantMap& args );
+  void OnZoneChange( const QVariantMap& args );
 
   void CardPlayed( Player player, const QString& cardId, int internalId = 0 );
   void CardReturned( Player player, const QString& cardId, int internalId = 0 );
