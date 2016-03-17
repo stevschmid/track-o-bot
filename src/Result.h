@@ -119,6 +119,7 @@ public:
   int legend;
 
   int duration;
+  int added;
 
   Result() {
     Reset();
@@ -148,6 +149,7 @@ public:
     result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
     result[ "mode" ]     = MODE_NAMES[ mode ];
     result[ "duration" ] = duration;
+    result[ "added" ] = added;
 
     if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
       result[ "rank" ] = rank;
