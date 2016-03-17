@@ -37,13 +37,13 @@ int OSXWindowCapture::Left() {
 }
 
 int OSXWindowCapture::Top() {
-  return CGRectGetMinY( mRect );
+  return CGRectGetMinY( mRect ) + ( Fullscreen() ? 0 : OSX_WINDOW_TITLE_BAR_HEIGHT );
 }
 
 QPixmap OSXWindowCapture::Capture( int x, int y, int w, int h ) {
   CGRect captureRect = CGRectMake(
-      x + CGRectGetMinX( mRect ),
-      y + CGRectGetMinY( mRect ) + ( Fullscreen() ? 0 : OSX_WINDOW_TITLE_BAR_HEIGHT ),
+      x + Left(),
+      y + Top(),
       w,
       h );
 
