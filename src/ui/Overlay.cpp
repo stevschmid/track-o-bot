@@ -161,7 +161,7 @@ Overlay::Overlay( QWidget *parent )
   : QMainWindow( parent ), mUI( new Ui::Overlay ), mShowPlayerHistory( PLAYER_UNKNOWN )
 {
   mUI->setupUi( this );
-  setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Window );
+  setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool );
   setAttribute( Qt::WA_TranslucentBackground );
 
   connect( Hearthstone::Instance(), &Hearthstone::GameWindowChanged, this, &Overlay::HandleGameWindowChanged );
@@ -261,6 +261,7 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
 void Overlay::Update() {
   if( Settings::Instance()->OverlayEnabled() ) {
     show();
+    setAttribute( Qt::WA_QuitOnClose ); // otherwise taskkill /IM Track-o-Bot.exe does not work (http://www.qtcentre.org/threads/11713-Qt-Tool?p=62466#post62466)
   } else {
     hide();
   }
