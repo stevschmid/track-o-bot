@@ -13,7 +13,7 @@ signals:
   void WebserviceURLChanged( const QString& webserviceUrl );
   void AutostartChanged( bool enabled );
   void AutoUpdateCheckChanged( bool enabled );
-  void UploadMetadataEnabledChanged( bool enabled );
+  void DebugEnabledChanged( bool enabled );
   void HearthstoneDirectoryPathChanged( const QString& path );
   void OverlayEnabledChanged( bool enabled );
 
@@ -33,8 +33,8 @@ public:
   void SetAutoUpdateCheck( bool enabled );
   void CheckForUpdates();
 
-  bool UploadMetadataEnabled() const;
-  void SetUploadMetadataEnabled( bool enabled );
+  bool DebugEnabled() const;
+  void SetDebugEnabled( bool enabled );
 
   bool OverlayEnabled() const;
   void SetOverlayEnabled( bool enabled );

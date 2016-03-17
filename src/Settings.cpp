@@ -13,7 +13,7 @@ DEFINE_SINGLETON_SCOPE( Settings );
 #define KEY_ACCOUNT_USERNAME "username"
 #define KEY_ACCOUNT_PASSWORD "password"
 #define KEY_WEBSERVICE_URL "webserviceUrl"
-#define KEY_UPLOAD_METADATA_ENABLED "uploadMetadataEnabled"
+#define KEY_DEBUG_ENABLED "debug"
 #define KEY_HEARTHSTONE_DIRECTORY_PATH "hearthstoneDirectoryPath"
 #define KEY_OVERLAY_ENABLED "overlayEnabled"
 
@@ -84,14 +84,14 @@ void Settings::CheckForUpdates() {
   }
 }
 
-bool Settings::UploadMetadataEnabled() const {
-  return QSettings().value( KEY_UPLOAD_METADATA_ENABLED, false ).toBool();
+bool Settings::DebugEnabled() const {
+  return QSettings().value( KEY_DEBUG_ENABLED, false ).toBool();
 }
 
-void Settings::SetUploadMetadataEnabled( bool enabled ) {
-  QSettings().setValue( KEY_UPLOAD_METADATA_ENABLED, enabled );
+void Settings::SetDebugEnabled( bool enabled ) {
+  QSettings().setValue( KEY_DEBUG_ENABLED, enabled );
 
-  emit UploadMetadataEnabledChanged( enabled );
+  emit DebugEnabledChanged( enabled );
 }
 
 bool Settings::OverlayEnabled() const {

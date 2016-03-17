@@ -2,6 +2,7 @@
 #include <ctime>
 
 #include <QTextStream>
+#include "Settings.h"
 
 DEFINE_SINGLETON_SCOPE( Logger );
 
@@ -54,6 +55,10 @@ void Logger::ProcessMessages() {
 
 void Logger::Add( LogEventType type, const char *fmt, ... ) {
   char buffer[ 4096 ];
+
+  // Ignore debug events when debug is not enabled
+  if( type == LOG_DEBUG && !Settings::Instance()->DebugEnabled() )
+    return;
 
   // Parse vargs
   va_list args;

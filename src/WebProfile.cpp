@@ -51,7 +51,7 @@ void WebProfile::UploadResult( const QJsonObject& result )
   params[ "result" ] = result;
 
   // Optional upload metadata to find out room for improvements
-  if( Settings::Instance()->UploadMetadataEnabled() ) {
+  if( Settings::Instance()->DebugEnabled() ) {
     METADATA( "GAME_WIDTH", Hearthstone::Instance()->Width() );
     METADATA( "GAME_HEIGHT", Hearthstone::Instance()->Height() );
     METADATA( "TOB_VERSION", VERSION );

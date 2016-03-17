@@ -21,7 +21,7 @@ public:
 public slots:
   void UpdateAutostart();
   void UpdateAutoUpdateCheck();
-  void UpdateUploadMetadata();
+  void UpdateDebug();
   void UpdateOverlayEnabled();
   void SelectHearthstoneDirectoryPath();
   void LoadSettings();

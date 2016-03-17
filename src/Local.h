@@ -30,12 +30,7 @@ private: \
 
 #define LOG(str, ...) Logger::Instance()->Add(LOG_INFO, str, ##__VA_ARGS__)
 #define ERR(str, ...) Logger::Instance()->Add(LOG_ERROR, str, ##__VA_ARGS__)
-
-#ifdef _DEBUG
 #define DBG(str, ...) Logger::Instance()->Add(LOG_DEBUG, str, ##__VA_ARGS__)
-#else
-#define DBG(str, ...)
-#endif
 
 #include "Metadata.h"
 #define METADATA(key, fmt, ...) Metadata::Instance()->Add(key, fmt, ##__VA_ARGS__)

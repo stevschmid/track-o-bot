@@ -21,7 +21,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QLabel#startDescription,
-QLabel#metadataDescription,
+QLabel#debugDescription,
 QLabel#hearthstonePathDescription,
 QLabel#overlayDescription,
 QLabel#updateDescription {
@@ -239,21 +239,21 @@ QLabel#updateDescription {
      <item row="12" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Diagnostics</string>
+        <string>Debug</string>
        </property>
       </widget>
      </item>
      <item row="12" column="1">
-      <widget class="QCheckBox" name="checkUploadMetadata">
+      <widget class="QCheckBox" name="checkDebug">
        <property name="text">
-        <string>Upload diagnostic data</string>
+        <string>Enable debug mode</string>
        </property>
       </widget>
      </item>
      <item row="13" column="1">
-      <widget class="QLabel" name="metadataDescription">
+      <widget class="QLabel" name="debugDescription">
        <property name="text">
-        <string>Enable upload of additional tracking data. This data helps to detect and fix problems.</string>
+        <string>Debug mode increases verbosity of output in the log tab and sends diagnostic data.</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
