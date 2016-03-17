@@ -22,22 +22,8 @@ LogTab::~LogTab() {
 }
 
 void LogTab::AddLogEntry( LogEventType type, const QString& msg ) {
-  mUI->logText->moveCursor( QTextCursor::End );
+  UNUSED_ARG( type );
 
-  switch( type ) {
-    case LOG_ERROR:
-      mUI->logText->setTextColor( Qt::red );
-      break;
-
-    case LOG_DEBUG:
-      mUI->logText->setTextColor( Qt::gray );
-      break;
-
-    default:
-      mUI->logText->setTextColor( QApplication::palette().text().color() );
-  }
-
-  mUI->logText->insertPlainText( msg );
-  mUI->logText->moveCursor( QTextCursor::End );
+  mUI->logText->appendPlainText( msg.trimmed() );
 }
 
