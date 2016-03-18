@@ -152,7 +152,7 @@ public:
     result[ "win" ]      = ( outcome == OUTCOME_VICTORY );
     result[ "mode" ]     = MODE_NAMES[ mode ];
     result[ "duration" ] = duration;
-    result[ "added" ] = added.toString( Qt::ISODate );
+    result[ "added" ]    = added.toTimeSpec( Qt::OffsetFromUTC ).toString( Qt::ISODate );
 
     if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
       result[ "rank" ] = rank;
