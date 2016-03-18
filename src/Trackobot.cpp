@@ -36,6 +36,11 @@ Trackobot::Trackobot( int argc, char **argv )
 }
 
 Trackobot::~Trackobot() {
+  if( mOverlay ) {
+    delete mOverlay;
+    mOverlay = NULL;
+  }
+
   if( mWindow ) {
     delete mWindow;
     mWindow = NULL;
