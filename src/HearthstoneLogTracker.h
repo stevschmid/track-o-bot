@@ -17,6 +17,7 @@ private:
   bool mSpectating;
   bool mMatchConcluded;
 
+  QList< int > mInitialDeckObjectIds;
   CardHistoryList mCardsPlayed;
   CardHistoryList mCardsDrawn;
   QMap< QString, int > mEntityIdByName;

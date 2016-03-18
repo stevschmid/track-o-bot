@@ -243,6 +243,12 @@ void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
     }
   }
 
+  if( CurrentTurn() == 0 && from.isEmpty() && to.contains( "DECK" ) ) {
+    // Since HS "creates" deck cards on the fly for events such as jousting or elekk
+    // Keep track of those initial cards
+    mInitialDeckObjectIds.push_back( id );
+  }
+
   /*
    * Cards played/drawn
    */
@@ -261,8 +267,10 @@ void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
 
   // Card drawn?
   // "" && turn = 0: initial draw, DECK: remaining draws (anything which comes from the deck)
-  bool draw = ( from.isEmpty() && CurrentTurn() == 0 && to.contains("HAND") ) ||
-      ( from.contains( "DECK" ) && !to.isEmpty() ); // to is empty on jousting
+  bool draw = ( from.isEmpty() && CurrentTurn() == 0 && to.contains("HAND") ) || // starting hand
+              ( from.contains( "DECK" ) && to.isEmpty() && mInitialDeckObjectIds.contains( id ) ) || // e.g. tracking
+              ( from.contains( "DECK") && !to.isEmpty() ); // normal draw
+
 
   // Card put back? (i.e. mulligan)
   // GRAVEYARD (malorne)
@@ -332,10 +340,13 @@ void HearthstoneLogTracker::RegisterHearthstoneLogLineHandler( const QString& mo
 }
 
 void HearthstoneLogTracker::Reset() {
+  DBG( "Reset" );
+
   mTurn = 0;
   mLegendTracked = false;
   mEntityIdByName.clear();
   mMatchConcluded = false;
+  mInitialDeckObjectIds.clear();
 
   mCardsPlayed.clear();
   emit HandleCardsPlayedUpdate( mCardsPlayed );
