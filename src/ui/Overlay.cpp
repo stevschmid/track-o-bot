@@ -240,6 +240,20 @@ void PaintHistoryInScreen( QPainter& painter, const OverlayHistoryWindow& wnd, c
 }
 
 void Overlay::paintEvent( QPaintEvent* ) {
+  QString title;
+  QRect rect;
+  OverlayHistoryList *history = NULL;
+
+  if( mShowPlayerHistory == PLAYER_SELF && mPlayerHistory.count() > 0 ) {
+    title = "Cards drawn";
+    history = &mPlayerHistory;
+    rect = mPlayerDeckRect;
+  } else if( mShowPlayerHistory == PLAYER_OPPONENT && mOpponentHistory.count() > 0 ) {
+    title = "Cards played by opponent";
+    history = &mOpponentHistory;
+    rect = mOpponentDeckRect;
+  }
+
   QPainter painter( this );
   painter.setRenderHint( QPainter::Antialiasing );
 
@@ -254,12 +268,10 @@ void Overlay::paintEvent( QPaintEvent* ) {
   int spacing = 8;
   int overlayWidth = 200;
 
-  if( mShowPlayerHistory == PLAYER_SELF && mPlayerHistory.count() > 0 ) {
-    OverlayHistoryWindow wnd( "Cards drawn", mPlayerHistory, overlayWidth, spacing, spacing, titleFontSize, rowFontSize );
-    PaintHistoryInScreen( painter, wnd, mPlayerDeckRect.topRight() + QPoint( 20, 0 ) );
-  } else if( mShowPlayerHistory == PLAYER_OPPONENT && mOpponentHistory.count() > 0 ) {
-    OverlayHistoryWindow wnd( "Cards played by opponent", mOpponentHistory, overlayWidth, spacing, spacing, titleFontSize, rowFontSize );
-    PaintHistoryInScreen( painter, wnd, mOpponentDeckRect.topRight() + QPoint( 20, 0 ) );
+  if( history ) {
+    OverlayHistoryWindow wnd( title, *history, overlayWidth, spacing, spacing, titleFontSize, rowFontSize );
+    QPoint pos = rect.center() + QPoint( 30, -wnd.Height() / 2 );
+    PaintHistoryInScreen( painter, wnd, pos );
   }
 }
 
