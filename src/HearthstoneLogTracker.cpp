@@ -58,11 +58,11 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
 
   // Add handlers
   RegisterHearthstoneLogLineHandler( "LoadingScreen", "LoadingScreen.OnSceneLoaded()", "prevMode=(?<prevMode>\\w+) currMode=(?<currMode>\\w+)", &HearthstoneLogTracker::OnSceneLoaded );
-  RegisterHearthstoneLogLineHandler( "Zone", "ZoneChangeList.ProcessChanges()", "(?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
+  RegisterHearthstoneLogLineHandler( "Zone", "ZoneChangeList.ProcessChanges()", "local=(?<local>\\w+) (?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?) EffectCardId=", &HearthstoneLogTracker::OnActionStart );
-  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
+  RegisterHearthstoneLogLineHandler( "Bob", "", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
   RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
   RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
   RegisterHearthstoneLogLineHandler( "Power", "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
@@ -218,6 +218,7 @@ void HearthstoneLogTracker::OnTagChange( const QVariantMap& args ) {
 void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
   QString from = args[ "from" ].toString();
   QString to = args[ "to" ].toString();
+  bool local = args[ "local" ].toBool();
 
   QVariantMap entity = args[ "entity" ].toMap();
   int id = entity[ "id" ].toInt();
@@ -261,21 +262,30 @@ void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
   // Card drawn?
   // "" && turn = 0: initial draw, DECK: remaining draws (anything which comes from the deck)
   bool draw = ( from.isEmpty() && CurrentTurn() == 0 && to.contains("HAND") ) ||
-      from.contains( "DECK" );
+      ( from.contains( "DECK" ) && !to.isEmpty() ); // to is empty on jousting
 
   // Card put back? (i.e. mulligan)
-  bool putBack = from.contains( "HAND" ) && to.contains( "DECK" );
+  // GRAVEYARD (malorne)
+  bool putBackToDeck = ( from.contains( "HAND" ) || from.contains( "GRAVEYARD" ) ) && to.contains( "DECK" );
+
+  // Play cancelled?
+  // Wrath: "from  -> FRIENDLY HAND"
+  // DotC: "from FRIENDLY PLAY -> FRIENDLY HAND"
+  bool playCancelled = local && ( from.isEmpty() || from.contains( "PLAY" ) ) && to.contains( "HAND" );
+
+  LOG( "Local %d", local );
+  LOG( "PlayCancel %d", playCancelled );
 
   if( draw ) {
     CardDrawn( player, cardId, id );
-  } else if( putBack ) {
+  } else if( putBackToDeck ) {
     CardUndrawn( player, cardId, id );
   }
 
   if( !setaside ) {
     if( playedFromHand || playedFromDeck ) {
       CardPlayed( player, cardId, id );
-    } else if( putBack ) {
+    } else if( playCancelled ) {
       CardReturned( player, cardId, id );
     }
   }
