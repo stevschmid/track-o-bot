@@ -273,9 +273,6 @@ void HearthstoneLogTracker::OnZoneChange( const QVariantMap& args ) {
   // DotC: "from FRIENDLY PLAY -> FRIENDLY HAND"
   bool playCancelled = local && ( from.isEmpty() || from.contains( "PLAY" ) ) && to.contains( "HAND" );
 
-  LOG( "Local %d", local );
-  LOG( "PlayCancel %d", playCancelled );
-
   if( draw ) {
     CardDrawn( player, cardId, id );
   } else if( putBackToDeck ) {
