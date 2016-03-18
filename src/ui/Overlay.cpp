@@ -275,7 +275,7 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
 }
 
 void Overlay::Update() {
-  if( Settings::Instance()->OverlayEnabled() ) {
+  if( Hearthstone::Instance()->GameRunning() && Settings::Instance()->OverlayEnabled() ) {
     show();
 #ifdef Q_OS_WIN
     setAttribute( Qt::WA_QuitOnClose ); // otherwise taskkill /IM Track-o-Bot.exe does not work (http://www.qtcentre.org/threads/11713-Qt-Tool?p=62466#post62466)

@@ -18,6 +18,11 @@ DEFINE_SINGLETON_SCOPE( Settings );
 #define KEY_OVERLAY_ENABLED "overlayEnabled"
 
 Settings::Settings() {
+  // Enable overlay by default for new users, but not for existing ones
+  if( !QSettings().contains( KEY_OVERLAY_ENABLED ) ) {
+    bool isNewUser = !HasAccount();
+    SetOverlayEnabled( isNewUser );
+  }
 }
 
 Settings::~Settings() {
@@ -95,9 +100,7 @@ void Settings::SetDebugEnabled( bool enabled ) {
 }
 
 bool Settings::OverlayEnabled() const {
-  // Enable overlay by default for new users, but not for existing ones
-  bool defaultOverlayEnabled = HasAccount() ? false : true;
-  return QSettings().value( KEY_OVERLAY_ENABLED, defaultOverlayEnabled ).toBool();
+  return QSettings().value( KEY_OVERLAY_ENABLED ).toBool();
 }
 
 void Settings::SetOverlayEnabled( bool enabled ) {
