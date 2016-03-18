@@ -31,7 +31,7 @@ const char HERO_IDS[NUM_HEROES][32] = {
 Q_DECLARE_METATYPE( ::CardHistoryList );
 
 HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
-  : QObject( parent ), mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false ), mMatchConcluded( false )
+  : QObject( parent ), mTurn( 0 ), mHeroPlayerId( 0 ), mLegendTracked( false )
 {
   qRegisterMetaType< ::CardHistoryList >( "CardHistoryList" );
 
@@ -132,9 +132,9 @@ void HearthstoneLogTracker::OnSceneLoaded( const QVariantMap& args ) {
   // We delay the scene changes to allow some log events to catch up
   // For example the rank mode distinction is only possible
   // via asset unload function, which is triggered on the scene change
-  QTimer::singleShot( 1000, [this, prevMode, currMode]() {
+  QTimer::singleShot( 2500, [this, prevMode, currMode]() {
     // First check if match concluded for current game mode
-    if( prevMode == "GAMEPLAY" && mMatchConcluded ) {
+    if( prevMode == "GAMEPLAY" ) {
       emit HandleMatchEnd();
       Reset();
     }
@@ -205,8 +205,6 @@ void HearthstoneLogTracker::OnTagChange( const QVariantMap& args ) {
         }
       }
     }
-
-    mMatchConcluded = true;
   }
 
   if( tag == "TURN" ) {
@@ -345,7 +343,6 @@ void HearthstoneLogTracker::Reset() {
   mTurn = 0;
   mLegendTracked = false;
   mEntityIdByName.clear();
-  mMatchConcluded = false;
   mInitialDeckObjectIds.clear();
 
   mCardsPlayed.clear();

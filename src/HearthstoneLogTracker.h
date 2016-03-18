@@ -15,7 +15,6 @@ private:
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
-  bool mMatchConcluded;
 
   QList< int > mInitialDeckObjectIds;
   CardHistoryList mCardsPlayed;
