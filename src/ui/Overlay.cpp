@@ -270,7 +270,7 @@ void Overlay::paintEvent( QPaintEvent* ) {
 
   if( history ) {
     OverlayHistoryWindow wnd( title, *history, overlayWidth, spacing, spacing, titleFontSize, rowFontSize );
-    QPoint pos = rect.center() + QPoint( 30, -wnd.Height() / 2 );
+    QPoint pos = rect.center() + QPoint( rect.width() / 2 + 10, -wnd.Height() / 2 );
     PaintHistoryInScreen( painter, wnd, pos );
   }
 }
