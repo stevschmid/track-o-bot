@@ -272,7 +272,7 @@ QLabel#updateDescription {
      <item row="3" column="1">
       <widget class="QLabel" name="overlayDescription">
        <property name="text">
-        <string>Hover over your or your opponent's deck to see which cards were drawn.</string>
+        <string>Hover over your or your opponent's deck to see which cards were drawn or played.</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
