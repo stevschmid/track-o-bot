@@ -156,12 +156,11 @@ public:
 
 };
 
-
 Overlay::Overlay( QWidget *parent )
   : QMainWindow( parent ), mUI( new Ui::Overlay ), mShowPlayerHistory( PLAYER_UNKNOWN )
 {
   mUI->setupUi( this );
-  setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
+  setWindowFlags( Qt::NoDropShadowWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowTransparentForInput );
 
 #ifdef Q_OS_WIN
   setWindowFlags( windowFlags() | Qt::Tool );
@@ -170,6 +169,7 @@ Overlay::Overlay( QWidget *parent )
 #endif
 
   setAttribute( Qt::WA_TranslucentBackground );
+  setAttribute( Qt::WA_ShowWithoutActivating );
 
   connect( Hearthstone::Instance(), &Hearthstone::GameWindowChanged, this, &Overlay::HandleGameWindowChanged );
   connect( Hearthstone::Instance(), &Hearthstone::GameStarted, this, &Overlay::HandleGameStarted );
@@ -189,6 +189,11 @@ Overlay::Overlay( QWidget *parent )
   objc_object* nsWindowObject = objc_msgSend( nsviewObject, sel_registerName("window") );
   int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
   objc_msgSend( nsWindowObject, sel_registerName("setCollectionBehavior:"), NSWindowCollectionBehaviorCanJoinAllSpaces );
+
+  // Ignore mouse events on Mac
+  // Qt::WindowTransparentForInput bug
+  // https://bugreports.qt.io/browse/QTBUG-45498
+  objc_msgSend( nsWindowObject, sel_registerName("setIgnoresMouseEvents:"), 1 );
 #endif
 }
 
