@@ -1,8 +1,9 @@
 #include "Logger.h"
-#include <ctime>
-
-#include <QTextStream>
 #include "Settings.h"
+
+#include <QTime>
+#include <QTextStream>
+#include <cassert>
 
 DEFINE_SINGLETON_SCOPE( Logger );
 
@@ -54,28 +55,20 @@ void Logger::ProcessMessages() {
 }
 
 void Logger::Add( LogEventType type, const char *fmt, ... ) {
-  char buffer[ 4096 ];
-
   // Ignore debug events when debug is not enabled
   if( type == LOG_DEBUG && !Settings::Instance()->DebugEnabled() )
     return;
 
-  // Parse vargs
+  char buffer[ 4096 ];
+  memset( buffer, 0, sizeof( buffer ) );
+
   va_list args;
   va_start( args, fmt );
-  vsnprintf( buffer, sizeof(buffer), fmt, args );
+  vsnprintf( buffer, sizeof( buffer ) - 1, fmt, args );
   va_end( args );
 
-  // Timestamp
-  char timestamp[ 256 ];
-  time_t t = time( 0 );
-  struct tm *now = localtime( &t );
-  strftime( timestamp, sizeof( timestamp ), "%H:%M:%S", now );
-
-  // Decorate
-  char decorated[ 4096 ];
-  sprintf( decorated, "[%s] %s: %s\n", timestamp, LOG_EVENT_TYPE_NAMES[ type ], buffer );
-  QString line( decorated );
+  QString timestamp = QTime::currentTime().toString( "hh:mm:ss" );
+  QString line = QString( "[%1] %2: %3\n" ).arg( timestamp ).arg( LOG_EVENT_TYPE_NAMES[ type ] ).arg( buffer );
 
   mQueue.push_back( QPair< LogEventType, QString >( type, line ) );
   ProcessMessages();
