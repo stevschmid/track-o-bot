@@ -281,14 +281,17 @@ void Overlay::paintEvent( QPaintEvent* ) {
 }
 
 void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
-  move( x, y );
+  // Order is important
+  // Otherwise starting fullscreen on windows
+  // will not show the overlay unless the FS mode is toggled
   setFixedSize( w, h );
+  move( x, y );
 
   int minWidth = h * 4 / 3;
   mPlayerDeckRect = QRect( w / 2 + 0.440 * minWidth, h * 0.510, 0.05 * minWidth, h * 0.170 );
   mOpponentDeckRect = mPlayerDeckRect.translated( -0.005 * minWidth, -0.275 * h );
 
-  update();
+  Update();
 }
 
 void Overlay::Update() {
