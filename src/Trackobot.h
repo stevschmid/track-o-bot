@@ -10,12 +10,11 @@
 #include "ui/Window.h"
 #include "ui/Overlay.h"
 
-class Trackobot : public QObject
+class Trackobot : public QApplication
 {
   Q_OBJECT
 
 private:
-  QApplication mApp;
   Window *mWindow;
   Overlay *mOverlay;
   QLocalServer *mSingleInstanceServer;
@@ -35,7 +34,7 @@ private:
   void Initialize();
 
 public:
-  Trackobot( int argc, char **argv );
+  Trackobot( int& argc, char **argv );
   ~Trackobot();
   int Run();
 };
