@@ -25,11 +25,12 @@ void Metadata::Add( const QString& key, float value ) {
 
 void Metadata::Add( const QString& key, const char* fmt, ... ) {
   char buffer[ 4096 ];
+  memset( buffer, 0, sizeof( buffer ) );
 
   // Parse vargs
   va_list args;
   va_start( args, fmt );
-  vsnprintf( buffer, sizeof(buffer), fmt, args );
+  vsnprintf( buffer, sizeof( buffer ) - 1, fmt, args );
   va_end( args );
 
   Add( key, QString( buffer ) );
