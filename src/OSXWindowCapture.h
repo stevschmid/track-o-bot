@@ -10,7 +10,6 @@ class OSXWindowCapture : public QObject, public WindowCapture
 Q_OBJECT
 
 private:
-  QString  mWindowName;
   CGRect   mRect;
   int mWinId;
 
@@ -20,7 +19,7 @@ private:
   bool Fullscreen();
 
 public:
-  OSXWindowCapture( const QString& windowName );
+  OSXWindowCapture();
 
   bool WindowFound();
   int Width();

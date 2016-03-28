@@ -5,14 +5,14 @@
 // remove the window title bar which we are not interested in
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
-OSXWindowCapture::OSXWindowCapture( const QString& windowName )
-  : mWindowName( windowName ), mWinId( 0 )
+OSXWindowCapture::OSXWindowCapture()
+  : mWinId( 0 )
 {
 }
 
 bool OSXWindowCapture::WindowFound() {
   if( mWinId == 0 ) {
-    mWinId = FindWindow( mWindowName );
+    mWinId = FindWindow( "Hearthstone" );
   }
 
   if( mWinId && !WindowRect( mWinId, &mRect ) ) {

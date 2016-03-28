@@ -8,15 +8,15 @@
 class WinWindowCapture : public WindowCapture
 {
 private:
-  QString mWindowName;
-
   RECT Rect();
   POINT ScreenPos();
 
   HWND FindHWND();
 
+  HWND mHwnd;
+
 public:
-  WinWindowCapture( const QString& windowName );
+  WinWindowCapture();
 
   bool WindowFound();
 

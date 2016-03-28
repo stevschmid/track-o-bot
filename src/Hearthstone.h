@@ -27,7 +27,6 @@ private:
   bool mGameRunning;
 
   QString ReadAgentAttribute( const char *attributeName ) const;
-  QString WindowName() const;
 
   QTimer *mTimer;
 
