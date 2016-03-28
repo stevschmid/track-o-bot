@@ -272,13 +272,6 @@ QString Hearthstone::WindowName() const {
     windowName = QString::fromWCharArray( L"하스스톤" );
   }
 
-  QFile file("C:\\tmp\\out.txt");
-  file.open(QIODevice::Text | QIODevice::WriteOnly );
-
-  QTextStream out(&file);
-  out << windowName << "\n";
-  file.close();
-
   return windowName;
 }
 
