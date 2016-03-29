@@ -20,7 +20,6 @@ brew link qt5 --force
  * I use the Qt libraries 5.5.0 for Windows VS 2012.
 * Install [WinSparkle](https://github.com/vslavik/winsparkle) 
  * Clone the repository and build the library, for example with VS 2012. The precompiled releases are ancient.
-* Install libwebm and libvpx
 
 # Build Instructions
 
