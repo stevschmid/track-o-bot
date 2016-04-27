@@ -11,6 +11,8 @@ namespace Ui { class Overlay; }
 
 #include "../Result.h"
 
+#include "../HearthstoneCardDB.h"
+
 typedef QList< QVariantMap > OverlayHistoryList;
 
 class Overlay : public QMainWindow
@@ -23,14 +25,14 @@ private:
   OverlayHistoryList mPlayerHistory;
   OverlayHistoryList mOpponentHistory;
 
-  QMap< QString, QVariantMap > mCardDB;
-
   Player mShowPlayerHistory;
 
   QRect mPlayerDeckRect;
   QRect mOpponentDeckRect;
 
   QTimer mCheckForHoverTimer;
+
+  HearthstoneCardDB mCardDB;
 
   void LoadCards();
   void UpdateHistoryFor( Player player, const ::CardHistoryList& list );

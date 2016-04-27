@@ -23,6 +23,5 @@
     <file>icons/win.ico</file>
     <file>icons/logo.png</file>
     <file>data/rank_classifier.json</file>
-    <file>data/cards.json</file>
   </qresource>
 </RCC>

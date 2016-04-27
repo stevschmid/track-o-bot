@@ -2,7 +2,7 @@ TARGET = Track-o-Bot
 VERSION = 0.8.0
 
 CONFIG += qt precompile_header debug_and_release c++11
-QT += core widgets network
+QT += core widgets network xml
 
 DESTDIR = build
 OBJECTS_DIR = tmp
@@ -23,6 +23,7 @@ HEADERS = src/Local.h \
           src/HearthstoneLogWatcher.h \
           src/HearthstoneLogTracker.h \
           src/HearthstoneLogLineHandler.h \
+          src/HearthstoneCardDB.h \
           src/Hearthstone.h \
           src/MLP.h \
           src/RankClassifier.h \
@@ -45,6 +46,7 @@ SOURCES = src/Main.cpp \
           src/Autostart.cpp \
           src/HearthstoneLogWatcher.cpp \
           src/HearthstoneLogTracker.cpp \
+          src/HearthstoneCardDB.cpp \
           src/MLP.cpp \
           src/RankClassifier.cpp \
           src/Settings.cpp \
