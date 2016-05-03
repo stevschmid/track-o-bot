@@ -1,5 +1,6 @@
 #include "HearthstoneCardDB.h"
 #include "Settings.h"
+#include "Hearthstone.h"
 
 #include <QtXml>
 
@@ -47,9 +48,6 @@ QString ExtractCardDefsXmlFromUnity3d( QString fileName, QString desiredLocale )
 HearthstoneCardDB::HearthstoneCardDB( QObject *parent )
   : QObject( parent )
 {
-  connect( Settings::Instance(), &Settings::HearthstoneDirectoryPathChanged, this, &HearthstoneCardDB::HearthstoneDirectoryPathChanged );
-
-  ReadDB();
 }
 
 int HearthstoneCardDB::Count() const {
@@ -91,11 +89,12 @@ QString HearthstoneCardDB::Type( const QString& id ) const {
   }
 }
 
-bool HearthstoneCardDB::ReadDB() {
-  mCards.clear();
+bool HearthstoneCardDB::Load() {
+  Unload();
+
+  DBG( "Load Card DB" );
 
   QString locale = Locale();
-
   QString platform = "Win";
 #ifdef Q_OS_MAC
   platform = "OSX";
@@ -103,8 +102,6 @@ bool HearthstoneCardDB::ReadDB() {
 
   QString path = QString( "%1/Data/%2/cardxml0.unity3d" ).arg( Settings::Instance()->HearthstoneDirectoryPath() ).arg( platform );
   QString xmlData = ExtractCardDefsXmlFromUnity3d( path, locale );
-
-  DBG( "ReadDB" );
 
   if( !xmlData.isEmpty() ) {
     QXmlSimpleReader reader;
@@ -118,9 +115,21 @@ bool HearthstoneCardDB::ReadDB() {
     QXmlInputSource input;
     input.setData( xmlData );
     reader.parse( &input );
+
+    DBG( "Loaded %d cards", mCards.count() );
   }
 
   return true;
+}
+
+bool HearthstoneCardDB::Unload() {
+  DBG( "Unload Card DB" );
+  mCards.clear();
+  return true;
+}
+
+bool HearthstoneCardDB::Loaded() const {
+  return !mCards.empty();
 }
 
 QString HearthstoneCardDB::Locale() const {
@@ -138,10 +147,5 @@ QString HearthstoneCardDB::Locale() const {
 
   DBG( "Locale = %s", qt2cstr( locale )) ;
   return locale;
-}
-
-void HearthstoneCardDB::HearthstoneDirectoryPathChanged( const QString& ) {
-  // Re-read card DB
-  ReadDB();
 }
 

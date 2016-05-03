@@ -14,14 +14,15 @@ private:
   QMap< QString, QVariantMap > mCards;
 
 private:
-  bool ReadDB();
   QString Locale() const;
-
-public slots:
-  void HearthstoneDirectoryPathChanged( const QString& path );
 
 public:
   HearthstoneCardDB( QObject *parent = 0 );
+
+  bool Load();
+  bool Unload();
+
+  bool Loaded() const;
 
   int Count() const;
   bool Contains( const QString& id ) const;
