@@ -47,6 +47,7 @@ Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Widgets.dll"; DestDir: "{app
 Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5WinExtras.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/bin/Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/plugins/imageformats/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/imageformats"; Flags: ignoreversion
 Source: "../../../../Qt/Qt5.5.1/5.5/msvc2013/plugins/platforms/*.dll"; Excludes: "*d.dll"; DestDir: "{app}/platforms"; Flags: ignoreversion
 
