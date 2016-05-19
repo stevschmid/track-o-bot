@@ -4,7 +4,6 @@
 #include <QtWinExtras/qwinfunctions.h>
 #include <psapi.h>
 
-
 WinWindowCapture::WinWindowCapture()
   : mHwnd( NULL )
 {
@@ -16,6 +15,7 @@ HWND WinWindowCapture::FindHWND() {
   }
 
   HWND hwnd = FindWindowW( NULL, L"Hearthstone" );
+
   if( !hwnd ) {
     // Fallback for localized
     HWND unityHwnd = FindWindowW( L"UnityWndClass", NULL );
@@ -97,5 +97,14 @@ QPixmap WinWindowCapture::Capture( int x, int y, int w, int h ) {
   }
 
   return pixmap;
+}
+
+bool WinWindowCapture::Focus() {
+
+    HWND activeWindow = GetForegroundWindow();
+    if( activeWindow == FindHWND() )
+        return true;
+    else
+        return false;
 }
 
