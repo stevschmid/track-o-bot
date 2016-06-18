@@ -16,6 +16,9 @@
 #include "Shlobj.h"
 #endif
 
+#define SLOW_UPDATE_INTERVAL 5000
+#define FAST_UPDATE_INTERVAL 250
+
 DEFINE_SINGLETON_SCOPE( Hearthstone )
 
 Hearthstone::Hearthstone()
@@ -32,10 +35,10 @@ Hearthstone::Hearthstone()
   // So just check only once in a while
   mTimer = new QTimer( this );
   connect( mTimer, &QTimer::timeout, this, &Hearthstone::Update );
-#ifdef Q_OS_MAC
-  mTimer->start( 5000 );
-#else
-  mTimer->start( 250 );
+  mTimer->start( SLOW_UPDATE_INTERVAL );
+#ifndef Q_OS_MAC
+  connect( this, &Hearthstone::GameStarted, this, &Hearthstone::SetFastUpdates );
+  connect( this, &Hearthstone::GameStopped, this, &Hearthstone::SetSlowUpdates );
 #endif
 }
 
@@ -73,6 +76,14 @@ void Hearthstone::Update() {
       emit GameStopped();
     }
   }
+}
+
+void Hearthstone::SetSlowUpdates() {
+  mTimer->setInterval( SLOW_UPDATE_INTERVAL );
+}
+
+void Hearthstone::SetFastUpdates() {
+  mTimer->setInterval( FAST_UPDATE_INTERVAL );
 }
 
 QString Hearthstone::ReadAgentAttribute( const char *attributeName ) const {
