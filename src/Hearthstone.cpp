@@ -306,16 +306,20 @@ const QString Hearthstone::DetectRegion() const {
 
     if ( !logDir.exists() || logDir.entryList().isEmpty() ) {
       ERR( "Directory %s does not exist or it is empty!", qt2cstr( logDir.path() ) );
-      break;
+      fallback = true;
+      continue;
     }
 
     QFile logFile( logDir.entryInfoList().first().filePath() );
     if ( !logFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
       ERR( "Cannot open open file: %s!", qt2cstr( logFile.fileName() ) );
-      break;
+      fallback = true;
+      continue;
     }
 
     QTextStream input( &logFile );
+    if ( fallback )
+       regionRegExp.swap( gameLaunchRegExp );
 
     do {
       if ( ( match = regionRegExp.match ( input.readLine() ) ).hasMatch() ) {
@@ -335,7 +339,6 @@ const QString Hearthstone::DetectRegion() const {
     }
 
     fallback = true;
-    regionRegExp.swap( gameLaunchRegExp );
   }
 
   if ( region.isEmpty() )  {
