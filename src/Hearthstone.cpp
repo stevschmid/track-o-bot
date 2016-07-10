@@ -1,10 +1,11 @@
 ﻿#include "Hearthstone.h"
 
 #include <QFile>
+#include <QDir>
 #include <QDesktopServices>
 #include <QSettings>
 #include <QTextStream>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -68,9 +69,13 @@ void Hearthstone::Update() {
     if( isRunning ) {
       LOG( "Hearthstone is running" );
       emit GameStarted();
+      // it takes time to create logfile
+      QTimer::singleShot( 3000, this, &Hearthstone::DetectRegion );
+
     } else {
       LOG( "Hearthstone stopped" );
       emit GameStopped();
+      mRegion.clear();
     }
   }
 }
@@ -171,10 +176,10 @@ void Hearthstone::EnableLogging() {
     }
   }
 
-  QRegExp regexEnabledConsolePrinting( "ConsolePrinting\\s*=\\s*true",
-      Qt::CaseInsensitive );
-  QRegExp regexDisabledFilePrinting( "FilePrinting\\s*=\\s*false",
-      Qt::CaseInsensitive );
+  QRegularExpression regexEnabledConsolePrinting( "ConsolePrinting\\s*=\\s*true",
+      QRegularExpression::CaseInsensitiveOption );
+  QRegularExpression regexDisabledFilePrinting( "FilePrinting\\s*=\\s*false",
+      QRegularExpression::CaseInsensitiveOption );
   if( contents.contains( regexEnabledConsolePrinting ) ||
       contents.contains( regexDisabledFilePrinting ) )
   {
@@ -263,3 +268,87 @@ int Hearthstone::Height() const {
   return mCapture->Height();
 }
 
+const QString& Hearthstone::Region() const {
+  return mRegion;
+}
+
+const QString Hearthstone::DetectRegion() const {
+
+  bool fallback = false;
+  QStringList dirList;
+  QString region;
+  QRegularExpressionMatch match;
+  QRegularExpression gameLaunchRegExp( "^.*\\[ProductState\\] {Main} InstallState \\(hs_beta\\): GameLaunching=1" );
+  QRegularExpression fallbackHelperRegExp( ".*REGION=(\\w{2})");
+  QRegularExpression regionRegExp( "^.*Connection Request to '(\\w{2}).actual.battle.net.*$" );
+
+#ifdef Q_OS_MAC
+  QString path = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first() + "/Library/Preferences/";
+#elif defined Q_OS_WIN
+  wchar_t buffer[ MAX_PATH ];
+  SHGetSpecialFolderPathW( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
+  QString path = QString::fromWCharArray( buffer );
+#endif
+  dirList  << path + "/Blizzard/Hearthstone/Logs/"
+           << path + "/Battle.net/Logs/";
+
+  /* Done in foreach since detection and fallback detection are done almost the same way.
+   *
+   * For hearthstone log file first match contains info about region.
+   * New log file is created every hs launch.
+   *
+   * For battle.net log file (fallback) the last region is the one we need
+   * since they are logged chronologically. We search for every line with
+   * (hs_beta) GameLauching=1 and the next line contains info about region. */
+
+  foreach ( const QString& dir, dirList ) {
+    QDir logDir( dir, "[hb]*.log", QDir::Time );
+
+    if ( !logDir.exists() || logDir.entryList().isEmpty() ) {
+      ERR( "Directory %s does not exist or it is empty!", qt2cstr( logDir.path() ) );
+      fallback = true;
+      continue;
+    }
+
+    QFile logFile( logDir.entryInfoList().first().filePath() );
+    if ( !logFile.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+      ERR( "Cannot open open file: %s!", qt2cstr( logFile.fileName() ) );
+      fallback = true;
+      continue;
+    }
+
+    QTextStream input( &logFile );
+    if ( fallback )
+       regionRegExp.swap( gameLaunchRegExp );
+
+    do {
+      if ( ( match = regionRegExp.match ( input.readLine() ) ).hasMatch() ) {
+
+        if( fallback )
+          match = fallbackHelperRegExp.match( input.readLine() );
+
+        region = match.capturedTexts().at( 1 );
+
+        if ( !region.isEmpty() && !fallback )
+          break;
+      }
+    } while ( !input.atEnd() );
+
+    if ( !region.isEmpty() ) {
+      break;
+    }
+
+    fallback = true;
+  }
+
+  if ( region.isEmpty() )  {
+    // either user is really persistent in deleating log files or there is
+    // something wrong with file permitions/instllation so we default to US;
+    LOG( "Could not detect region. falling back to US", qt2cstr( region ) );
+    return "US";
+  }
+
+  region = region.toUpper();
+  LOG( "Detected %s region.", qt2cstr( region ) );
+  return region;
+}

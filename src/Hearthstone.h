@@ -29,6 +29,7 @@ private:
   QString ReadAgentAttribute( const char *attributeName ) const;
 
   QTimer *mTimer;
+  QString mRegion;
 
 public:
   // Allow to override window capture for test environment
@@ -43,6 +44,7 @@ public:
 
   QString LogConfigPath() const;
   QString DetectHearthstonePath() const;
+  const QString& Region() const;
 
   int Width() const;
   int Height() const;
@@ -55,4 +57,5 @@ signals:
 
 private slots:
   void Update();
+  const QString DetectRegion() const;
 };
