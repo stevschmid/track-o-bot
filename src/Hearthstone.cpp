@@ -5,7 +5,6 @@
 #include <QDesktopServices>
 #include <QSettings>
 #include <QTextStream>
-#include <QRegExp>
 #include <QRegularExpression>
 
 #include <QJsonDocument>
@@ -177,10 +176,10 @@ void Hearthstone::EnableLogging() {
     }
   }
 
-  QRegExp regexEnabledConsolePrinting( "ConsolePrinting\\s*=\\s*true",
-      Qt::CaseInsensitive );
-  QRegExp regexDisabledFilePrinting( "FilePrinting\\s*=\\s*false",
-      Qt::CaseInsensitive );
+  QRegularExpression regexEnabledConsolePrinting( "ConsolePrinting\\s*=\\s*true",
+      QRegularExpression::CaseInsensitiveOption );
+  QRegularExpression regexDisabledFilePrinting( "FilePrinting\\s*=\\s*false",
+      QRegularExpression::CaseInsensitiveOption );
   if( contents.contains( regexEnabledConsolePrinting ) ||
       contents.contains( regexDisabledFilePrinting ) )
   {
