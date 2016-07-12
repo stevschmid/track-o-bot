@@ -31,6 +31,7 @@ private:
   int DetermineRank();
 
 public slots:
+  void HandleHearthstoneStart();
   void HandleMatchStart();
   void HandleMatchEnd();
   void HandleCardsPlayedUpdate( const ::CardHistoryList& cardsPlayed );
