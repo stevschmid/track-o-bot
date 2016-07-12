@@ -18,7 +18,7 @@ class Hearthstone : public QObject
 {
   Q_OBJECT
 
-  DEFINE_SINGLETON( Hearthstone )
+  DEFINE_SINGLETON( Hearthstone );
 
 private:
   WindowCapture *mCapture;
@@ -53,6 +53,7 @@ signals:
   void GameStopped();
   void GameRequiresRestart();
   void GameWindowChanged( int x, int y, int w, int h );
+  void FocusChanged( bool value );
 
 private slots:
   void Update();

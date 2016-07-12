@@ -174,6 +174,7 @@ Overlay::Overlay( QWidget *parent )
   connect( Hearthstone::Instance(), &Hearthstone::GameWindowChanged, this, &Overlay::HandleGameWindowChanged );
   connect( Hearthstone::Instance(), &Hearthstone::GameStarted, this, &Overlay::HandleGameStarted );
   connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Overlay::HandleGameStopped );
+  connect( Hearthstone::Instance(), &Hearthstone::FocusChanged, this, &Overlay::HandleFocusChanged );
 
   connect( &mCheckForHoverTimer, &QTimer::timeout, this, &Overlay::CheckForHover );
 
@@ -362,4 +363,8 @@ void Overlay::HandleOverlaySettingChanged( bool enabled ) {
   UNUSED_ARG( enabled );
 
   Update();
+}
+
+void Overlay::HandleFocusChanged( bool focus ) {
+  focus && Settings::Instance()->OverlayEnabled() ? show() : hide();
 }
