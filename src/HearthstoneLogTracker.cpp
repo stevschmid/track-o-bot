@@ -61,7 +61,7 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   RegisterHearthstoneLogLineHandler( "Zone", "ZoneChangeList.ProcessChanges()", "local=(?<local>\\w+) (?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
-  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "ACTION_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?) EffectCardId=", &HearthstoneLogTracker::OnActionStart );
+  RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "BLOCK_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?) EffectCardId=", &HearthstoneLogTracker::OnActionStart );
   RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "id=(?<id>\\d+) Player=(?<player>.+?) TaskList=", &HearthstoneLogTracker::OnPlayerId );
   RegisterHearthstoneLogLineHandler( "Bob", "", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
   RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
