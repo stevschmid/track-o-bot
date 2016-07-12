@@ -19,7 +19,7 @@ private:
   QList< int > mInitialDeckObjectIds;
   CardHistoryList mCardsPlayed;
   CardHistoryList mCardsDrawn;
-  QMap< QString, int > mEntityIdByName;
+  QMap< QString, int > mPlayerIdByName;
 
   QList< HearthstoneLogLineHandler* > mLineHandlers;
 
@@ -33,6 +33,7 @@ private:
   void OnStartSpectating( const QVariantMap& args );
   void OnStopSpectating( const QVariantMap& args );
   void OnTagChange( const QVariantMap& args );
+  void OnPlayerId( const QVariantMap& args );
   void OnZoneChange( const QVariantMap& args );
 
   void CardPlayed( Player player, const QString& cardId, int internalId = 0 );
