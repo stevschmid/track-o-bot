@@ -25,6 +25,8 @@ private:
 
   ResultQueue           mResultsQueue;
 
+  QString               mRegion;
+
   void ResetResult();
   void UploadResult();
 

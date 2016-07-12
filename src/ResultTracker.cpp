@@ -16,6 +16,9 @@ ResultTracker::~ResultTracker() {
 void ResultTracker::HandleHearthstoneStart() {
   DBG( "HandleHearthstoneStart" );
 
+  mRegion = Hearthstone::Instance()->DetectRegion();
+  DBG( "Region detected: %s", qt2cstr( mRegion ) );
+
   ResetResult();
   // Make sure we reset spectating mode when game is started
   mSpectating = false;
@@ -76,6 +79,7 @@ void ResultTracker::HandleMatchEnd() {
   mResult.duration = mDurationTimer.elapsed() / 1000;
   mResult.added = QDateTime::currentDateTime();
   mResult.mode = mCurrentGameMode;
+  mResult.region = mRegion;
   UploadResult();
 }
 

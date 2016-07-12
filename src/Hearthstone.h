@@ -43,6 +43,7 @@ public:
 
   QString LogConfigPath() const;
   QString DetectHearthstonePath() const;
+  QString DetectRegion() const;
 
   int Width() const;
   int Height() const;

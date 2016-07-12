@@ -9,6 +9,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include <QDirIterator>
+#include <QDateTime>
+
 #ifdef Q_OS_MAC
 #include "OSXWindowCapture.h"
 #elif defined Q_OS_WIN
@@ -253,6 +256,54 @@ QString Hearthstone::DetectHearthstonePath() const {
   }
 
   return hsPath;
+}
+
+QString Hearthstone::DetectRegion() const {
+  QString region = "";
+
+#ifdef Q_OS_MAC
+  QString homeLocation = QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first();
+  QString path = homeLocation + "/Library/Application Support/Battle.net/";
+#elif defined Q_OS_WIN
+  wchar_t buffer[ MAX_PATH ];
+  SHGetSpecialFolderPathW( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
+  QString localAppData = QString::fromWCharArray( buffer );
+  QString path = localAppData + "/Battle.net/";
+#endif
+
+  QDirIterator it( path, QStringList() << "*.config" );
+  uint lastModifiedTime = 0;
+  QString lastModifiedPath;
+  while( it.hasNext() ) {
+    it.next();
+
+    uint modifiedTime = it.fileInfo().lastModified().toTime_t();
+    if( modifiedTime > lastModifiedTime ) {
+      lastModifiedPath = it.fileInfo().absoluteFilePath();
+      lastModifiedTime = modifiedTime;
+    }
+  }
+
+  if( !lastModifiedPath.isEmpty() ) {
+    QFile file(lastModifiedPath);
+    LOG( "File %s", qt2cstr( lastModifiedPath ) );
+    if( file.open( QIODevice::ReadOnly ) ) {
+      QByteArray data = file.readAll();
+      QJsonDocument doc = QJsonDocument::fromJson( data );
+      QJsonObject root = doc.object();
+
+      region = root["User"].toObject()
+        ["Client"].toObject()
+        ["PlayScreen"].toObject()
+        ["GameFamily"].toObject()
+        ["WTCG"].toObject()
+        ["LastSelectedGameRegion"].toString();
+    } else {
+      LOG( "Couldn't open config file %s", qt2cstr( lastModifiedPath ) );
+    }
+  }
+
+  return region;
 }
 
 int Hearthstone::Width() const {

@@ -124,6 +124,8 @@ public:
   int duration;
   QDateTime added;
 
+  QString region;
+
   Result() {
     Reset();
   }
@@ -142,6 +144,8 @@ public:
     legend = LEGEND_UNKNOWN;
 
     duration = 0;
+
+    region = "";
   }
 
   QJsonObject AsJson() const {
@@ -153,6 +157,9 @@ public:
     result[ "mode" ]     = MODE_NAMES[ mode ];
     result[ "duration" ] = duration;
     result[ "added" ]    = added.toTimeSpec( Qt::OffsetFromUTC ).toString( Qt::ISODate );
+    if( !region.isEmpty() ) {
+      result[ "region" ]    = region;
+    }
 
     if( mode == MODE_RANKED && rank != RANK_UNKNOWN && legend == LEGEND_UNKNOWN ) {
       result[ "rank" ] = rank;
