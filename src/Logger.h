@@ -21,7 +21,7 @@ const char LOG_EVENT_TYPE_NAMES[][128] = {
 class Logger : public QObject {
   Q_OBJECT
 
-DEFINE_SINGLETON( Logger )
+DEFINE_SINGLETON( Logger );
 
 private:
   QList< QPair< LogEventType, QString > > mQueue;

@@ -6,7 +6,7 @@ class Settings : public QObject
 {
   Q_OBJECT
 
-  DEFINE_SINGLETON( Settings )
+  DEFINE_SINGLETON( Settings );
 
 signals:
   void AccountChanged( const QString& username, const QString& password );

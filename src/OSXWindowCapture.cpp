@@ -6,7 +6,7 @@
 #define OSX_WINDOW_TITLE_BAR_HEIGHT 22
 
 OSXWindowCapture::OSXWindowCapture()
-  : mWinId( 0 )
+  : mWinId( 0 ), mFocus( false )
 {
 }
 
@@ -15,7 +15,7 @@ bool OSXWindowCapture::WindowFound() {
     mWinId = FindWindow( "Hearthstone" );
   }
 
-  if( mWinId && !WindowRect( mWinId, &mRect ) ) {
+  if( mWinId && !ExtractWindowProperties( mWinId, &mRect, &mFocus ) ) {
     // Window became invalid
     mWinId = 0;
   }
@@ -75,34 +75,44 @@ int OSXWindowCapture::FindWindow( const QString& name ) {
   CFStringRef nameRef = name.toCFString();
 
   for( int i = 0; i < (int)numWindows; i++ ) {
-    CFDictionaryRef info = ( CFDictionaryRef )CFArrayGetValueAtIndex( windowList, i);
+    CFDictionaryRef info = ( CFDictionaryRef )CFArrayGetValueAtIndex( windowList, i );
     CFStringRef thisWindowName = ( CFStringRef )CFDictionaryGetValue( info, kCGWindowName );
     CFStringRef thisWindowOwnerName = ( CFStringRef )CFDictionaryGetValue( info, kCGWindowOwnerName );
-    CFNumberRef thisWindowNumber = ( CFNumberRef )CFDictionaryGetValue( info, kCGWindowNumber );
 
     if( thisWindowOwnerName && CFStringCompare( thisWindowOwnerName, nameRef, 0 ) == kCFCompareEqualTo ) {
       if( thisWindowName && CFStringCompare( thisWindowName, nameRef, 0 ) == kCFCompareEqualTo ) {
+        CFNumberRef thisWindowNumber = ( CFNumberRef )CFDictionaryGetValue( info, kCGWindowNumber );
         CFNumberGetValue( thisWindowNumber, kCFNumberIntType, &winId );
         break;
       }
     }
   }
 
-  CFRelease(nameRef);
-  CFRelease(windowList);
+  CFRelease( nameRef );
+  CFRelease( windowList );
 
   return winId;
 }
 
-bool OSXWindowCapture::WindowRect( int windowId, CGRect *rect ) {
+bool OSXWindowCapture::ExtractWindowProperties( int windowId, CGRect *rect, bool *focus ) {
   CFArrayRef windowList = CGWindowListCopyWindowInfo( kCGWindowListOptionIncludingWindow, windowId );
   CFIndex numWindows = CFArrayGetCount( windowList );
+
+  *focus = false;
 
   if( numWindows > 0 ) {
     CFDictionaryRef info = ( CFDictionaryRef )CFArrayGetValueAtIndex( windowList, 0 );
     CGRectMakeWithDictionaryRepresentation( ( CFDictionaryRef )CFDictionaryGetValue( info, kCGWindowBounds ), rect);
+    CFBooleanRef thisWindowOnScreen = ( CFBooleanRef )( CFDictionaryGetValue( info, kCGWindowIsOnscreen ) );
+    if( thisWindowOnScreen != NULL ) {
+      *focus = CFBooleanGetValue( thisWindowOnScreen );
+    }
   }
 
   CFRelease( windowList );
   return numWindows > 0;
+}
+
+bool OSXWindowCapture::HasFocus() {
+  return mFocus;
 }

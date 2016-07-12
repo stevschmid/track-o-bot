@@ -28,6 +28,6 @@ public:
 
   QPixmap Capture( int x, int y, int w, int h );
 
-  bool Focus();
+  bool HasFocus();
 };
 

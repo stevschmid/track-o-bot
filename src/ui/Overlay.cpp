@@ -174,7 +174,7 @@ Overlay::Overlay( QWidget *parent )
   connect( Hearthstone::Instance(), &Hearthstone::GameWindowChanged, this, &Overlay::HandleGameWindowChanged );
   connect( Hearthstone::Instance(), &Hearthstone::GameStarted, this, &Overlay::HandleGameStarted );
   connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Overlay::HandleGameStopped );
-  connect( Hearthstone::Instance(), &Hearthstone::FocusChanged, this, &Overlay::HandleFocusChanged );
+  connect( Hearthstone::Instance(), &Hearthstone::FocusChanged, this, &Overlay::HandleGameFocusChanged );
 
   connect( &mCheckForHoverTimer, &QTimer::timeout, this, &Overlay::CheckForHover );
 
@@ -276,21 +276,26 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
 }
 
 void Overlay::Update() {
+  bool showable = false;
+
   if( Hearthstone::Instance()->GameRunning() && Settings::Instance()->OverlayEnabled() ) {
-    show();
+    showable = true;
 #ifdef Q_OS_WIN
     setAttribute( Qt::WA_QuitOnClose ); // otherwise taskkill /IM Track-o-Bot.exe does not work (http://www.qtcentre.org/threads/11713-Qt-Tool?p=62466#post62466)
 #endif
-
     if( !mCardDB.Loaded() ) {
       mCardDB.Load();
     }
   } else {
-    hide();
-
     if( mCardDB.Loaded() ) {
       mCardDB.Unload();
     }
+  }
+
+  if( showable && Hearthstone::Instance()->HasFocus() ) {
+    show();
+  } else {
+    hide();
   }
 
   update();
@@ -365,6 +370,7 @@ void Overlay::HandleOverlaySettingChanged( bool enabled ) {
   Update();
 }
 
-void Overlay::HandleFocusChanged( bool focus ) {
-  focus && Settings::Instance()->OverlayEnabled() ? show() : hide();
+void Overlay::HandleGameFocusChanged( bool focus ) {
+  DBG( "HandleFocusChanged %d", focus );
+  Update();
 }

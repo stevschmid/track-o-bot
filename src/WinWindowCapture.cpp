@@ -99,12 +99,7 @@ QPixmap WinWindowCapture::Capture( int x, int y, int w, int h ) {
   return pixmap;
 }
 
-bool WinWindowCapture::Focus() {
-
-    HWND activeWindow = GetForegroundWindow();
-    if( activeWindow == FindHWND() )
-        return true;
-    else
-        return false;
+bool WinWindowCapture::HasFocus() {
+  return GetForegroundWindow() == FindHWND();
 }
 

@@ -22,7 +22,7 @@
 DEFINE_SINGLETON_SCOPE( Hearthstone );
 
 Hearthstone::Hearthstone()
- : mCapture( NULL ), mGameRunning( false )
+ : mCapture( NULL ), mGameRunning( false ), mGameHasFocus( false )
 {
 #ifdef Q_OS_MAC
   mCapture = new OSXWindowCapture();
@@ -51,7 +51,12 @@ void Hearthstone::Update() {
   bool isRunning = mCapture->WindowFound();
 
   if( isRunning ) {
-    emit FocusChanged( mCapture->Focus() );
+    bool hasFocus = mCapture->HasFocus();
+    if( mGameHasFocus != hasFocus ) {
+      mGameHasFocus = hasFocus;
+      emit FocusChanged( hasFocus );
+    }
+
     static int lastLeft = 0, lastTop = 0, lastWidth = 0, lastHeight = 0;
     if( lastLeft != mCapture->Left() || lastTop != mCapture->Top() ||
         lastWidth != mCapture->Width() || lastHeight != mCapture->Height() )
@@ -315,3 +320,6 @@ int Hearthstone::Height() const {
   return mCapture->Height();
 }
 
+bool Hearthstone::HasFocus() const {
+  return mGameHasFocus;
+}

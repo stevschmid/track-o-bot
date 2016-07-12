@@ -6,7 +6,7 @@
 
 class Metadata
 {
-  DEFINE_SINGLETON( Metadata )
+  DEFINE_SINGLETON( Metadata );
 
 private:
   QMap< QString, QString > mMetadata;

@@ -17,6 +17,6 @@ public:
 
   virtual QPixmap Capture( int x, int y, int w, int h ) = 0;
 
-  virtual bool Focus() = 0;
+  virtual bool HasFocus() = 0;
 };
 

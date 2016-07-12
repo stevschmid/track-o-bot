@@ -25,6 +25,7 @@ private:
 
   bool mRestartRequired; // in case HS needs to be restarted for log changes to take effect
   bool mGameRunning;
+  bool mGameHasFocus;
 
   QString ReadAgentAttribute( const char *attributeName ) const;
 
@@ -48,12 +49,14 @@ public:
   int Width() const;
   int Height() const;
 
+  bool HasFocus() const;
+
 signals:
   void GameStarted();
   void GameStopped();
   void GameRequiresRestart();
   void GameWindowChanged( int x, int y, int w, int h );
-  void FocusChanged( bool value );
+  void FocusChanged( bool focus );
 
 private slots:
   void Update();
