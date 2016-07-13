@@ -272,7 +272,7 @@ QString Hearthstone::DetectRegion() const {
   QString path = homeLocation + "/Library/Application Support/Battle.net/";
 #elif defined Q_OS_WIN
   wchar_t buffer[ MAX_PATH ];
-  SHGetSpecialFolderPathW( NULL, buffer, CSIDL_LOCAL_APPDATA, FALSE );
+  SHGetSpecialFolderPathW( NULL, buffer, CSIDL_APPDATA, FALSE );
   QString localAppData = QString::fromWCharArray( buffer );
   QString path = localAppData + "/Battle.net/";
 #endif
