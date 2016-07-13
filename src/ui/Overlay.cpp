@@ -280,9 +280,6 @@ void Overlay::Update() {
 
   if( Hearthstone::Instance()->GameRunning() && Settings::Instance()->OverlayEnabled() ) {
     showable = true;
-#ifdef Q_OS_WIN
-    setAttribute( Qt::WA_QuitOnClose ); // otherwise taskkill /IM Track-o-Bot.exe does not work (http://www.qtcentre.org/threads/11713-Qt-Tool?p=62466#post62466)
-#endif
     if( !mCardDB.Loaded() ) {
       mCardDB.Load();
     }
@@ -293,7 +290,11 @@ void Overlay::Update() {
   }
 
   if( showable && Hearthstone::Instance()->HasFocus() ) {
+    hide(); // Minimize/Restore on Windows requires a hide() first
     show();
+#ifdef Q_OS_WIN
+    setAttribute( Qt::WA_QuitOnClose ); // otherwise taskkill /IM Track-o-Bot.exe does not work (http://www.qtcentre.org/threads/11713-Qt-Tool?p=62466#post62466)
+#endif
   } else {
     hide();
   }
