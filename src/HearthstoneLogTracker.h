@@ -15,11 +15,12 @@ private:
   int mHeroPlayerId;
   bool mLegendTracked;
   bool mSpectating;
+  QString mCurrentPlayerName;
 
   QList< int > mInitialDeckObjectIds;
   CardHistoryList mCardsPlayed;
   CardHistoryList mCardsDrawn;
-  QMap< QString, int > mPlayerIdByName;
+  QMap< QString, int > mPlayerIdsByName;
 
   QList< HearthstoneLogLineHandler* > mLineHandlers;
 
@@ -34,6 +35,7 @@ private:
   void OnStopSpectating( const QVariantMap& args );
   void OnTagChange( const QVariantMap& args );
   void OnPlayerId( const QVariantMap& args );
+  void OnPlayerName( const QVariantMap& args );
   void OnZoneChange( const QVariantMap& args );
 
   void CardPlayed( Player player, const QString& cardId, int internalId = 0 );

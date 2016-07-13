@@ -62,19 +62,25 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "BLOCK_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?) EffectCardId=", &HearthstoneLogTracker::OnActionStart );
-  RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "id=(?<id>\\d+) Player=(?<player>.+?) TaskList=", &HearthstoneLogTracker::OnPlayerId );
+  RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "id=\\d+ Player=(?<name>.+?) TaskList=", &HearthstoneLogTracker::OnPlayerName );
+  RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "type=INVALID zone=DECK zonePos=0 player=(?<id>\\d+)", &HearthstoneLogTracker::OnPlayerId );
   RegisterHearthstoneLogLineHandler( "Bob", "", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
   RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
   RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
   RegisterHearthstoneLogLineHandler( "Power", "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
 }
 
+
+void HearthstoneLogTracker::OnPlayerName( const QVariantMap& args ) {
+  mCurrentPlayerName = args[ "name" ].toString();
+  DBG( "OnPlayerName %s", qt2cstr( mCurrentPlayerName ) );
+}
+
 void HearthstoneLogTracker::OnPlayerId( const QVariantMap& args ) {
-  QString player = args[ "player" ].toString();
   int id = args[ "id" ].toInt();
 
-  DBG( "OnPlayerId %s = %d", qt2cstr( player ), id );
-  mPlayerIdByName[ player ] = id;
+  DBG( "OnPlayerId %d. Set %s to id %d", id, qt2cstr( mCurrentPlayerName ), id );
+  mPlayerIdsByName[ mCurrentPlayerName ] = id;
 }
 
 void HearthstoneLogTracker::OnActionStart( const QVariantMap& args ) {
@@ -194,7 +200,7 @@ void HearthstoneLogTracker::OnTagChange( const QVariantMap& args ) {
     QString entityName = args[ "entity" ].toString();
     QString outcome = value;
 
-    int entityId = mPlayerIdByName.value( entityName, -1 );
+    int entityId = mPlayerIdsByName.value( entityName, -1 );
     if( entityId == -1 ) {
       LOG( "Could not resolve entity %s to determine outcome", qt2cstr( entityName ) );
     } else {
@@ -344,7 +350,7 @@ void HearthstoneLogTracker::Reset() {
 
   mTurn = 0;
   mLegendTracked = false;
-  mPlayerIdByName.clear();
+  mPlayerIdsByName.clear();
   mInitialDeckObjectIds.clear();
 
   mCardsPlayed.clear();
