@@ -64,6 +64,7 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "BLOCK_START BlockType=(?<blockType>.+?) Entity=(?<entity>.+?) EffectCardId=", &HearthstoneLogTracker::OnActionStart );
   RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "id=\\d+ Player=(?<name>.+?) TaskList=", &HearthstoneLogTracker::OnPlayerName );
   RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "type=INVALID zone=DECK zonePos=0 player=(?<id>\\d+)", &HearthstoneLogTracker::OnPlayerId );
+  RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "Entities\\[\\d+\\]=\\[.*player=(?<id>\\d+).*\\]", &HearthstoneLogTracker::OnPlayerId );
   RegisterHearthstoneLogLineHandler( "Bob", "", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
   RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
   RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
