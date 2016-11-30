@@ -276,9 +276,6 @@ void Overlay::HandleGameWindowChanged( int x, int y, int w, int h ) {
 }
 
 void Overlay::Update() {
-  // TODO: Re-enable overlay after card db fix
-  return;
-
   bool showable = false;
 
   if( Hearthstone::Instance()->GameRunning() && Settings::Instance()->OverlayEnabled() ) {

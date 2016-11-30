@@ -4,47 +4,6 @@
 
 #include <QtXml>
 
-QString ExtractCardDefsXmlFromUnity3d( QString fileName, QString desiredLocale ) {
-  QFile file( fileName );
-
-  if( !file.open( QIODevice::ReadOnly ) ) {
-    DBG( "Couldn't open %s", qt2cstr( fileName ) );
-    return "";
-  }
-
-  QString xml;
-
-  QByteArray data = file.readAll();
-  for( int idx = data.indexOf( "<CardDefs>" ); idx != -1; idx = data.indexOf( "<CardDefs>", idx + 1 ) ) {
-    // Determine size
-    int size;
-    memcpy( &size, data.constData() + ( idx - 4 ), 4 );
-
-    // Determine locale
-    int localeOffset = idx - 5;
-    while( localeOffset > 0 && data[ localeOffset - 1 ] != char(0) )
-      localeOffset--;
-
-    int localeSizeOffset = localeOffset - 4;
-    if( localeOffset < 0 && localeSizeOffset < 0 ) {
-      DBG( "Offsets < 0. Skip" );
-      continue;
-    }
-
-    int localeSize;
-    memcpy( &localeSize, data.constData() + localeSizeOffset, 4 );
-    QString locale = QString::fromUtf8( data.constData() + localeOffset, localeSize );
-
-    if( locale == desiredLocale ) {
-      DBG( "Found desired locale %s (card defs size %d)", qt2cstr( desiredLocale ), size );
-      xml = QString::fromUtf8( data.constData() + idx, size );
-      break;
-    }
-  }
-
-  return xml;
-}
-
 HearthstoneCardDB::HearthstoneCardDB( QObject *parent )
   : QObject( parent )
 {
@@ -59,7 +18,7 @@ bool HearthstoneCardDB::Contains( const QString& id ) const {
 }
 
 int HearthstoneCardDB::Mana( const QString& id ) const {
-  return mCards[ id ][ "cost" ].toInt();
+  return mCards[ id ][ "mana" ].toInt();
 }
 
 QString HearthstoneCardDB::Name( const QString& id ) const {
@@ -89,34 +48,114 @@ QString HearthstoneCardDB::Type( const QString& id ) const {
   }
 }
 
+QMap< QString, QVariantMap > ReadTags( const QString& locale ) {
+  UNUSED_ARG( locale );
+
+  QMap< QString, QVariantMap > tags;
+
+  QString path = QString( "%1/DBF/CARD_TAG.xml" ).arg( Settings::Instance()->HearthstoneDirectoryPath() );
+  QFile file( path );
+  if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+    DBG( "Couldn't open %s", qt2cstr( path ) );
+    return tags;
+  }
+
+  QString xmlData = file.readAll();
+
+  QDomDocument doc;
+  doc.setContent( xmlData );
+
+  QDomElement dbf = doc.firstChildElement( "Dbf" );
+  QDomElement record = dbf.firstChildElement( "Record" );
+  for( ; !record.isNull(); record = record.nextSiblingElement( "Record" ) ) {
+    QVariantMap item;
+
+    QDomElement field = record.firstChildElement( "Field" );
+    for( ; !field.isNull(); field = field.nextSiblingElement( "Field" ) ) {
+      QString key = field.attribute( "column" );
+      QString value = field.text();
+      item[ key ] = value;
+    }
+
+    if( item.contains( "CARD_ID" ) ) {
+      QString cardId = item[ "CARD_ID" ].toString();
+
+      QString tagKey = item[ "TAG_ID" ].toString();
+      QString tagValue = item[ "TAG_VALUE" ].toString();
+
+      tags[ cardId ][ tagKey ] = tagValue;
+    }
+  }
+
+  return tags;
+}
+
+QMap< QString, QVariantMap > ReadCards( const QString& locale ) {
+  QMap< QString, QVariantMap > cards;
+
+  QString path = QString( "%1/DBF/CARD.xml" ).arg( Settings::Instance()->HearthstoneDirectoryPath() );
+  QFile file( path );
+  if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+    DBG( "Couldn't open %s", qt2cstr( path ) );
+    return cards;
+  }
+
+  QString xmlData = file.readAll();
+
+  QDomDocument doc;
+  doc.setContent( xmlData );
+
+  QDomElement dbf = doc.firstChildElement( "Dbf" );
+  QDomElement record = dbf.firstChildElement( "Record" );
+  for( ; !record.isNull(); record = record.nextSiblingElement( "Record" ) ) {
+    QVariantMap card;
+
+    QDomElement field = record.firstChildElement( "Field" );
+    for( ; !field.isNull(); field = field.nextSiblingElement( "Field" ) ) {
+      QString key = field.attribute( "column" );
+
+      QDomElement localizedText = field.firstChildElement( locale );
+      QString value;
+      if( !localizedText.isNull() ) {
+        value = localizedText.text();
+      } else {
+        value = field.text();
+      }
+
+      card[ key ] = value;
+    }
+
+    if( card.contains( "ID" ) ) {
+      cards[ card[ "ID" ].toString() ] = card;
+    }
+  }
+
+  return cards;
+}
+
 bool HearthstoneCardDB::Load() {
   Unload();
 
   DBG( "Load Card DB" );
 
   QString locale = Locale();
-  QString platform = "Win";
-#ifdef Q_OS_MAC
-  platform = "OSX";
-#endif
 
-  QString path = QString( "%1/Data/%2/cardxml0.unity3d" ).arg( Settings::Instance()->HearthstoneDirectoryPath() ).arg( platform );
-  QString xmlData = ExtractCardDefsXmlFromUnity3d( path, locale );
+  QMap< QString, QVariantMap > cards = ReadCards( locale );
+  QMap< QString, QVariantMap > tags = ReadTags( locale );
 
-  if( !xmlData.isEmpty() ) {
-    QXmlSimpleReader reader;
-    CardCollector cardCollector;
-    reader.setContentHandler( &cardCollector );
+  for( auto key : cards.keys() ) {
+    QVariantMap cardRaw = cards[ key ];
+    QVariantMap cardTags = tags[ key ];
 
-    connect( &cardCollector, &CardCollector::CardCollected, this, [&]( const QString& id, const QVariantMap& card ) {
-      mCards[ id ] = card;
-    });
+    QVariantMap card;
 
-    QXmlInputSource input;
-    input.setData( xmlData );
-    reader.parse( &input );
+    QString ref = cardRaw[ "NOTE_MINI_GUID" ].toString();
+    card[ "name" ] = cardRaw[ "NAME" ].toString();
+    card[ "mana" ] = cardTags[ "48" ].toString();
+    card[ "type" ] = cardTags[ "202" ].toString();
+    mCards[ ref ] = card;
 
-    DBG( "Loaded %d cards", mCards.count() );
+    DBG( "%s Name %s Cost %d Type %s", qt2cstr( ref ), qt2cstr( Name( ref ) ), Mana( ref ), qt2cstr( Type( ref ) ) );
   }
 
   return true;
