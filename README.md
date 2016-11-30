@@ -1,6 +1,6 @@
 # Build Dependencies
 
-* Qt 5.5
+* Qt 5.7
 * (OS X) Sparkle
 * (Windows) WinSparkle
 
@@ -17,7 +17,7 @@ brew link qt5 --force
 ## Windows
 
 * Install [Qt](http://qt-project.org/downloads) 
- * I use the Qt libraries 5.5.0 for Windows VS 2012.
+ * I use the Qt libraries for Windows VS 2012.
 * Install [WinSparkle](https://github.com/vslavik/winsparkle) 
  * Clone the repository and build the library, for example with VS 2012. The precompiled releases are ancient.
 
