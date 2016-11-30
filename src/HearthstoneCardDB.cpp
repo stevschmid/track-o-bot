@@ -114,10 +114,13 @@ QMap< QString, QVariantMap > ReadCards( const QString& locale ) {
     for( ; !field.isNull(); field = field.nextSiblingElement( "Field" ) ) {
       QString key = field.attribute( "column" );
 
-      QDomElement localizedText = field.firstChildElement( locale );
       QString value;
-      if( !localizedText.isNull() ) {
-        value = localizedText.text();
+      QDomElement localizedName = field.firstChildElement( locale );
+      QDomElement defaultLocalizedName = field.firstChildElement( "enUS" );
+      if( !locale.isEmpty() && !localizedName.isNull() ) {
+        value = localizedName.text();
+      } else if( !defaultLocalizedName.isNull() ) {
+        value = defaultLocalizedName.text();
       } else {
         value = field.text();
       }
