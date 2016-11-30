@@ -17,9 +17,9 @@ brew link qt5 --force
 ## Windows
 
 * Install [Qt](http://qt-project.org/downloads) 
- * I use the Qt libraries for Windows VS 2012.
+ * I use the Qt libraries for Windows VS 2013.
 * Install [WinSparkle](https://github.com/vslavik/winsparkle) 
- * Clone the repository and build the library, for example with VS 2012. The precompiled releases are ancient.
+ * Clone the repository and build the library, for example with VS 2013. The precompiled releases are ancient.
 
 # Build Instructions
 
