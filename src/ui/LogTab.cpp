@@ -28,3 +28,8 @@ void LogTab::AddLogEntry( LogEventType type, const QString& msg ) {
   mUI->logText->moveCursor( QTextCursor::End );
 }
 
+
+/* QSize LogTab::sizeHint() const { */
+/*   DBG( "sizeHint called") ; */
+/*   return QSize( 50, 50 ); */
+/* } */

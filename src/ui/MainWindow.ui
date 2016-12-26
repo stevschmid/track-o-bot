@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>150</height>
+    <width>428</width>
+    <height>296</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -25,25 +25,29 @@
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
-  <widget class="QStackedWidget" name="pageWidget">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <widget class="SettingsTab" name="settingsPage"/>
-   <widget class="AccountTab" name="accountsPage"/>
-   <widget class="LogTab" name="logPage"/>
-   <widget class="AboutTab" name="aboutPage"/>
+  <widget class="QWidget" name="mainWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
+    </property>
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
+     <number>1</number>
+    </property>
+   </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="minimumSize">
     <size>
-     <width>400</width>
+     <width>0</width>
      <height>0</height>
     </size>
    </property>
@@ -52,6 +56,9 @@
    </property>
    <property name="movable">
     <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoToolBarArea</set>
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -128,32 +135,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>SettingsTab</class>
-   <extends>QWidget</extends>
-   <header>src/ui/SettingsTab.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogTab</class>
-   <extends>QWidget</extends>
-   <header>src/ui/LogTab.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AboutTab</class>
-   <extends>QWidget</extends>
-   <header>src/ui/AboutTab.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AccountTab</class>
-   <extends>QWidget</extends>
-   <header>src/ui/AccountTab.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../../resources.qrc"/>
  </resources>

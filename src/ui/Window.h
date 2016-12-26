@@ -7,7 +7,14 @@
 #include <QMainWindow>
 #include <QStatusBar>
 
+#include "LogTab.h"
+#include "AccountTab.h"
+#include "SettingsTab.h"
+#include "AboutTab.h"
+
 namespace Ui { class MainWindow; }
+
+#define NUM_TABS 4
 
 class Window : public QMainWindow
 {
@@ -27,6 +34,13 @@ private:
   QAction           *mQuitAction;
   QAction           *mOpenProfileAction;
   QAction           *mGameClientRestartRequiredAction;
+
+  SettingsTab       *mSettingsTab;
+  AccountTab        *mAccountTab;
+  LogTab            *mLogTab;
+  AboutTab          *mAboutTab;
+
+  QWidget*          mTabs[ NUM_TABS ];
 
   QSystemTrayIcon   *mTrayIcon;
   QMenu             *mTrayIconMenu;

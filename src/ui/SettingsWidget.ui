@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>486</width>
-    <height>337</height>
+    <height>307</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -303,7 +303,7 @@ QLabel#updateDescription {
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>40</height>
+         <height>20</height>
         </size>
        </property>
       </spacer>

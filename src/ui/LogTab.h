@@ -17,5 +17,7 @@ private slots:
 public:
   explicit LogTab( QWidget *parent = 0 );
   ~LogTab();
+  /* virtual QSize sizeHint() const; */
+
 };
 

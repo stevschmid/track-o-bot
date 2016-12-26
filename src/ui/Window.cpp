@@ -39,17 +39,32 @@ Window::Window()
   mUI->actionAbout->setActionGroup( group );
   mUI->actionAbout->setProperty( "pageIndex", 3 );
 
-  mUI->pageWidget->setCurrentIndex( 0 );
-  mUI->actionSettings->setChecked( true );
+  mSettingsTab = new SettingsTab( this );
+  mAccountTab  = new AccountTab( this );
+  mLogTab      = new LogTab( this );
+  mAboutTab    = new AboutTab( this );
+
+  mTabs[ 0 ] = mSettingsTab;
+  mTabs[ 1 ] = mAccountTab;
+  mTabs[ 2 ] = mLogTab;
+  mTabs[ 3 ] = mAboutTab;
+
+  QLayout *layout = mUI->mainWidget->layout();
+  for( int i = 0; i < NUM_TABS; i++ ) {
+    layout->addWidget( mTabs[ i ] );
+  }
   TabChanged( 0 );
 
+  mUI->actionSettings->setChecked( true );
+
   connect( group, &QActionGroup::triggered, this, &Window::ActionTriggered );
-  connect( mUI->pageWidget, &QStackedWidget::currentChanged, this, &Window::TabChanged );
 
   connect( Hearthstone::Instance(), &Hearthstone::GameRequiresRestart, this, &Window::HandleGameClientRestartRequired );
   connect( Hearthstone::Instance(), &Hearthstone::GameStopped, this, &Window::HandleGameClientStop );
 
   QTimer::singleShot( 1000, this, &Window::HandleFirstStartCheck );
+
+  mUI->toolBar->setContextMenuPolicy( Qt::PreventContextMenu );
 
 #ifdef Q_OS_WIN
   // This is a fix for
@@ -70,12 +85,15 @@ Window::~Window() {
 
 void Window::ActionTriggered( QAction *action ) {
   int page = action->property( "pageIndex" ).toInt();
-  mUI->pageWidget->setCurrentIndex( page );
+  TabChanged( page );
 }
 
 void Window::TabChanged( int index ) {
-  QWidget *widget = mUI->pageWidget->widget( index );
-  mUI->pageWidget->setFixedHeight( widget->minimumHeight() );
+  for( int i = 0; i < NUM_TABS; i++ ) {
+    mTabs[ i ]->hide();
+  }
+  mTabs[ index ]->show();
+  resize(0, 0);
   adjustSize();
 }
 
@@ -143,18 +161,19 @@ void Window::CreateTrayIcon() {
   mTrayIcon->setContextMenu (mTrayIconMenu );
 
 #if defined Q_OS_MAC
-  QIcon::Mode blackMode = QIcon::Normal;
-  QIcon::Mode whiteMode = QIcon::Selected;
-  if( OSX_YosemiteDarkModeEnabled() ) {
-    blackMode = QIcon::Disabled;
-    whiteMode = QIcon::Normal;
-  }
+  /* QIcon::Mode blackMode = QIcon::Normal; */
+  /* QIcon::Mode whiteMode = QIcon::Selected; */
+  /* if( OSX_YosemiteDarkModeEnabled() ) { */
+  /*   blackMode = QIcon::Disabled; */
+  /*   whiteMode = QIcon::Normal; */
+  /* } */
 
   QIcon icon;
-  icon.addFile( ":/icons/mac_black@2x.png", QSize(), blackMode );
-  icon.addFile( ":/icons/mac_black.png", QSize(), blackMode );
-  icon.addFile( ":/icons/mac_white.png", QSize(), whiteMode );
-  icon.addFile( ":/icons/mac_white@2x.png", QSize(), whiteMode );
+  icon.addFile( ":/icons/mac_black.png", QSize(), QIcon::Normal );
+  icon.addFile( ":/icons/mac_black@2x.png", QSize(), QIcon::Normal );
+  /* icon.addFile( ":/icons/mac_white.png", QSize(), whiteMode ); */
+  /* icon.addFile( ":/icons/mac_white@2x.png", QSize(), whiteMode ); */
+  icon.setIsMask( true );
 #elif defined Q_OS_WIN
   QIcon icon = QIcon( ":/icons/win.ico" );
 #endif
