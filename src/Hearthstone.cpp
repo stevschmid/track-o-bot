@@ -255,8 +255,16 @@ QString Hearthstone::DetectHearthstonePath() const {
 #elif defined Q_OS_MAC
     hsPath = ReadAgentAttribute( "install_dir" );
     if( hsPath.isEmpty() ) {
-      LOG( "Fall back to default game path. You should set the path manually in the settings!" );
-      hsPath = QStandardPaths::standardLocations( QStandardPaths::ApplicationsLocation ).first() + "/Hearthstone";
+
+      QStringList dirs = QStandardPaths::standardLocations( QStandardPaths::ApplicationsLocation );
+      foreach( const QString& dir, dirs ) {
+        hsPath = dir + "/Hearthstone";
+        if( QDir( hsPath ).exists() ) {
+          break;
+        }
+      }
+
+      LOG( "Auto-detected %s as game path. Make sure it's the right one!", qt2cstr( hsPath ) );
     }
 #endif
   }
