@@ -46,6 +46,9 @@ QString HearthstoneCardDB::CardsJsonRemoteUrl() {
 }
 
 bool HearthstoneCardDB::Load() {
+  // Request cards.json if needed only once
+  static bool cardsRequested = false;
+
   Unload();
 
   int build = Hearthstone::Instance()->DetectBuild();
@@ -58,12 +61,16 @@ bool HearthstoneCardDB::Load() {
     DBG( "cards.json already downloaded, load it locally: %s", qt2cstr( CardsJsonLocalPath() ) );
     LoadJson();
   } else {
-    DBG( "cards.json not downloaded or outdated, download it: %s", qt2cstr( CardsJsonLocalPath() ) );
-    DBG( "Download cards.json from: %s", qt2cstr( CardsJsonRemoteUrl() ) );
+    if( !cardsRequested ) {
+      cardsRequested = true;
 
-    QNetworkRequest request( CardsJsonRemoteUrl() );
-    QNetworkReply *reply = mNetworkManager.get( request );
-    connect( reply, &QNetworkReply::finished, this, &HearthstoneCardDB::CardsJsonReply );
+      DBG( "cards.json not downloaded or outdated, download it: %s", qt2cstr( CardsJsonLocalPath() ) );
+      DBG( "Download cards.json from: %s", qt2cstr( CardsJsonRemoteUrl() ) );
+
+      QNetworkRequest request( CardsJsonRemoteUrl() );
+      QNetworkReply *reply = mNetworkManager.get( request );
+      connect( reply, &QNetworkReply::finished, this, &HearthstoneCardDB::CardsJsonReply );
+    }
   }
 
   return false;
