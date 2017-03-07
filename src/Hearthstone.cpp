@@ -324,7 +324,7 @@ QString Hearthstone::DetectRegion() const {
 
 #ifdef Q_OS_WIN
 // http://stackoverflow.com/questions/940707/how-do-i-programatically-get-the-version-of-a-dll-or-exe-file
-int Win32ExtractBuildFromPE( const char *szVersionFile ) {
+int Win32ExtractBuildFromPE( const wchar_t *szVersionFile ) {
   int build        = 0;
   DWORD  verHandle = NULL;
   UINT   size      = 0;
@@ -335,7 +335,7 @@ int Win32ExtractBuildFromPE( const char *szVersionFile ) {
     LPSTR verData = new char[ verSize ];
 
     if( GetFileVersionInfo( szVersionFile, verHandle, verSize, verData) ) {
-      if( VerQueryValue( verData, "\\", (VOID FAR* FAR*)&lpBuffer, &size ) ) {
+      if( VerQueryValue( verData, L"\\", (VOID FAR* FAR*)&lpBuffer, &size ) ) {
         if( size ) {
           VS_FIXEDFILEINFO *verInfo = (VS_FIXEDFILEINFO *)lpBuffer;
 
@@ -371,7 +371,7 @@ int Hearthstone::DetectBuild() const {
     }
 #elif defined Q_OS_WIN
     buildPath = QString( "%1/Hearthstone.exe" ).arg( hsPath );
-    build = Win32ExtractBuildFromPE( buildPath.c_str() );
+      build = Win32ExtractBuildFromPE( buildPath.toStdWString().c_str() );
 #endif
   }
   return build;

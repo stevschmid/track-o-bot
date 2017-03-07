@@ -82,6 +82,12 @@ void HearthstoneCardDB::CardsJsonReply() {
 
   DBG( "Downloaded cards.json %d bytes", jsonData.size() );
 
+  QString dirPath = QFileInfo( CardsJsonLocalPath() ).absolutePath();
+  if( !QFile::exists( dirPath ) ) {
+    QDir dir;
+    dir.mkpath( dirPath );
+  }
+
   QFile file( CardsJsonLocalPath() );
   file.open( QIODevice::WriteOnly );
   file.write( jsonData );

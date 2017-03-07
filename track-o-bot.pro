@@ -110,7 +110,7 @@ win32 {
 
   DEFINES += _CRT_SECURE_NO_WARNINGS
 
-  LIBS += user32.lib Gdi32.lib shell32.lib
+  LIBS += user32.lib Gdi32.lib shell32.lib version.lib
   LIBS += -L../WinSparkle/Release
 
   QMAKE_PRE_LINK = ruby dist/win/patch_rc.rb
