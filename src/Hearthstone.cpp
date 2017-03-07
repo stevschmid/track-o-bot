@@ -19,6 +19,8 @@
 #include "Shlobj.h"
 #endif
 
+#include "Settings.h"
+
 DEFINE_SINGLETON_SCOPE( Hearthstone );
 
 Hearthstone::Hearthstone()
@@ -319,6 +321,78 @@ QString Hearthstone::DetectRegion() const {
 
   return region;
 }
+
+#ifdef Q_OS_WIN
+// http://stackoverflow.com/questions/940707/how-do-i-programatically-get-the-version-of-a-dll-or-exe-file
+int Win32ExtractBuildFromPE( const char *szVersionFile ) {
+  int build        = 0;
+  DWORD  verHandle = NULL;
+  UINT   size      = 0;
+  LPBYTE lpBuffer  = NULL;
+  DWORD  verSize   = GetFileVersionInfoSize( szVersionFile, &verHandle);
+
+  if( verSize != NULL ) {
+    LPSTR verData = new char[ verSize ];
+
+    if( GetFileVersionInfo( szVersionFile, verHandle, verSize, verData) ) {
+      if( VerQueryValue( verData, "\\", (VOID FAR* FAR*)&lpBuffer, &size ) ) {
+        if( size ) {
+          VS_FIXEDFILEINFO *verInfo = (VS_FIXEDFILEINFO *)lpBuffer;
+
+          if( verInfo->dwSignature == 0xfeef04bd ) {
+            build = ( verInfo->dwFileVersionLS >>  0 ) & 0xffff;
+          }
+        }
+      }
+    }
+
+    delete[] verData;
+  } else {
+    DBG( "Could not extract build from PE: %s", szVersionFile );
+  }
+
+  return build;
+}
+#endif
+
+int Hearthstone::DetectBuild() const {
+  int build = 0;
+  QString hsPath = Settings::Instance()->HearthstoneDirectoryPath();
+  QString buildPath;
+
+  if( !hsPath.isEmpty() ) {
+#ifdef Q_OS_MAC
+    buildPath = QString( "%1/Hearthstone.app/Contents/Info.plist" ).arg( hsPath );
+    QSettings settings( buildPath, QSettings::NativeFormat );
+    QString version = settings.value( "BlizzardFileVersion", "1.0.0.0" ).toString();
+
+    if( !version.isEmpty() ) {
+      build = version.split(".").last().toInt();
+    }
+#elif defined Q_OS_WIN
+    buildPath = QString( "%1/Hearthstone.exe" ).arg( hsPath );
+    build = Win32ExtractBuildFromPE( buildPath.c_str() );
+#endif
+  }
+  return build;
+}
+
+QString Hearthstone::DetectLocale() const {
+  QString locale = "enUS";
+
+  QString path = QString( "%1/Launcher.db" ).arg( Settings::Instance()->HearthstoneDirectoryPath() );
+  QFile file( path );
+
+  if( file.open( QIODevice::ReadOnly ) )  {
+    QTextStream stream( &file );
+    locale = stream.readLine();
+  } else {
+    DBG( "Couldn't open %s to determine locale", qt2cstr( path ) );
+  }
+
+  return locale;
+}
+
 
 int Hearthstone::Width() const {
   return mCapture->Width();

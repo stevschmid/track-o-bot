@@ -3,6 +3,9 @@
 #include "Hearthstone.h"
 
 #include <QtXml>
+#include <cassert>
+
+#define HEARTHSTONE_JSON_API_URL "https://api.hearthstonejson.com/v1"
 
 HearthstoneCardDB::HearthstoneCardDB( QObject *parent )
   : QObject( parent )
@@ -17,8 +20,8 @@ bool HearthstoneCardDB::Contains( const QString& id ) const {
   return mCards.contains( id );
 }
 
-int HearthstoneCardDB::Mana( const QString& id ) const {
-  return mCards[ id ][ "mana" ].toInt();
+int HearthstoneCardDB::Cost( const QString& id ) const {
+  return mCards[ id ][ "cost" ].toInt();
 }
 
 QString HearthstoneCardDB::Name( const QString& id ) const {
@@ -26,142 +29,93 @@ QString HearthstoneCardDB::Name( const QString& id ) const {
 }
 
 QString HearthstoneCardDB::Type( const QString& id ) const {
-  int value = mCards[ id ][ "type" ].toInt();
-  switch( value ) {
-    case 3:
-    case 4:
-      return "minion";
-      break;
-
-    case 5:
-    case 6:
-      return "ability";
-
-    case 7:
-      return "weapon";
-
-    case 10:
-      return "hero";
-
-    default:
-      return "unknown";
-  }
+  return mCards[ id ][ "type" ].toString();
 }
 
-QMap< QString, QVariantMap > ReadTags( const QString& locale ) {
-  UNUSED_ARG( locale );
-
-  QMap< QString, QVariantMap > tags;
-
-  QString path = QString( "%1/DBF/CARD_TAG.xml" ).arg( Settings::Instance()->HearthstoneDirectoryPath() );
-  QFile file( path );
-  if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-    DBG( "Couldn't open %s", qt2cstr( path ) );
-    return tags;
-  }
-
-  QString xmlData = file.readAll();
-
-  QDomDocument doc;
-  doc.setContent( xmlData );
-
-  QDomElement dbf = doc.firstChildElement( "Dbf" );
-  QDomElement record = dbf.firstChildElement( "Record" );
-  for( ; !record.isNull(); record = record.nextSiblingElement( "Record" ) ) {
-    QVariantMap item;
-
-    QDomElement field = record.firstChildElement( "Field" );
-    for( ; !field.isNull(); field = field.nextSiblingElement( "Field" ) ) {
-      QString key = field.attribute( "column" );
-      QString value = field.text();
-      item[ key ] = value;
-    }
-
-    if( item.contains( "CARD_ID" ) ) {
-      QString cardId = item[ "CARD_ID" ].toString();
-
-      QString tagKey = item[ "TAG_ID" ].toString();
-      QString tagValue = item[ "TAG_VALUE" ].toString();
-
-      tags[ cardId ][ tagKey ] = tagValue;
-    }
-  }
-
-  return tags;
+QString HearthstoneCardDB::CardsJsonLocalPath() {
+  int build = Hearthstone::Instance()->DetectBuild();
+  QString locale = Hearthstone::Instance()->DetectLocale();
+  QString appDataLocation = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).first();
+  return QString( "%1/cards_%2_%3.json" ).arg( appDataLocation ).arg( build ).arg( locale );
 }
 
-QMap< QString, QVariantMap > ReadCards( const QString& locale ) {
-  QMap< QString, QVariantMap > cards;
-
-  QString path = QString( "%1/DBF/CARD.xml" ).arg( Settings::Instance()->HearthstoneDirectoryPath() );
-  QFile file( path );
-  if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
-    DBG( "Couldn't open %s", qt2cstr( path ) );
-    return cards;
-  }
-
-  QString xmlData = file.readAll();
-
-  QDomDocument doc;
-  doc.setContent( xmlData );
-
-  QDomElement dbf = doc.firstChildElement( "Dbf" );
-  QDomElement record = dbf.firstChildElement( "Record" );
-  for( ; !record.isNull(); record = record.nextSiblingElement( "Record" ) ) {
-    QVariantMap card;
-
-    QDomElement field = record.firstChildElement( "Field" );
-    for( ; !field.isNull(); field = field.nextSiblingElement( "Field" ) ) {
-      QString key = field.attribute( "column" );
-
-      QString value;
-      QDomElement localizedName = field.firstChildElement( locale );
-      QDomElement defaultLocalizedName = field.firstChildElement( "enUS" );
-      if( !locale.isEmpty() && !localizedName.isNull() ) {
-        value = localizedName.text();
-      } else if( !defaultLocalizedName.isNull() ) {
-        value = defaultLocalizedName.text();
-      } else {
-        value = field.text();
-      }
-
-      card[ key ] = value;
-    }
-
-    if( card.contains( "ID" ) ) {
-      cards[ card[ "ID" ].toString() ] = card;
-    }
-  }
-
-  return cards;
+QString HearthstoneCardDB::CardsJsonRemoteUrl() {
+  int build = Hearthstone::Instance()->DetectBuild();
+  QString locale = Hearthstone::Instance()->DetectLocale();
+  return QString( "%1/%2/%3/cards.json" ).arg( HEARTHSTONE_JSON_API_URL ).arg( build ).arg( locale );
 }
 
 bool HearthstoneCardDB::Load() {
   Unload();
 
-  DBG( "Load Card DB" );
-
-  QString locale = Locale();
-
-  QMap< QString, QVariantMap > cards = ReadCards( locale );
-  QMap< QString, QVariantMap > tags = ReadTags( locale );
-
-  for( auto key : cards.keys() ) {
-    QVariantMap cardRaw = cards[ key ];
-    QVariantMap cardTags = tags[ key ];
-
-    QVariantMap card;
-
-    QString ref = cardRaw[ "NOTE_MINI_GUID" ].toString();
-    card[ "name" ] = cardRaw[ "NAME" ].toString();
-    card[ "mana" ] = cardTags[ "48" ].toString();
-    card[ "type" ] = cardTags[ "202" ].toString();
-    mCards[ ref ] = card;
-
-    DBG( "%s Name %s Cost %d Type %s", qt2cstr( ref ), qt2cstr( Name( ref ) ), Mana( ref ), qt2cstr( Type( ref ) ) );
+  int build = Hearthstone::Instance()->DetectBuild();
+  if( !build ) {
+    ERR( "Could not determine build during card db load" );
+    return false;
   }
 
-  return true;
+  if( QFileInfo( CardsJsonLocalPath() ).exists() ) {
+    DBG( "cards.json already downloaded, load it locally: %s", qt2cstr( CardsJsonLocalPath() ) );
+    LoadJson();
+  } else {
+    DBG( "cards.json not downloaded or outdated, download it: %s", qt2cstr( CardsJsonLocalPath() ) );
+    DBG( "Download cards.json from: %s", qt2cstr( CardsJsonRemoteUrl() ) );
+
+    QNetworkRequest request( CardsJsonRemoteUrl() );
+    QNetworkReply *reply = mNetworkManager.get( request );
+    connect( reply, &QNetworkReply::finished, this, &HearthstoneCardDB::CardsJsonReply );
+  }
+
+  return false;
+}
+
+void HearthstoneCardDB::CardsJsonReply() {
+  QNetworkReply *reply = static_cast< QNetworkReply* >( sender() );
+  QByteArray jsonData = reply->readAll();
+
+  DBG( "Downloaded cards.json %d bytes", jsonData.size() );
+
+  QFile file( CardsJsonLocalPath() );
+  file.open( QIODevice::WriteOnly );
+  file.write( jsonData );
+  file.close();
+
+  LoadJson();
+}
+
+void HearthstoneCardDB::LoadJson() {
+  DBG( "LoadJson %s", qt2cstr( CardsJsonLocalPath() ) );
+
+  if( !QFileInfo( CardsJsonLocalPath() ).exists() ) {
+    DBG( "cards.json does not exist locally", qt2cstr( CardsJsonLocalPath() ) );
+    return;
+  }
+
+  QFile file( CardsJsonLocalPath() );
+  bool opened = file.open( QIODevice::ReadOnly | QIODevice::Text );
+  assert( opened );
+
+  QByteArray jsonData = file.readAll();
+  QJsonParseError error;
+  QJsonArray jsonCards = QJsonDocument::fromJson( jsonData, &error ).array();
+  assert( error.error == QJsonParseError::NoError );
+
+  DBG( "Load cards.json" );
+
+  for( QJsonValueRef jsonCardRef : jsonCards ) {
+    QJsonObject jsonCard = jsonCardRef.toObject();
+
+    QString ref = jsonCard[ "id" ].toString();
+
+    QVariantMap card;
+    card[ "name" ] = jsonCard[ "name" ].toString();
+    card[ "cost" ] = jsonCard[ "cost" ].toInt();
+    card[ "type" ] = jsonCard[ "type" ].toString();
+    mCards[ ref ] = card;
+    /* DBG( "%s Name %s Cost %d Type %s", qt2cstr( ref ), qt2cstr( Name( ref ) ), Cost( ref ), qt2cstr( Type( ref ) ) ); */
+  }
+
+  DBG( "Card DB %d cards", mCards.count() );
 }
 
 bool HearthstoneCardDB::Unload() {
@@ -172,22 +126,5 @@ bool HearthstoneCardDB::Unload() {
 
 bool HearthstoneCardDB::Loaded() const {
   return !mCards.empty();
-}
-
-QString HearthstoneCardDB::Locale() const {
-  QString locale = "enUS";
-
-  QString path = QString( "%1/Launcher.db" ).arg( Settings::Instance()->HearthstoneDirectoryPath() );
-  QFile file( path );
-
-  if( file.open( QIODevice::ReadOnly ) )  {
-    QTextStream stream( &file );
-    locale = stream.readLine();
-  } else {
-    DBG( "Couldn't open %s to determine locale", qt2cstr( path ) );
-  }
-
-  DBG( "Locale = %s", qt2cstr( locale )) ;
-  return locale;
 }
 

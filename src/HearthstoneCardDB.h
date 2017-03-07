@@ -3,6 +3,9 @@
 #include <QMap>
 #include <QString>
 #include <QVariant>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include <QtXml>
 
@@ -13,8 +16,14 @@ class HearthstoneCardDB : public QObject
 private:
   QMap< QString, QVariantMap > mCards;
 
+  QNetworkAccessManager mNetworkManager;
+  void CardsJsonReply();
+
+  QString CardsJsonLocalPath();
+  QString CardsJsonRemoteUrl();
+
 private:
-  QString Locale() const;
+  void LoadJson();
 
 public:
   HearthstoneCardDB( QObject *parent = 0 );
@@ -27,7 +36,7 @@ public:
   int Count() const;
   bool Contains( const QString& id ) const;
 
-  int Mana( const QString& id ) const;
+  int Cost( const QString& id ) const;
   QString Name( const QString& id ) const;
   QString Type( const QString& id ) const;
 };

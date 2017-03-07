@@ -327,7 +327,7 @@ void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
       continue;
     }
 
-    if( mCardDB.Type( cardId ) == "hero" ) {
+    if( mCardDB.Type( cardId ) == "HERO_POWER" ) {
       continue;
     }
 
@@ -337,7 +337,7 @@ void Overlay::UpdateHistoryFor( Player player, const ::CardHistoryList& list ) {
 
     QVariantMap& entry = entries[ cardId ];
     entry[ "count" ] = entry.value( "count", 0 ).toInt() + 1;
-    entry[ "mana" ] = mCardDB.Mana( cardId );
+    entry[ "mana" ] = mCardDB.Cost( cardId );
     entry[ "name" ] = mCardDB.Name( cardId );
   }
 
