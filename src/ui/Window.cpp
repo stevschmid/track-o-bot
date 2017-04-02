@@ -150,15 +150,14 @@ void Window::CreateActions() {
 }
 
 void Window::CreateTrayIcon() {
-  mTrayIconMenu = new QMenu( this);
+  mTrayIconMenu = new QMenu( this );
+  mTrayIcon = new QSystemTrayIcon( this );
+  mTrayIcon->setContextMenu ( mTrayIconMenu );
   mTrayIconMenu->addAction( mOpenProfileAction );
   mTrayIconMenu->addSeparator();
   mTrayIconMenu->addAction( mShowAction );
   mTrayIconMenu->addSeparator();
   mTrayIconMenu->addAction( mQuitAction );
-
-  mTrayIcon = new QSystemTrayIcon( this );
-  mTrayIcon->setContextMenu (mTrayIconMenu );
 
 #if defined Q_OS_MAC
   /* QIcon::Mode blackMode = QIcon::Normal; */
