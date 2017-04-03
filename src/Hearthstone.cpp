@@ -24,7 +24,7 @@
 DEFINE_SINGLETON_SCOPE( Hearthstone );
 
 Hearthstone::Hearthstone()
- : mCapture( NULL ), mGameRunning( false ), mGameHasFocus( false )
+ : mCapture( NULL ), mGameRunning( false ), mGameHasFocus( false ), mBuild( 0 )
 {
 #ifdef Q_OS_MAC
   mCapture = new OSXWindowCapture();
@@ -37,6 +37,7 @@ Hearthstone::Hearthstone()
   // So just check only once in a while
   mTimer = new QTimer( this );
   connect( mTimer, &QTimer::timeout, this, &Hearthstone::Update );
+  connect( this, &Hearthstone::GameStarted, this, &Hearthstone::DetectBuild );
 #ifdef Q_OS_MAC
   mTimer->start( 5000 );
 #else
@@ -322,6 +323,10 @@ QString Hearthstone::DetectRegion() const {
   return region;
 }
 
+int Hearthstone::Build() const {
+  return mBuild;
+}
+
 #ifdef Q_OS_WIN
 // http://stackoverflow.com/questions/940707/how-do-i-programatically-get-the-version-of-a-dll-or-exe-file
 int Win32ExtractBuildFromPE( const wchar_t *szVersionFile ) {
@@ -355,8 +360,7 @@ int Win32ExtractBuildFromPE( const wchar_t *szVersionFile ) {
 }
 #endif
 
-int Hearthstone::DetectBuild() const {
-  int build = 0;
+void Hearthstone::DetectBuild() {
   QString hsPath = Settings::Instance()->HearthstoneDirectoryPath();
   QString buildPath;
 
@@ -367,14 +371,13 @@ int Hearthstone::DetectBuild() const {
     QString version = settings.value( "BlizzardFileVersion", "1.0.0.0" ).toString();
 
     if( !version.isEmpty() ) {
-      build = version.split(".").last().toInt();
+      mBuild = version.split(".").last().toInt();
     }
 #elif defined Q_OS_WIN
     buildPath = QString( "%1/Hearthstone.exe" ).arg( hsPath );
-      build = Win32ExtractBuildFromPE( buildPath.toStdWString().c_str() );
+      mBuild = Win32ExtractBuildFromPE( buildPath.toStdWString().c_str() );
 #endif
   }
-  return build;
 }
 
 QString Hearthstone::DetectLocale() const {
