@@ -93,19 +93,32 @@ const char CLASS_NAMES[][128] = {
 #define RANK_UNKNOWN   0
 #define LEGEND_UNKNOWN  0
 
+class CardsCreatedBy
+{
+public:
+	int parentId;
+	int internalId;
+	QString cardId;
+	bool isCreator;
+	CardsCreatedBy(int parentId,QString& cardId, bool isCreator,int internalId):parentId(parentId),cardId(cardId),isCreator(isCreator), internalId(internalId){
+	}
+};
+
 class CardHistoryItem {
 public:
   int turn;
   Player player;
   QString cardId;
   int internalId;
-
-  CardHistoryItem( int turn, Player player, const QString& cardId, int internalId = 0 )
-    : turn( turn ), player( player ), cardId( cardId ), internalId( internalId )
+  QString createdBy;
+  
+  CardHistoryItem( int turn, Player player, const QString& cardId,QString createdBy, int internalId = 0 )
+    : turn( turn ), player( player ), cardId( cardId ), createdBy(createdBy),internalId( internalId )
   {
   }
 };
 typedef QList< CardHistoryItem > CardHistoryList;
+typedef QList<CardsCreatedBy> CardsCreatedByList;
 
 class Result {
 public:
@@ -117,7 +130,8 @@ public:
   HeroClass opponent;
 
   CardHistoryList cardList;
-
+  CardsCreatedByList cardsCreatedByList;
+ 
   int rank;
   int legend;
 
@@ -178,6 +192,7 @@ public:
       item[ "turn" ] = chi.turn;
       item[ "player" ] = chi.player == PLAYER_SELF ? "me" : "opponent";
       item[ "card_id" ] = chi.cardId;
+	  item["createdBy"] = chi.createdBy;
       card_history.append(item);
     }
     result[ "card_history" ] = card_history;

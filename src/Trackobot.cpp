@@ -147,6 +147,7 @@ void Trackobot::WireStuff() {
   connect( mLogTracker, &HearthstoneLogTracker::HandleLegend, mResultTracker, &ResultTracker::HandleLegend );
   connect( mLogTracker, &HearthstoneLogTracker::HandleTurn, mResultTracker, &ResultTracker::HandleTurn );
   connect( mLogTracker, &HearthstoneLogTracker::HandleCardsPlayedUpdate, mResultTracker, &ResultTracker::HandleCardsPlayedUpdate );
+   connect(mLogTracker, &HearthstoneLogTracker::HandleCardsCreatedBy, mResultTracker, &ResultTracker::HandleCardsCreatedBy);
 
   connect( mLogTracker, &HearthstoneLogTracker::HandleSpectating, mResultTracker, &ResultTracker::HandleSpectating );
   connect( mLogTracker, &HearthstoneLogTracker::HandleMatchStart, mResultTracker, &ResultTracker::HandleMatchStart );

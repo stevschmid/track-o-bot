@@ -21,7 +21,8 @@ private:
   CardHistoryList mCardsPlayed;
   CardHistoryList mCardsDrawn;
   QMap< QString, int > mPlayerIdsByName;
-
+  CardsCreatedByList mCardsCreatedByList;
+  CardsCreatedByList mTagCreatorList;
   QList< HearthstoneLogLineHandler* > mLineHandlers;
 
   void RegisterHearthstoneLogLineHandler( const QString& module, const QString& call, const QString& regex, void (HearthstoneLogTracker::*)( const QVariantMap& args ) );
@@ -37,7 +38,9 @@ private:
   void OnPlayerId( const QVariantMap& args );
   void OnPlayerName( const QVariantMap& args );
   void OnZoneChange( const QVariantMap& args );
-
+ void OnGetCreatedByCardId(const QVariantMap& args);
+  void OnGetTagCreator(const QVariantMap& args);
+  
   void CardPlayed( Player player, const QString& cardId, int internalId = 0 );
   void CardReturned( Player player, const QString& cardId, int internalId = 0 );
   void CardDrawn( Player player, const QString& cardId, int internalId = 0 );
@@ -68,6 +71,7 @@ signals:
   void HandleCardsDrawnUpdate( const ::CardHistoryList& cardsDrawn );
 
   void HandleSpectating( bool nowSpectating );
+  void HandleCardsCreatedBy(const ::CardsCreatedByList& createdBy);
 
 public:
   HearthstoneLogTracker( QObject *parent = 0 );

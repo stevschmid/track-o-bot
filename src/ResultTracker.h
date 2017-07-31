@@ -46,6 +46,7 @@ public slots:
   void HandleGameMode( GameMode mode );
   void HandleTurn( int turn );
   void HandleLegend( int legend );
+  void HandleCardsCreatedBy(const ::CardsCreatedByList& CreatedBy);
 
 public:
   ResultTracker( QObject *parent = 0 );
