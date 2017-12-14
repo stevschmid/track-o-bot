@@ -66,7 +66,7 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "type=INVALID zone=DECK zonePos=0 player=(?<id>\\d+)", &HearthstoneLogTracker::OnPlayerId );
   RegisterHearthstoneLogLineHandler( "Power", "GameState.DebugPrintEntityChoices()", "Entities\\[\\d+\\]=\\[.*player=(?<id>\\d+).*\\]", &HearthstoneLogTracker::OnPlayerId );
   RegisterHearthstoneLogLineHandler( "Bob", "", "legend rank (?<rank>\\w+)", &HearthstoneLogTracker::OnLegendRank );
-  RegisterHearthstoneLogLineHandler( "Asset", "", "name=rank_window", &HearthstoneLogTracker::OnRanked );
+  RegisterHearthstoneLogLineHandler( "Asset", "", "assetPath=rank_window", &HearthstoneLogTracker::OnRanked );
   RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
   RegisterHearthstoneLogLineHandler( "Power", "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
 }
