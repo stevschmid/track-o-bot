@@ -16,9 +16,11 @@
 
 #define DEFAULT_WEBSERVICE_URL "https://trackobot.com"
 
-#if defined(Q_OS_MAC) && !defined(QT_NO_BEARERMANAGEMENT)
-  #error Qt must be built without bearer management (-no-feature-bearermanagement) on Mac (until https://bugreports.qt.io/browse/QTBUG-50181 is fixed)
-#endif
+
+/* According to a comment not happening with Qt 5.8+ */
+/* #if defined(Q_OS_MAC) && !defined(QT_NO_BEARERMANAGEMENT) */
+/*   #error Qt must be built without bearer management (-no-feature-bearermanagement) on Mac (until https://bugreports.qt.io/browse/QTBUG-50181 is fixed) */
+/* #endif */
 
 WebProfile::WebProfile( QObject *parent )
   : QObject( parent )
