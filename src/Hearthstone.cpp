@@ -42,10 +42,8 @@ Hearthstone::Hearthstone()
   mTimer = new QTimer( this );
   connect( mTimer, &QTimer::timeout, this, &Hearthstone::Update );
   mTimer->start( SLOW_UPDATE_INTERVAL );
-#ifndef Q_OS_MAC
   connect( this, &Hearthstone::GameStarted, this, &Hearthstone::SetFastUpdates );
   connect( this, &Hearthstone::GameStopped, this, &Hearthstone::SetSlowUpdates );
-#endif
 }
 
 Hearthstone::~Hearthstone() {
@@ -91,10 +89,12 @@ void Hearthstone::Update() {
 }
 
 void Hearthstone::SetSlowUpdates() {
+  DBG( "Hearthstone::SetSlowUpdates" );
   mTimer->setInterval( SLOW_UPDATE_INTERVAL );
 }
 
 void Hearthstone::SetFastUpdates() {
+  DBG( "Hearthstone::SetFastUpdates" );
   mTimer->setInterval( FAST_UPDATE_INTERVAL );
 }
 
