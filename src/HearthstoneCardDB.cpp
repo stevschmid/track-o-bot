@@ -32,16 +32,24 @@ QString HearthstoneCardDB::Type( const QString& id ) const {
   return mCards[ id ][ "type" ].toString();
 }
 
+QString LocaleForCardDB() {
+  QString locale = Hearthstone::Instance()->DetectLocale();
+  if( locale == "enGB" ) {
+    locale = "enUS";
+  }
+  return locale;
+}
+
 QString HearthstoneCardDB::CardsJsonLocalPath() {
   int build = Hearthstone::Instance()->DetectBuild();
-  QString locale = Hearthstone::Instance()->DetectLocale();
+  QString locale = LocaleForCardDB();
   QString appDataLocation = QStandardPaths::standardLocations( QStandardPaths::AppDataLocation ).first();
   return QString( "%1/cards_%2_%3.json" ).arg( appDataLocation ).arg( build ).arg( locale );
 }
 
 QString HearthstoneCardDB::CardsJsonRemoteUrl() {
   int build = Hearthstone::Instance()->DetectBuild();
-  QString locale = Hearthstone::Instance()->DetectLocale();
+  QString locale = LocaleForCardDB();
   return QString( "%1/%2/%3/cards.json" ).arg( HEARTHSTONE_JSON_API_URL ).arg( build ).arg( locale );
 }
 
