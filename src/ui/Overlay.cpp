@@ -85,16 +85,16 @@ private:
 
   void DrawCardLine( QPainter& painter, int x, int y, int width, int height, const QString& name, int count ) const {
     painter.save();
-    painter.drawText( x, y, width, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, name );
+	QString text = name;
 
-    if( count > 1 ) {
-      int nameWidth = QFontMetrics( painter.font() ).width( name + " " );
-      QString countString = QString( "x%1" ).arg( count );
+	if( count > 1 ) {
+      text.prepend(QString( "%1x " ).arg( count ));
       QFont font = painter.font();
       font.setBold( true );
       painter.setFont( font );
-      painter.drawText( x + nameWidth, y, width - nameWidth, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, countString );
     }
+
+    painter.drawText( x, y, width, height, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextDontClip, text );
     painter.restore();
   }
 
@@ -235,7 +235,7 @@ void Overlay::paintEvent( QPaintEvent* ) {
     history = &mPlayerHistory;
     rect = mPlayerDeckRect;
   } else if( mShowPlayerHistory == PLAYER_OPPONENT && mOpponentHistory.count() > 0 ) {
-    title = "Cards played by opponent";
+    title = "Opponent played";
     history = &mOpponentHistory;
     rect = mOpponentDeckRect;
   }
