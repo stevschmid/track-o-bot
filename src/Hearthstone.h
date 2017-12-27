@@ -62,4 +62,6 @@ signals:
 
 private slots:
   void Update();
+  void SetSlowUpdates();
+  void SetFastUpdates();
 };
