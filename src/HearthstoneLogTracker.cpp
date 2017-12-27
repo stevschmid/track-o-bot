@@ -13,7 +13,7 @@ const int NUM_HERO_POWER_CARDS = 115;
 const char HERO_POWER_CARD_IDS[NUM_HERO_POWER_CARDS][32] = {
 "CS1h_001" /* Lesser Heal */, "CS2_017" /* Shapeshift */, "CS2_034" /* Fireblast */, "CS2_049" /* Totemic Call */, "CS2_056" /* Life Tap */, "CS2_083b" /* Dagger Mastery */, "CS2_101" /* Reinforce */, "CS2_102" /* Armor Up! */, "DS1h_292" /* Steady Shot */, "EX1_625t" /* Mind Spike */, "EX1_625t2" /* Mind Shatter */, "EX1_tk33" /* INFERNO! */, "CS2_034_H1" /* Fireblast */, "CS2_034_H1_AT_132" /* Fireblast Rank 2 */, "CS2_101_H1" /* Reinforce */, "CS2_102_H1" /* Armor Up! */, "CS2_102_H1_AT_132" /* Tank Up! */, "DS1h_292_H1" /* Steady Shot */, "DS1h_292_H1_AT_132" /* Ballista Shot */, "TBA01_5" /* Wild Magic */, "TBA01_6" /* Molten Rage */, "TU4d_003" /* Shotgun Blast */, "TU4e_002" /* Flames of Azzinoth */, "NAX10_03" /* Hateful Strike */, "NAX10_03H" /* Hateful Strike */, "NAX11_02" /* Poison Cloud */, "NAX11_02H" /* Poison Cloud */, "NAX12_02" /* Decimate */, "NAX12_02H" /* Decimate */, "NAX13_02" /* Polarity Shift */, "NAX14_02" /* Frost Breath */, "NAX15_02" /* Frost Blast */, "NAX15_02H" /* Frost Blast */, "NAX15_04" /* Chains */, "NAX15_04H" /* Chains */, "NAX1_04" /* Skitter */, "NAX1h_04" /* Skitter */, "NAX2_03" /* Rain of Fire */, "NAX2_03H" /* Rain of Fire */, "NAX3_02" /* Web Wrap */, "NAX3_02H" /* Web Wrap */, "NAX4_04" /* Raise Dead */, "NAX4_04H" /* Raise Dead */, "NAX5_02" /* Eruption */, "NAX5_02H" /* Eruption */, "NAX6_02" /* Necrotic Aura */, "NAX6_02H" /* Necrotic Aura */, "NAX7_03" /* Unbalancing Strike */, "NAX7_03H" /* Unbalancing Strike */, "NAX8_02" /* Harvest */, "NAX8_02H" /* Harvest */, "NAX9_06" /* Unholy Shadow */, "BRMA01_2" /* Pile On! */, "BRMA01_2H" /* Pile On! */, "BRMA02_2" /* Jeering Crowd */, "BRMA02_2H" /* Jeering Crowd */, "BRMA03_2" /* Power of the Firelord */, "BRMA04_2" /* Magma Pulse */, "BRMA05_2" /* Ignite Mana */, "BRMA05_2H" /* Ignite Mana */, "BRMA06_2" /* The Majordomo */, "BRMA06_2H" /* The Majordomo */, "BRMA07_2" /* ME SMASH */, "BRMA07_2H" /* ME SMASH */, "BRMA08_2" /* Intense Gaze */, "BRMA08_2H" /* Intense Gaze */, "BRMA09_2" /* Open the Gates */, "BRMA09_2H" /* Open the Gates */, "BRMA09_3" /* Old Horde */, "BRMA09_3H" /* Old Horde */, "BRMA09_4" /* Blackwing */, "BRMA09_4H" /* Blackwing */, "BRMA09_5" /* Dismount */, "BRMA09_5H" /* Dismount */, "BRMA10_3" /* The Rookery */, "BRMA10_3H" /* The Rookery */, "BRMA11_2" /* Essence of the Red */, "BRMA11_2H" /* Essence of the Red */, "BRMA12_10" /* Mutation */, "BRMA12_2" /* Brood Affliction */, "BRMA12_2H" /* Brood Affliction */, "BRMA13_2" /* True Form */, "BRMA13_2H" /* True Form */, "BRMA13_4" /* Wild Magic */, "BRMA13_4H" /* Wild Magic */, "BRMA14_10" /* Activate! */, "BRMA14_10H" /* Activate! */, "BRMA14_2" /* Activate Arcanotron */, "BRMA14_2H" /* Activate Arcanotron */, "BRMA14_4" /* Activate Toxitron */, "BRMA14_4H" /* Activate Toxitron */, "BRMA14_6" /* Activate Electron */, "BRMA14_6H" /* Activate Electron */, "BRMA14_8" /* Activate Magmatron */, "BRMA14_8H" /* Activate Magmatron */, "BRMA15_2" /* The Alchemist */, "BRMA15_2H" /* The Alchemist */, "BRMA16_2" /* Echolocate */, "BRMA16_2H" /* Echolocate */, "BRMA17_5" /* Bone Minions */, "BRMA17_5H" /* Bone Minions */, "BRMA17_8" /* Nefarian Strikes! */, "BRMA17_8H" /* Nefarian Strikes! */, "BRM_027p" /* DIE, INSECT! */, "BRM_027pH" /* DIE, INSECTS! */, "AT_050t" /* Lightning Jolt */, "AT_132_DRUID" /* Dire Shapeshift */, "AT_132_HUNTER" /* Ballista Shot */, "AT_132_MAGE" /* Fireblast Rank 2 */, "AT_132_PALADIN" /* The Silver Hand */, "AT_132_PRIEST" /* Heal */, "AT_132_ROGUE" /* Poisoned Daggers */, "AT_132_SHAMAN" /* Totemic Slam */, "AT_132_WARLOCK" /* Soul Tap */, "AT_132_WARRIOR" /* Tank Up! */
 };
-
+bool isShowEntity = false;
 // Hero Ids: Must match HeroClass enum
 const int NUM_HEROES = 9;
 const char HERO_IDS[NUM_HEROES][32] = {
@@ -58,6 +58,8 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
 
   // Add handlers
   RegisterHearthstoneLogLineHandler( "LoadingScreen", "LoadingScreen.OnSceneLoaded()", "prevMode=(?<prevMode>\\w+) currMode=(?<currMode>\\w+)", &HearthstoneLogTracker::OnSceneLoaded );
+  RegisterHearthstoneLogLineHandler("Power", "PowerTaskList.DebugPrintPower()", "tag=CREATOR value=(?<id>\\d+).*", &HearthstoneLogTracker::OnGetTagCreator);
+  RegisterHearthstoneLogLineHandler("Power", "PowerTaskList.DebugPrintPower()", "SHOW_ENTITY - Updating Entity=(?<entity>\\[.+?\\]) CardID=(?<cardId>\\w+)", &HearthstoneLogTracker::OnGetCreatedByCardId);
   RegisterHearthstoneLogLineHandler( "Zone", "ZoneChangeList.ProcessChanges()", "local=(?<local>\\w+) (?<entity>\\[.+?\\]) zone from (?<from>.*) ->\\s?(?<to>.*)", &HearthstoneLogTracker::OnZoneChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "TAG_CHANGE Entity=(?<entity>.+?) tag=(?<tag>\\w+) value=(?<value>\\w+)", &HearthstoneLogTracker::OnTagChange );
   RegisterHearthstoneLogLineHandler( "Power", "PowerTaskList.DebugPrintPower()", "CREATE_GAME", &HearthstoneLogTracker::OnCreateGame );
@@ -69,6 +71,34 @@ HearthstoneLogTracker::HearthstoneLogTracker( QObject *parent )
   RegisterHearthstoneLogLineHandler( "Asset", "", "assetPath=rank_window", &HearthstoneLogTracker::OnRanked );
   RegisterHearthstoneLogLineHandler( "Power", "", "Start Spectator Game", &HearthstoneLogTracker::OnStartSpectating );
   RegisterHearthstoneLogLineHandler( "Power", "", "End Spectator Mode", &HearthstoneLogTracker::OnStopSpectating ); // MODE!
+}
+
+void HearthstoneLogTracker::OnGetCreatedByCardId(const QVariantMap& args)
+{
+	QVariantMap entity = args["entity"].toMap();
+	int id = entity["id"].toInt();
+	QString cardId= args["cardId"].toString();
+	mCardsCreatedByList.push_back(CardsCreatedBy(0,cardId,false,id));
+	isShowEntity = true;
+	}
+void HearthstoneLogTracker::OnGetTagCreator(const QVariantMap& args)
+{
+	QString cardId = "";
+	int id = args["id"].toInt();
+	int count = 1;
+	if (isShowEntity)
+	{
+		for each (CardsCreatedBy item in mCardsCreatedByList)
+		{
+			if(count== mCardsCreatedByList.count())
+				mTagCreatorList.push_back(CardsCreatedBy(id, item.cardId, true,item.internalId));
+			
+			count++;
+		}
+		emit HandleCardsCreatedBy(mTagCreatorList);
+	}
+	isShowEntity = false;
+	
 }
 
 
@@ -359,6 +389,12 @@ void HearthstoneLogTracker::Reset() {
 
   mCardsDrawn.clear();
   emit HandleCardsDrawnUpdate( mCardsDrawn );
+  
+  mTagCreatorList.clear();
+  emit HandleCardsCreatedBy(mTagCreatorList);
+
+  mCardsCreatedByList.clear();
+  emit HandleCardsDrawnUpdate( mCardsDrawn );
 }
 
 void HearthstoneLogTracker::HandleLogLine( const QString& module, const QString& line ) {
@@ -374,7 +410,8 @@ void HearthstoneLogTracker::HandleLogLine( const QString& module, const QString&
 void HearthstoneLogTracker::CardPlayed( Player player, const QString& cardId, int internalId ) {
   DBG( "%s played card %s on turn %d (id %d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
 
-  mCardsPlayed.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
+  QString createdBy = "";
+  mCardsPlayed.push_back( CardHistoryItem( CurrentTurn(), player, cardId,createdBy, internalId ) );
   emit HandleCardsPlayedUpdate( mCardsPlayed );
 }
 
@@ -392,7 +429,8 @@ void HearthstoneLogTracker::CardReturned( Player player, const QString& cardId, 
 void HearthstoneLogTracker::CardDrawn( Player player, const QString& cardId, int internalId ) {
   DBG( "%s Card drawn %s on turn %d (%d)", PLAYER_NAMES[ player ], qt2cstr( cardId ), CurrentTurn(), internalId );
 
-  mCardsDrawn.push_back( CardHistoryItem( CurrentTurn(), player, cardId, internalId ) );
+  QString createdBy = "";
+  mCardsDrawn.push_back( CardHistoryItem( CurrentTurn(), player, cardId, createdBy,internalId ) );
   emit HandleCardsDrawnUpdate( mCardsDrawn );
 }
 

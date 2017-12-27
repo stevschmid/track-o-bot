@@ -68,6 +68,11 @@ void ResultTracker::HandleCardsPlayedUpdate( const ::CardHistoryList& cardsPlaye
   mResult.cardList = cardsPlayed;
 }
 
+void ResultTracker::HandleCardsCreatedBy(const ::CardsCreatedByList& createdBy) {
+	DBG("HandleCardsCreatedBy");
+	mResult.cardsCreatedByList = createdBy;
+}
+
 void ResultTracker::HandleMatchEnd() {
   if( mSpectating ) {
     LOG( "Ignore spectated match" );
@@ -139,6 +144,32 @@ void ResultTracker::UploadResult() {
   mResult.rank = DetermineRank();
   DBG( "Determined Rank: %d", mResult.rank );
 
+  QList<CardHistoryItem> updatedList;
+
+  for each (CardsCreatedBy cardsCreatedBy in mResult.cardsCreatedByList)
+  {
+	  for each (CardHistoryItem cardList in mResult.cardList)
+	  {
+		  if (cardList.internalId == cardsCreatedBy.internalId)
+		  {
+			  for each (CardHistoryItem cardListItem in mResult.cardList)
+			  {
+				  if (cardListItem.internalId == cardsCreatedBy.parentId)
+				  {
+					  cardList.createdBy = cardListItem.cardId;
+					  updatedList.push_back(cardList);
+				  }
+			  }
+			 
+		  }
+		  else
+		  {
+			  updatedList.push_back(cardList);
+		  }
+	  }
+  }
+  mResult.cardList = updatedList;
+  
   mResultsQueue.Add( mResult );
   ResetResult();
 }
