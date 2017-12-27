@@ -11,6 +11,7 @@
 
 #include <QDirIterator>
 #include <QDateTime>
+#include <QRegularExpression>
 
 #ifdef Q_OS_MAC
 #include "OSXWindowCapture.h"
@@ -363,8 +364,19 @@ int Hearthstone::DetectBuild() const {
   if( !hsPath.isEmpty() ) {
 #ifdef Q_OS_MAC
     buildPath = QString( "%1/Hearthstone.app/Contents/Info.plist" ).arg( hsPath );
-    QSettings settings( buildPath, QSettings::NativeFormat );
-    QString version = settings.value( "BlizzardFileVersion", "1.0.0.0" ).toString();
+
+    QString version;
+    QFile file( buildPath );
+    if( file.open( QIODevice::ReadOnly | QFile::Text ) ) {
+      QTextStream is( &file );
+      QString content = is.readAll();
+
+      QRegularExpression r( "<key>BlizzardFileVersion<\\/key>\\s*<string>([\\d\\.]+)<\\/string>", QRegularExpression::CaseInsensitiveOption );
+      QRegularExpressionMatch match = r.match( content );
+      if( match.hasMatch() ) {
+        version = match.captured( 1 );
+      }
+    }
 
     if( !version.isEmpty() ) {
       build = version.split(".").last().toInt();
